@@ -1,20 +1,40 @@
 import "./index.css";
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { DAppProvider, Mainnet } from "@usedapp/core";
+import { DAppProvider, DEFAULT_SUPPORTED_CHAINS } from "@usedapp/core";
 import React from "react";
 import ReactDOM from "react-dom";
 
 import App from "./App";
 
-// Change this to your own Infura project id: https://infura.io/register
-const INFURA_PROJECT_ID = "defba93b47f748f09fcead8282b9e58e";
-const config = {
-  readOnlyChainId: Mainnet.chainId,
-  readOnlyUrls: {
-    [Mainnet.chainId]: "https://mainnet.infura.io/v3/" + INFURA_PROJECT_ID,
+export const BttcChain = {
+  chainId: 199,
+  chainName: "BitTorrent Chain Mainnet",
+  isTestChain: false,
+  isLocalChain: false,
+  multicallAddress: "0x365aEf443783331c487Eaf8C576A248f15e221c5",
+  getExplorerAddressLink: (address) =>
+    `https://bttcscan.com/address/${address}`,
+  getExplorerTransactionLink: (transactionHash) =>
+    `https://bttcscan.com/tx/${transactionHash}`,
+  // Optional parameters:
+  rpcUrl: "https://rpc.bt.io/",
+  blockExplorerUrl: "https://bttcscan.com",
+  nativeCurrency: {
+    name: "BitTorrent-New",
+    symbol: "BTT",
+    decimals: 18,
   },
-}
+};
+
+const config = {
+  readOnlyChainId: BttcChain.chainId,
+  readOnlyUrls: {
+    [BttcChain.chainId]:
+      "https://bttc.getblock.io/mainnet/?api_key=538c9c6c-35d3-42f2-a58a-e4060ef3367f",
+  },
+  networks: [...DEFAULT_SUPPORTED_CHAINS, BttcChain],
+};
 
 // You should replace this url with your own and put it into a .env file
 // See all subgraphs: https://thegraph.com/explorer/
@@ -31,5 +51,5 @@ ReactDOM.render(
       </ApolloProvider>
     </DAppProvider>
   </React.StrictMode>,
-  document.getElementById("root"),
+  document.getElementById("root")
 );

@@ -6,6 +6,7 @@ import {
   useEthers,
   useLookupAddress,
 } from "@usedapp/core";
+import * as ethers from "ethers";
 import React, { useEffect, useState } from "react";
 
 import { Body, Button, Container, Header, Image, Link } from "./components";
@@ -56,10 +57,26 @@ function App() {
   // Read more about useDapp on https://usedapp.io/
   const { error: contractCallError, value: tokenBalance } =
     useCall({
-      contract: new Contract(addresses.ceaErc20, abis.erc20),
-      method: "balanceOf",
-      args: ["0x3f8CB69d9c0ED01923F11c829BaE4D9a4CB6c82C"],
+      contract: new Contract(addresses.bttcMulticall, abis.multicall),
+      method: "getEthBalance",
+      args: ["0xbe921007385971d169a4596ECC175A91f8710a56"],
     }) ?? {};
+
+  if (contractCallError)
+    console.log(
+      `contractCallError`,
+      contractCallError,
+      typeof contractCallError
+    );
+
+  console.log(`tokenBalance`, tokenBalance, typeof tokenBalance);
+
+  if (tokenBalance) {
+    const balance = ethers.BigNumber.from(tokenBalance.balance._hex);
+    let amountOfBTT = ethers.utils.formatEther(balance);
+    amountOfBTT = Math.round(amountOfBTT * 1e4) / 1e4;
+    console.log(`amountOfBTT`, amountOfBTT, typeof amountOfBTT);
+  }
 
   const { loading, error: subgraphQueryError, data } = useQuery(GET_TRANSFERS);
 
