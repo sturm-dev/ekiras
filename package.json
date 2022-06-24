@@ -13,7 +13,6 @@
     "subgraph:codegen": "yarn workspace @my-app/subgraph codegen",
     "subgraph:build": "yarn workspace @my-app/subgraph build",
     "subgraph:deploy": "yarn workspace @my-app/subgraph deploy",
-    "rn-app:ipfs": "yarn workspace @my-app/react-app ipfs",
     "rn-app:start:ios": "yarn workspace @my-app/rn-app ios"
   },
   "workspaces": {

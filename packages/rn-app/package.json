@@ -1,5 +1,5 @@
 {
-  "name": "justFeedback",
+  "name": "@my-app/rn-app",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "reset-cache": "react-native start --reset-cache"
   },
   "dependencies": {
     "react": "18.0.0",
