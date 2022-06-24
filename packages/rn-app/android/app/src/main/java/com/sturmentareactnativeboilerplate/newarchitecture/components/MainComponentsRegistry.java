@@ -1,4 +1,4 @@
-package com.justfeedback.newarchitecture.components;
+package com.sturmentareactnativeboilerplate.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

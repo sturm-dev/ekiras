@@ -28,6 +28,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const Section: React.FC<{
+  children: React.ReactNode;
   title: string;
 }> = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -83,7 +84,9 @@ const App = () => {
           <Section title="Debug">
             <DebugInstructions />
           </Section>
-          <Section title="Learn More">test changes</Section>
+          <Section title="Learn More">
+            Read the docs to discover what to do next:
+          </Section>
           <LearnMoreLinks />
         </View>
       </ScrollView>
