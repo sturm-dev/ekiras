@@ -13,7 +13,7 @@ class MainComponentsRegistry
  public:
   // Adapt it to the package you used for your Java class.
   constexpr static auto kJavaDescriptor =
-      "Lcom/sturmentareactnativeboilerplate/newarchitecture/components/MainComponentsRegistry;";
+      "Lcom/justfeedback/newarchitecture/components/MainComponentsRegistry;";
 
   static void registerNatives();
 
