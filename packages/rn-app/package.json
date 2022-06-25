@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.7",
-    "@usedapp/core": "file:.yalc/@usedapp/core",
     "ethers": "5.0.5",
     "react": "18.0.0",
     "react-native": "0.69.0"

@@ -9,6 +9,7 @@
  */
 
 import React from 'react';
+import {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -27,10 +28,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import {Contract} from '@ethersproject/contracts';
-import {useCall} from '@usedapp/core';
 import * as ethers from 'ethers';
 import multicallAbi from './multicall.json';
+import {bttcChain} from './bttcChain';
 
 const Section: React.FC<{
   children: React.ReactNode;
@@ -68,31 +68,44 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const {error: contractCallError, value: tokenBalance} =
-    useCall({
-      contract: new Contract(
-        '0x365aEf443783331c487Eaf8C576A248f15e221c5',
-        multicallAbi,
-      ),
-      method: 'getEthBalance',
-      args: ['0xbe921007385971d169a4596ECC175A91f8710a56'],
-    }) ?? {};
+  useEffect(() => {
+    tryConnecting();
+  }, []);
 
-  if (contractCallError)
-    console.log(
-      `contractCallError`,
-      contractCallError,
-      typeof contractCallError,
+  const tryConnecting = () => {
+    const {rpcUrl, chainId, chainName} = bttcChain;
+    const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
+      chainId,
+      name: chainName,
+    });
+
+    // var wallet = new ethers.Wallet(
+    //   '0x2761906e540d278b6f08eae1b3f7f07b1cc1ac737a8792e8bf0c77e4e3cc5c83',
+    //   provider,
+    // );
+
+    const contract = new ethers.Contract(
+      '0x365aEf443783331c487Eaf8C576A248f15e221c5',
+      multicallAbi,
+      provider,
+      // wallet,
     );
 
-  console.log(`tokenBalance`, tokenBalance, typeof tokenBalance);
+    const getEthBalancePromise: Promise<any> = contract.getEthBalance(
+      '0xbe921007385971d169a4596ECC175A91f8710a56',
+    );
 
-  if (tokenBalance) {
-    const balance = ethers.BigNumber.from(tokenBalance.balance._hex);
-    let amountOfBTT: any = ethers.utils.formatEther(balance);
-    amountOfBTT = Math.round(amountOfBTT * 1e4) / 1e4;
-    console.log(`amountOfBTT`, amountOfBTT, typeof amountOfBTT);
-  }
+    getEthBalancePromise
+      .then((tokenBalance: any) => {
+        if (tokenBalance) {
+          const balance = ethers.BigNumber.from(tokenBalance._hex);
+          let amountOfBTT: any = ethers.utils.formatEther(balance);
+          amountOfBTT = Math.round(amountOfBTT * 1e4) / 1e4;
+          console.log(`amountOfBTT`, amountOfBTT, typeof amountOfBTT);
+        }
+      })
+      .catch(e => console.log(`e`, e, typeof e));
+  };
 
   return (
     <SafeAreaView style={backgroundStyle}>

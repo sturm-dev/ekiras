@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "@usedapp/core": {
-      "signature": "2be0aa10b1799f5042c1b3dc21881395",
-      "file": true
-    }
-  }
-}
