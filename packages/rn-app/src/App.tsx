@@ -73,6 +73,8 @@ const App = () => {
     tryConnecting();
   }, []);
 
+  // TODO: events https://youtu.be/yk7nVp5HTCk?t=4329
+
   const tryConnecting = async () => {
     const address1 = '0xbe921007385971d169a4596ECC175A91f8710a56';
     const address2 = '0xDdaCAe39c023cc587eAB8AE4E7183670620BE231';

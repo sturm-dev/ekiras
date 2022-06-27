@@ -1,6 +1,12 @@
 import React from 'react';
-import _App from './App';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+
+import {Container_App as ContainerApp} from './navigations';
 
 export const App = (): any => {
-  return <_App />;
+  return (
+    <SafeAreaProvider>
+      <ContainerApp />
+    </SafeAreaProvider>
+  );
 };
