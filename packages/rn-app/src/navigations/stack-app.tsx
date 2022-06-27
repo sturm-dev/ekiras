@@ -1,6 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Screen_Home} from '../scenes/app';
+import {Screen_Home, Screen_Profile} from '../scenes/app';
 import {AppStackParamList} from './constants';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -11,6 +11,7 @@ export const Stack_App = (): any => {
       initialRouteName="Screen_Home"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="Screen_Home" component={Screen_Home} />
+      <Stack.Screen name="Screen_Profile" component={Screen_Profile} />
     </Stack.Navigator>
   );
 };

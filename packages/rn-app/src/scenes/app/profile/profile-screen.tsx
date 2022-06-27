@@ -9,22 +9,22 @@ import {themedStyleSheet} from '../../../utils';
 import {AppStackParamList} from '../../../navigations/constants';
 import {TextByScale} from '../../../components/atoms/text-by-scale';
 
-export type Screen_Home__Params = undefined;
+export type Screen_Profile__Params = undefined;
 
-type Screen_Home__Prop = NativeStackNavigationProp<
+type Screen_Profile__Prop = NativeStackNavigationProp<
   AppStackParamList,
-  'Screen_Home'
+  'Screen_Profile'
 >;
 
-export const Screen_Home: React.FC<{
+export const Screen_Profile: React.FC<{
   route: RouteProp<{
-    params: Screen_Home__Params;
+    params: Screen_Profile__Params;
   }>;
 }> = ({route}) => {
   const styles = useStyles();
   const colors = useTheme().colors as MyThemeInterfaceColors;
 
-  const navigation = useNavigation<Screen_Home__Prop>();
+  const navigation = useNavigation<Screen_Profile__Prop>();
   const {params} = route;
 
   React.useEffect(() => {
@@ -38,9 +38,9 @@ export const Screen_Home: React.FC<{
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
-        <TextByScale>Home</TextByScale>
-        <TouchableOpacity onPress={() => navigation.navigate('Screen_Profile')}>
-          <TextByScale>Go Profile</TextByScale>
+        <TextByScale>Profile</TextByScale>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TextByScale>Go Back</TextByScale>
         </TouchableOpacity>
       </View>
     </ScreenSafeArea>
