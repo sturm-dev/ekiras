@@ -1,1 +1,1 @@
-export * from './register/register-screen';
+export * from './slides/slides-screen';

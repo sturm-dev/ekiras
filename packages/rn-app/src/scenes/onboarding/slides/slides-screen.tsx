@@ -9,22 +9,22 @@ import {themedStyleSheet} from '../../../utils';
 import {OnboardingStackParamList} from '../../../navigations/constants';
 import {TextByScale} from '../../../components/atoms/text-by-scale';
 
-export type Screen_Register__Params = undefined;
+export type Screen_Slides__Params = undefined;
 
-type Screen_Register__Prop = NativeStackNavigationProp<
+type Screen_Slides__Prop = NativeStackNavigationProp<
   OnboardingStackParamList,
-  'Screen_Register'
+  'Screen_Slides'
 >;
 
-export const Screen_Register: React.FC<{
+export const Screen_Slides: React.FC<{
   route: RouteProp<{
-    params: Screen_Register__Params;
+    params: Screen_Slides__Params;
   }>;
 }> = ({route}) => {
   const styles = useStyles();
   const colors = useTheme().colors as MyThemeInterfaceColors;
 
-  const navigation = useNavigation<Screen_Register__Prop>();
+  const navigation = useNavigation<Screen_Slides__Prop>();
   const {params} = route;
 
   React.useEffect(() => {
@@ -38,7 +38,7 @@ export const Screen_Register: React.FC<{
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
-        <TextByScale>Register</TextByScale>
+        <TextByScale>Slides</TextByScale>
         <TouchableOpacity onPress={() => navigation.navigate('Stack_App')}>
           <TextByScale>Go To Home</TextByScale>
         </TouchableOpacity>
