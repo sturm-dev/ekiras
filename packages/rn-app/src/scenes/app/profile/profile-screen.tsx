@@ -4,7 +4,7 @@ import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {MyThemeInterfaceColors} from '../../../styles';
-import {ScreenSafeArea} from '../../../components/atoms';
+import {Icon, ScreenSafeArea} from '../../../components/atoms';
 import {themedStyleSheet} from '../../../utils';
 import {AppStackParamList} from '../../../navigations/constants';
 import {TextByScale} from '../../../components/atoms/text-by-scale';
@@ -39,7 +39,10 @@ export const Screen_Profile: React.FC<{
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <TextByScale>Profile</TextByScale>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{flexDirection: 'row'}}>
+          <Icon name="arrow-back" size={24} color={colors.text} />
           <TextByScale>Go Back</TextByScale>
         </TouchableOpacity>
       </View>
