@@ -1,4 +1,5 @@
 import {
+  Screen_CreatePost__Params,
   Screen_Home__Params,
   Screen_LoadingStart__Params,
   Screen_Profile__Params,
@@ -18,4 +19,5 @@ export type OnboardingStackParamList = RootStackParamList & {
 export type AppStackParamList = RootStackParamList & {
   Screen_Home: Screen_Home__Params;
   Screen_Profile: Screen_Profile__Params;
+  Screen_CreatePost: Screen_CreatePost__Params;
 };
