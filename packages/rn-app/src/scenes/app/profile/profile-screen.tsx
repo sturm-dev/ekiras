@@ -3,11 +3,9 @@ import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {MyThemeInterfaceColors} from '../../../styles';
-import {Icon, ScreenSafeArea} from '../../../components/atoms';
-import {themedStyleSheet} from '../../../utils';
-import {AppStackParamList} from '../../../navigations/constants';
-import {TextByScale} from '../../../components/atoms/text-by-scale';
+import {Icon, ScreenSafeArea, TextByScale} from '_atoms';
+import {AppStackParamList} from '_navigations';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 
 export type Screen_Profile__Params = undefined;
 

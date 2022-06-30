@@ -1,10 +1,10 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {ReactNode} from 'react';
 import {StatusBar} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 import {SafeAreaView, SafeAreaViewProps} from 'react-native-safe-area-context';
 
-import {MyThemeInterfaceColors} from '../../styles';
-import {parseStyle} from '../../utils';
+import {MyThemeInterfaceColors, parseStyle} from '_utils';
 
 interface ScreenSafeAreaProps extends SafeAreaViewProps {
   children: ReactNode;

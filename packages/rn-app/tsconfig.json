@@ -97,7 +97,24 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
+        // for alias import
+        "baseUrl": "./",
+        "paths": {
+          "_assets": ["src/assets/index.ts"],
+          // -----
+          "_atoms": ["src/components/atoms/index.ts"],
+          "_molecules": ["src/components/molecules/index.ts"],
+          "_organisms": ["src/components/organisms/index.ts"],
+          // -----
+          "_navigations": ["src/navigations/index.ts"],
+          // -----
+          "_scenes": ["src/scenes/index.ts"],
+          // -----
+          "_utils": ["src/utils/index.ts"],
+          // -----
+          "_hooks": ["src/hooks/index.ts"],
+        },
   },
   "exclude": [
     "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"

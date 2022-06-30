@@ -3,14 +3,13 @@ import {useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {Stack_App, Stack_Onboarding} from './';
-import {MyDarkTheme, MyLightTheme} from '../styles';
-import {RootStackParamList} from './constants';
-import {Screen_LoadingStart} from '../scenes/loading-start';
+import {MyDarkTheme, MyLightTheme} from '_utils';
+import {Screen_LoadingStart} from '_scenes';
+import {Stack_Onboarding, Stack_App, RootStackParamList} from '_navigations';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const Container_App = (): any => {
+export const ContainerApp = (): any => {
   const scheme = useColorScheme(); // get from device theme used
   const theme = scheme === 'dark' ? MyDarkTheme : MyLightTheme;
 

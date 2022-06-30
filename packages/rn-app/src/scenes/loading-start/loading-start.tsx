@@ -3,9 +3,8 @@ import {ActivityIndicator} from 'react-native';
 import {useTheme, RouteProp} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {MyThemeInterfaceColors} from '../../styles';
-import {themedStyleSheet} from '../../utils';
-import {useNavigationReset} from '../../hooks';
+import {useNavigationReset} from '_hooks';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 
 export type Screen_LoadingStart__Params = undefined;
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Screen_Home, Screen_Profile} from '../scenes/app';
-import {AppStackParamList} from './constants';
+
+import {Screen_Home, Screen_Profile} from '_scenes';
+import {AppStackParamList} from '_navigations';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 

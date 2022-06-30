@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-pascal-case */
 import {useTheme} from '@react-navigation/native';
 import React, {ReactChild, ReactElement} from 'react';
 import {
@@ -7,10 +6,13 @@ import {
   TextProps as RN_TextProps,
   TextStyle,
 } from 'react-native';
-import {MyThemeInterfaceColors} from '../../styles';
 
-import {parseStyle} from '../../utils';
-import {fontSizeByScale, fontSizeScales} from '../../utils/fonts';
+import {
+  MyThemeInterfaceColors,
+  parseStyle,
+  fontSizeByScale,
+  fontSizeScales,
+} from '_utils';
 
 export interface TextByScaleProps extends RN_TextProps {
   children: ReactElement | string | number | (string | false | ReactChild)[];

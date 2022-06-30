@@ -1,6 +1,9 @@
-import {Screen_LoadingStart__Params} from '../scenes/loading-start';
-import {Screen_Home__Params, Screen_Profile__Params} from '../scenes/app';
-import {Screen_Slides__Params} from '../scenes/onboarding';
+import {
+  Screen_Home__Params,
+  Screen_LoadingStart__Params,
+  Screen_Profile__Params,
+  Screen_Slides__Params,
+} from '_scenes';
 
 export type RootStackParamList = {
   Loading_Start: Screen_LoadingStart__Params;

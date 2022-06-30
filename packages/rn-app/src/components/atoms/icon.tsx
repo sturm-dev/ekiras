@@ -17,7 +17,7 @@ import Icon_Octicons from 'react-native-vector-icons/Octicons';
 import Icon_SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Icon_Zocial from 'react-native-vector-icons/Zocial';
 
-import {MyThemeInterfaceColors} from '../../styles';
+import {MyThemeInterfaceColors} from '_utils';
 
 export type IconType =
   | 'antdesign'

@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
-import {MyThemeInterfaceColors} from '../styles';
+import {MyThemeInterfaceColors} from '_utils';
 
 export const themedStyleSheet =
   <T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>, V>(
