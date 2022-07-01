@@ -1,10 +1,10 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {useTheme, RouteProp} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {useNavigationReset} from '_hooks';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {ScreenSafeArea} from '_atoms';
 
 export type Screen_LoadingStart__Params = undefined;
 
@@ -25,14 +25,16 @@ export const Screen_LoadingStart: React.FC<{
   }, [handleResetNavigation]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ActivityIndicator size="large" color={colors.text} />
-    </SafeAreaView>
+    <ScreenSafeArea withBottomEdgeToo>
+      <View style={styles.mainContainer}>
+        <ActivityIndicator size="large" color={colors.text} />
+      </View>
+    </ScreenSafeArea>
   );
 };
 
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
-  safeArea: {
+  mainContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

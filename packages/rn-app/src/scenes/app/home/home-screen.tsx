@@ -5,26 +5,19 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {
+  mockData_lorem,
+  mockData_userId,
+  mockData_username,
+  MyThemeInterfaceColors,
+  themedStyleSheet,
+} from '_utils';
 
 import {PostPreview} from './post-preview-component';
 
 export type Screen_Home__Params = undefined;
 
 // ────────────────────────────────────────────────────────────────────────────────
-
-const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-aliquip ex ea commodo consequat. Duis aute irure dolor in
-reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.`;
-
-const userId = '0x365aEf443783331c487Eaf8C576A248f15e221c5';
-const username = 'Nathan Michael';
-
-// ───────────────────────────────────
 
 type itemType = {
   id: number;
@@ -39,7 +32,11 @@ type itemType = {
 
 const listOfItems: itemType[] = [];
 [0, 1, 2].forEach((e, i) =>
-  listOfItems.push({id: i, user: {userId, username}, text: lorem}),
+  listOfItems.push({
+    id: i,
+    user: {userId: mockData_userId, username: mockData_username},
+    text: mockData_lorem,
+  }),
 );
 
 // ────────────────────────────────────────────────────────────────────────────────

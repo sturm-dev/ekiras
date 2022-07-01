@@ -48,21 +48,19 @@ export const Screen_CreatePost: React.FC<{
   }, []);
 
   return (
-    <ScreenSafeArea colorStatusBar={colors.background}>
+    <ScreenSafeArea colorStatusBar={colors.background} withBottomEdgeToo>
+      <BackButton onPress={() => navigation.goBack()} />
       <CustomKeyboardAvoidingView>
         <View style={styles.container}>
-          <BackButton onPress={() => navigation.goBack()} />
           <View style={styles.header}>
             <TextByScale scale="h3">Create Post</TextByScale>
           </View>
           <View style={styles.body}>
             <MultilineTextInput value={text} onChangeText={setText} />
           </View>
-          <SafeAreaView edges={['bottom']}>
-            <View style={styles.footer}>
-              <Button onPress={() => null} text="Create post" />
-            </View>
-          </SafeAreaView>
+          <View style={styles.footer}>
+            <Button onPress={() => null} text="Create post" />
+          </View>
         </View>
       </CustomKeyboardAvoidingView>
     </ScreenSafeArea>

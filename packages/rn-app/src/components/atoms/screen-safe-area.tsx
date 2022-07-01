@@ -9,11 +9,13 @@ import {MyThemeInterfaceColors, parseStyle} from '_utils';
 interface ScreenSafeAreaProps extends SafeAreaViewProps {
   children: ReactNode;
   colorStatusBar?: string;
+  withBottomEdgeToo?: boolean;
 }
 
 export const ScreenSafeArea: React.FC<ScreenSafeAreaProps> = ({
   children,
   colorStatusBar: colorStatusBarFromProps,
+  withBottomEdgeToo,
   ...props
 }: ScreenSafeAreaProps) => {
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -23,7 +25,12 @@ export const ScreenSafeArea: React.FC<ScreenSafeAreaProps> = ({
     <>
       <StatusBar backgroundColor={colorStatusBar} barStyle="light-content" />
       <SafeAreaView
-        edges={['right', 'top', 'left']}
+        edges={[
+          'right',
+          'top',
+          'left',
+          ...((withBottomEdgeToo ? ['bottom'] : []) as ['bottom'] | []),
+        ]}
         {...props}
         style={{
           flex: 1,
@@ -38,4 +45,5 @@ export const ScreenSafeArea: React.FC<ScreenSafeAreaProps> = ({
 
 ScreenSafeArea.defaultProps = {
   colorStatusBar: undefined, // set default color inside of component
+  withBottomEdgeToo: undefined,
 };
