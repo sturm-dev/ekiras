@@ -17,11 +17,11 @@ export type RootStackParamList = {
   Stack_App: undefined;
 };
 
-export type OnboardingStackParamList = RootStackParamList & {
+export type OnboardingStackParamList = {
   Screen_Slides: Screen_Slides__Params;
 };
 
-export type AppStackParamList = RootStackParamList & {
+export type AppStackParamList = {
   Screen_Home: Screen_Home__Params;
   // ──────────────────────────────────────────────
   Screen_CreatePost: Screen_CreatePost__Params;

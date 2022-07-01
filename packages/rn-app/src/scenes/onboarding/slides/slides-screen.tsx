@@ -6,6 +6,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {ScreenSafeArea, TextByScale} from '_atoms';
 import {OnboardingStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {useNavigationReset} from '_hooks';
 
 export type Screen_Slides__Params = undefined;
 
@@ -25,6 +26,8 @@ export const Screen_Slides: React.FC<{
   const navigation = useNavigation<Screen_Slides__Prop>();
   const {params} = route;
 
+  const {handleResetNavigation} = useNavigationReset();
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
@@ -37,7 +40,13 @@ export const Screen_Slides: React.FC<{
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <TextByScale>Slides</TextByScale>
-        <TouchableOpacity onPress={() => navigation.navigate('Stack_App')}>
+        <TouchableOpacity
+          onPress={() =>
+            handleResetNavigation({
+              stack: 'Stack_App',
+              screen: 'Screen_Home',
+            })
+          }>
           <TextByScale>Go To Home</TextByScale>
         </TouchableOpacity>
       </View>

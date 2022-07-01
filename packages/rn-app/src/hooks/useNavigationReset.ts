@@ -2,30 +2,39 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useCallback} from 'react';
 
-import {OnboardingStackParamList, RootStackParamList} from '_navigations';
+import {
+  AppStackParamList,
+  OnboardingStackParamList,
+  RootStackParamList,
+} from '_navigations';
 
 export const useNavigationReset = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleResetNavigation = useCallback(
-    (firstParam?: {
-      stack?: keyof RootStackParamList;
-      screen?: keyof OnboardingStackParamList;
-      params?: {};
-    }) => {
+    (
+      firstParam?:
+        | {
+            stack: 'Stack_Onboarding';
+            screen?: keyof OnboardingStackParamList;
+            params?: {};
+          }
+        | {
+            stack?: 'Stack_App';
+            screen?: keyof AppStackParamList;
+            params?: {};
+          },
+    ) => {
       navigation.reset({
         index: 0,
         routes: [
           {
             name: firstParam?.stack || 'Stack_Onboarding',
-            params:
-              firstParam?.stack === 'Stack_App'
-                ? {}
-                : {
-                    screen: firstParam?.screen || 'Screen_EnterEmail',
-                    params: firstParam?.params,
-                  },
+            params: {
+              screen: firstParam?.screen || undefined,
+              params: firstParam?.params || undefined,
+            },
           },
         ],
       });
