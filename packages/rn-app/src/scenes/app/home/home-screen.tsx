@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {FlatList, ScrollView, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -7,7 +7,42 @@ import {Icon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 
+import {PostPreview} from './post-preview-component';
+
 export type Screen_Home__Params = undefined;
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+aliquip ex ea commodo consequat. Duis aute irure dolor in
+reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+culpa qui officia deserunt mollit anim id est laborum.`;
+
+const userId = '0x365aEf443783331c487Eaf8C576A248f15e221c5';
+const username = 'Nathan Michael';
+
+// ───────────────────────────────────
+
+type itemType = {
+  id: number;
+  user: {
+    userId: string;
+    username: string;
+  };
+  text: string;
+};
+
+// ───────────────────────────────────
+
+const listOfItems: itemType[] = [];
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((e, i) =>
+  listOfItems.push({id: i, user: {userId, username}, text: lorem}),
+);
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 type Screen_Home__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -51,9 +86,19 @@ export const Screen_Home: React.FC<{
             <Icon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        <ScrollView>
-          <TextByScale>scrollView</TextByScale>
-        </ScrollView>
+        <FlatList
+          data={listOfItems}
+          renderItem={({
+            item: {
+              text,
+              user: {userId, username},
+            },
+          }) => <PostPreview user={{id: userId, username}} text={text} />}
+          keyExtractor={item => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
+          ItemSeparatorComponent={() => <View style={{height: 10}} />}
+        />
       </View>
     </ScreenSafeArea>
   );
