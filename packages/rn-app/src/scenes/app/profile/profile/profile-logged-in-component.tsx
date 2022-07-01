@@ -1,6 +1,6 @@
 import React from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {
@@ -10,6 +10,7 @@ import {
   getPercentageInHex,
 } from '_utils';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Screen_Profile__Prop} from './profile-screen';
 
 interface ProfileLoggedInProps {
   userId: string;
@@ -22,6 +23,8 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
 }: ProfileLoggedInProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
+
+  const navigation = useNavigation<Screen_Profile__Prop>();
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -40,7 +43,9 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     <ScrollView style={styles.container}>
       {/* • • • • • */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.headerSubContainer}>
+        <TouchableOpacity
+          style={styles.headerSubContainer}
+          onPress={() => navigation.navigate('Screen_UpdateUsername')}>
           <View style={styles.userImage} />
           <View style={{flex: 1}}>
             <TextByScale>{username}</TextByScale>

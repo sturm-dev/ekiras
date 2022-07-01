@@ -7,6 +7,7 @@ import {
   Screen_Home,
   Screen_ImportWallet,
   Screen_Profile,
+  Screen_UpdateUsername,
 } from '_scenes';
 import {AppStackParamList} from '_navigations';
 
@@ -27,6 +28,10 @@ export const Stack_App = (): any => {
       <Stack.Screen
         name="Screen_ImportWallet"
         component={Screen_ImportWallet}
+      />
+      <Stack.Screen
+        name="Screen_UpdateUsername"
+        component={Screen_UpdateUsername}
       />
     </Stack.Navigator>
   );

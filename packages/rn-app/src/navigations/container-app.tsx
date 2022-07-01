@@ -15,7 +15,7 @@ export const ContainerApp = (): any => {
 
   return (
     <>
-      <NavigationContainer theme={theme}>
+      <NavigationContainer theme={theme as any}>
         <Stack.Navigator
           initialRouteName="Loading_Start"
           screenOptions={{headerShown: false}}>

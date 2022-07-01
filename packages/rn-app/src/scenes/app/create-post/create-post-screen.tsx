@@ -12,6 +12,7 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
+import {useNavigationReset} from '_hooks';
 
 export type Screen_CreatePost__Params = undefined;
 
@@ -30,6 +31,8 @@ export const Screen_CreatePost: React.FC<{
 
   const navigation = useNavigation<Screen_CreatePost__Prop>();
   const {params} = route;
+
+  const {handleResetNavigation} = useNavigationReset();
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -57,7 +60,16 @@ export const Screen_CreatePost: React.FC<{
             <MultilineTextInput value={text} onChangeText={setText} />
           </View>
           <View style={styles.footer}>
-            <Button onPress={() => null} text="Create post" />
+            <Button
+              onPress={() =>
+                handleResetNavigation({
+                  stack: 'Stack_App',
+                  screen: 'Screen_Home',
+                })
+              }
+              text="Create post"
+              disabled={!text || text.length < 10 || text.length > 140}
+            />
           </View>
         </View>
       </CustomKeyboardAvoidingView>
