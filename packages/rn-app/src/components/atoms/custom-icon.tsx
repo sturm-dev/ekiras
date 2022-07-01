@@ -50,8 +50,8 @@ interface IconProps {
   style?: ViewStyle;
 }
 
-export const Icon: React.FC<IconProps> = (iconProps: IconProps) => {
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+export const CustomIcon: React.FC<IconProps> = (iconProps: IconProps) => {
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
   const {
     type,
     name,
@@ -104,7 +104,7 @@ export const Icon: React.FC<IconProps> = (iconProps: IconProps) => {
   return FinalIcon;
 };
 
-Icon.defaultProps = {
+CustomIcon.defaultProps = {
   type: 'material',
   size: 24,
   color: undefined,

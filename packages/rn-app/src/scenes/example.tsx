@@ -25,7 +25,7 @@ export const Screen_Example: React.FC<{
   }>;
 }> = ({route}) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Example__Prop>();
   const {params} = route;

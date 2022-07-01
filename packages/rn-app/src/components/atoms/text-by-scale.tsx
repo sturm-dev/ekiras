@@ -34,7 +34,7 @@ export const TextByScale: React.FC<TextByScaleProps> = ({
   center,
   ...props
 }: TextByScaleProps) => {
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   return (
     <RN_Text

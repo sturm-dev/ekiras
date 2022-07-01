@@ -2,8 +2,8 @@ import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
-import {Icon, TextByScale} from '_atoms';
-import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
+import {CustomIcon, TextByScale} from '_atoms';
+import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
 
 interface PostPreviewProps {
   user: {
@@ -18,7 +18,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   text,
 }: PostPreviewProps) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -31,7 +31,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         <View style={styles.userImage} />
         <View>
           <TextByScale>{user.username}</TextByScale>
-          <TextByScale scale="caption">{user.id}</TextByScale>
+          <TextByScale scale="caption">{shortAccountId(user.id)}</TextByScale>
         </View>
       </View>
       <View style={styles.body}>
@@ -39,10 +39,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       </View>
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button}>
-          <Icon name="thumbs-up" type="feather" />
+          <CustomIcon name="thumbs-up" type="feather" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
-          <Icon name="thumbs-down" type="feather" />
+          <CustomIcon name="thumbs-down" type="feather" />
         </TouchableOpacity>
       </View>
     </View>

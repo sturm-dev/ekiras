@@ -3,7 +3,7 @@ import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {Icon, ScreenSafeArea, TextByScale} from '_atoms';
+import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 
@@ -20,7 +20,7 @@ export const Screen_CreatePost: React.FC<{
   }>;
 }> = ({route}) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_CreatePost__Prop>();
   const {params} = route;
@@ -40,7 +40,7 @@ export const Screen_CreatePost: React.FC<{
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={{flexDirection: 'row'}}>
-          <Icon name="arrow-back" size={24} color={colors.text} />
+          <CustomIcon name="arrow-back" size={24} color={colors.text} />
           <TextByScale>Go Back</TextByScale>
         </TouchableOpacity>
       </View>

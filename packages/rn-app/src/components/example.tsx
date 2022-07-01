@@ -13,7 +13,7 @@ export const ExampleComponent: React.FC<ExampleComponentProps> = ({
   onPress,
 }: ExampleComponentProps) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars

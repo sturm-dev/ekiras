@@ -8,7 +8,7 @@ export const themedStyleSheet =
     styles: T | ((colors: MyThemeInterfaceColors, props: V) => T),
   ) =>
   (props: V = {} as any): T => {
-    const colors = useTheme().colors as MyThemeInterfaceColors;
+    const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
     const css = typeof styles === 'function' ? styles(colors, props) : styles;
 
     return StyleSheet.create(css);

@@ -1,9 +1,9 @@
 import React from 'react';
-import {FlatList, ScrollView, TouchableOpacity, View} from 'react-native';
+import {FlatList, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {Icon, ScreenSafeArea, TextByScale} from '_atoms';
+import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 
@@ -38,7 +38,7 @@ type itemType = {
 // ───────────────────────────────────
 
 const listOfItems: itemType[] = [];
-[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((e, i) =>
+[0, 1, 2].forEach((e, i) =>
   listOfItems.push({id: i, user: {userId, username}, text: lorem}),
 );
 
@@ -55,7 +55,7 @@ export const Screen_Home: React.FC<{
   }>;
 }> = ({route}) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
@@ -78,12 +78,12 @@ export const Screen_Home: React.FC<{
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_CreatePost')}
             style={{padding: 10}}>
-            <Icon name="add" type="material" />
+            <CustomIcon name="add" type="material" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_Profile')}
             style={{padding: 10}}>
-            <Icon name="ios-person-sharp" type="ionicon" />
+            <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
         <FlatList

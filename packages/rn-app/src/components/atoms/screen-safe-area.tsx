@@ -16,7 +16,7 @@ export const ScreenSafeArea: React.FC<ScreenSafeAreaProps> = ({
   colorStatusBar: colorStatusBarFromProps,
   ...props
 }: ScreenSafeAreaProps) => {
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
   const colorStatusBar = colorStatusBarFromProps || colors.background;
 
   return (

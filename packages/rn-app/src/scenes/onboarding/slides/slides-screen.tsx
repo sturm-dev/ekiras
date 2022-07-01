@@ -20,7 +20,7 @@ export const Screen_Slides: React.FC<{
   }>;
 }> = ({route}) => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Slides__Prop>();
   const {params} = route;

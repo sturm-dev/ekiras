@@ -14,7 +14,7 @@ export const Screen_LoadingStart: React.FC<{
   }>;
 }> = () => {
   const styles = useStyles();
-  const colors = useTheme().colors as MyThemeInterfaceColors;
+  const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const {handleResetNavigation} = useNavigationReset();
 
