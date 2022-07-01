@@ -44,11 +44,12 @@ export const Screen_CreateWallet: React.FC<{
         <TextByScale
           style={{marginTop: 10, marginBottom: 25}}
           color={colors.text2}>
-          Write this words in paper and save in a safe place
+          Write this 12 words in paper and save in a safe place
         </TextByScale>
         <ListOf12Words words={arrayOf12Words} />
         <Button
           text="Continue"
+          style={{marginTop: 30}}
           onPress={() =>
             handleResetNavigation({
               stack: 'Stack_App',

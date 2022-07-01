@@ -83,7 +83,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
               size={iconSize}
               color={color}
               type={iconType as IconType}
-              style={{marginRight: 5}}
+              style={{marginRight: text ? 5 : 0}}
             />
           )}
           {!!text && (

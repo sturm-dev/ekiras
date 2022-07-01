@@ -7,10 +7,12 @@ import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
 
 interface ListOf12WordsProps {
   words: string[];
+  grayWords?: boolean;
 }
 
 export const ListOf12Words: React.FC<ListOf12WordsProps> = ({
   words,
+  grayWords,
 }: ListOf12WordsProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -26,17 +28,25 @@ export const ListOf12Words: React.FC<ListOf12WordsProps> = ({
         {words.map((word, i) =>
           i <= 5 ? (
             <View key={i} style={styles.wordContainer}>
-              <TextByScale scale="h3">{`${i + 1}. ${word}`}</TextByScale>
+              <TextByScale
+                scale="h4"
+                color={grayWords ? colors.text2 : colors.text}>{`${
+                i + 1
+              }. ${word.toLowerCase()}`}</TextByScale>
             </View>
           ) : null,
         )}
       </View>
-      <View style={{width: 15}} />
+      <View style={{width: 10}} />
       <View style={styles.column}>
         {words.map((word, i) =>
           i > 5 ? (
             <View key={i} style={styles.wordContainer}>
-              <TextByScale scale="h3">{`${i + 1}. ${word}`}</TextByScale>
+              <TextByScale
+                scale="h4"
+                color={grayWords ? colors.text2 : colors.text}>{`${
+                i + 1
+              }. ${word.toLowerCase()}`}</TextByScale>
             </View>
           ) : null,
         )}
@@ -48,10 +58,9 @@ export const ListOf12Words: React.FC<ListOf12WordsProps> = ({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   mainContainer: {
-    flex: 1,
     backgroundColor: 'black',
     flexDirection: 'row',
-    padding: 15,
+    padding: 10,
   },
   wordContainer: {},
   column: {flex: 1},
