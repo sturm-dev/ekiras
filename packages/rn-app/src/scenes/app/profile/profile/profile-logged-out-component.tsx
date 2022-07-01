@@ -1,9 +1,11 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
+
+import {Screen_Profile__Prop} from './profile-screen';
 
 interface ProfileLoggedOutProps {}
 
@@ -13,6 +15,8 @@ export const ProfileLoggedOut: React.FC<
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
+  const navigation = useNavigation<Screen_Profile__Prop>();
+
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
@@ -20,7 +24,9 @@ export const ProfileLoggedOut: React.FC<
 
   return (
     <View style={styles.mainContainer}>
-      <TouchableOpacity style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('Screen_ImportWallet')}>
         <CustomIcon
           name="wallet-outline"
           type="ionicon"
@@ -31,7 +37,9 @@ export const ProfileLoggedOut: React.FC<
           I already have a wallet created in crypto space
         </TextByScale>
       </TouchableOpacity>
-      <TouchableOpacity style={{...styles.card, marginTop: 0}}>
+      <TouchableOpacity
+        style={{...styles.card, marginTop: 0}}
+        onPress={() => navigation.navigate('Screen_CreateWallet')}>
         <CustomIcon name="add" type="material" style={styles.icon} size={50} />
         <TextByScale style={styles.text} scale="h5">
           Create a new wallet

@@ -1,11 +1,10 @@
 import React from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {
   BackButton,
-  CustomIcon,
   CustomKeyboardAvoidingView,
   ScreenSafeArea,
   TextByScale,
@@ -13,7 +12,6 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 export type Screen_CreatePost__Params = undefined;
 
@@ -85,5 +83,6 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   footer: {
     width: '80%',
     alignSelf: 'center',
+    paddingBottom: 15,
   },
 }));

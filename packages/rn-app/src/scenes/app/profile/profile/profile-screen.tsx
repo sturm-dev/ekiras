@@ -16,7 +16,7 @@ import {ProfileLoggedOut} from './profile-logged-out-component';
 
 export type Screen_Profile__Params = undefined;
 
-type Screen_Profile__Prop = NativeStackNavigationProp<
+export type Screen_Profile__Prop = NativeStackNavigationProp<
   AppStackParamList,
   'Screen_Profile'
 >;
@@ -26,7 +26,6 @@ export const Screen_Profile: React.FC<{
     params: Screen_Profile__Params;
   }>;
 }> = ({route}) => {
-  const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Profile__Prop>();
