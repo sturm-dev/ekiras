@@ -3,9 +3,17 @@ import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
+import {
+  BackButton,
+  CustomIcon,
+  CustomKeyboardAvoidingView,
+  ScreenSafeArea,
+  TextByScale,
+} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {Button, MultilineTextInput} from '_molecules';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export type Screen_CreatePost__Params = undefined;
 
@@ -25,6 +33,12 @@ export const Screen_CreatePost: React.FC<{
   const navigation = useNavigation<Screen_CreatePost__Prop>();
   const {params} = route;
 
+  // ────────────────────────────────────────────────────────────────────────────────
+
+  const [text, setText] = React.useState('');
+
+  // ────────────────────────────────────────────────────────────────────────────────
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
@@ -35,15 +49,22 @@ export const Screen_CreatePost: React.FC<{
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
-      <View style={styles.container}>
-        <TextByScale>Create Post</TextByScale>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{flexDirection: 'row'}}>
-          <CustomIcon name="arrow-back" size={24} color={colors.text} />
-          <TextByScale>Go Back</TextByScale>
-        </TouchableOpacity>
-      </View>
+      <CustomKeyboardAvoidingView>
+        <View style={styles.container}>
+          <BackButton onPress={() => navigation.goBack()} />
+          <View style={styles.header}>
+            <TextByScale scale="h3">Create Post</TextByScale>
+          </View>
+          <View style={styles.body}>
+            <MultilineTextInput value={text} onChangeText={setText} />
+          </View>
+          <SafeAreaView edges={['bottom']}>
+            <View style={styles.footer}>
+              <Button onPress={() => null} text="Create post" />
+            </View>
+          </SafeAreaView>
+        </View>
+      </CustomKeyboardAvoidingView>
     </ScreenSafeArea>
   );
 };
@@ -54,5 +75,17 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
     paddingHorizontal: 10,
     backgroundColor: colors.background,
+  },
+  header: {
+    alignItems: 'center',
+    padding: 10,
+  },
+  body: {
+    flex: 1,
+    padding: 20,
+  },
+  footer: {
+    width: '80%',
+    alignSelf: 'center',
   },
 }));
