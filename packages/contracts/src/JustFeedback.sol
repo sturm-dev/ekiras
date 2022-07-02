@@ -15,48 +15,63 @@ contract JustFeedback {
     mapping(uint256 => Post) public posts;
     uint256 postIndex;
 
+    event CreatePostEvent(uint256 _id);
+    event VoteEvent(
+        uint256 _postId,
+        uint256 _upVotesCount,
+        uint256 _downVotesCount
+    );
+
     constructor() {
         postIndex = 0;
     }
 
-    function createPost(string memory text) public {
+    function createPost(string memory _text) public {
         posts[postIndex].author = msg.sender;
-        posts[postIndex].text = text;
+        posts[postIndex].text = _text;
         posts[postIndex].upVotesCount = 0;
         posts[postIndex].downVotesCount = 0;
+
+        emit CreatePostEvent(postIndex);
 
         postIndex += 1;
     }
 
-    function votePost(uint256 postId, bool voteIsTypeUp) public {
+    function votePost(uint256 _postId, bool _voteIsTypeUp) public {
         require(
-            posts[postId].author != 0x0000000000000000000000000000000000000000,
+            posts[_postId].author != 0x0000000000000000000000000000000000000000,
             "post not created yet"
         );
-        require(posts[postId].author != msg.sender, "the author cannot vote");
+        require(posts[_postId].author != msg.sender, "the author cannot vote");
         require(
-            voteIsTypeUp
-                ? !posts[postId].upVotes[msg.sender]
-                : !posts[postId].downVotes[msg.sender],
+            _voteIsTypeUp
+                ? !posts[_postId].upVotes[msg.sender]
+                : !posts[_postId].downVotes[msg.sender],
             "only one vote for post"
         );
 
-        if (voteIsTypeUp) {
-            posts[postId].upVotesCount += 1;
-            posts[postId].upVotes[msg.sender] = true;
+        if (_voteIsTypeUp) {
+            posts[_postId].upVotesCount += 1;
+            posts[_postId].upVotes[msg.sender] = true;
 
-            if (posts[postId].downVotes[msg.sender]) {
-                posts[postId].downVotes[msg.sender] = false;
-                posts[postId].downVotesCount -= 1;
+            if (posts[_postId].downVotes[msg.sender]) {
+                posts[_postId].downVotes[msg.sender] = false;
+                posts[_postId].downVotesCount -= 1;
             }
         } else {
-            posts[postId].downVotesCount += 1;
-            posts[postId].downVotes[msg.sender] = true;
+            posts[_postId].downVotesCount += 1;
+            posts[_postId].downVotes[msg.sender] = true;
 
-            if (posts[postId].upVotes[msg.sender]) {
-                posts[postId].upVotes[msg.sender] = false;
-                posts[postId].upVotesCount -= 1;
+            if (posts[_postId].upVotes[msg.sender]) {
+                posts[_postId].upVotes[msg.sender] = false;
+                posts[_postId].upVotesCount -= 1;
             }
         }
+
+        emit VoteEvent(
+            _postId,
+            posts[_postId].upVotesCount,
+            posts[_postId].downVotesCount
+        );
     }
 }
