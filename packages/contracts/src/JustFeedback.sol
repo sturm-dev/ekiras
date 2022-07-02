@@ -14,6 +14,9 @@ contract JustFeedback {
 
     mapping(uint256 => Post) public posts;
     uint256 postIndex;
+    mapping(address => string) public addressToUsername;
+    mapping(string => address) public usernameToAddress;
+    address emptyAddress;
 
     event CreatePostEvent(uint256 _id);
     event VoteEvent(
@@ -21,9 +24,11 @@ contract JustFeedback {
         uint256 _upVotesCount,
         uint256 _downVotesCount
     );
+    event UpdateUsernameEvent();
 
     constructor() {
         postIndex = 0;
+        emptyAddress = 0x0000000000000000000000000000000000000000;
     }
 
     function createPost(string memory _text) public {
@@ -38,10 +43,7 @@ contract JustFeedback {
     }
 
     function votePost(uint256 _postId, bool _voteIsTypeUp) public {
-        require(
-            posts[_postId].author != 0x0000000000000000000000000000000000000000,
-            "post not created yet"
-        );
+        require(posts[_postId].author != emptyAddress, "post not created yet");
         require(posts[_postId].author != msg.sender, "the author cannot vote");
         require(
             _voteIsTypeUp
@@ -73,5 +75,22 @@ contract JustFeedback {
             posts[_postId].upVotesCount,
             posts[_postId].downVotesCount
         );
+    }
+
+    function updateMyUsername(string memory _text) public {
+        require(
+            usernameToAddress[_text] == emptyAddress,
+            "username already used"
+        );
+
+        // change of username -> delete previous
+        if (bytes(addressToUsername[msg.sender]).length != 0) {
+            usernameToAddress[addressToUsername[msg.sender]] = emptyAddress;
+        }
+
+        usernameToAddress[_text] = msg.sender;
+        addressToUsername[msg.sender] = _text;
+
+        emit UpdateUsernameEvent();
     }
 }
