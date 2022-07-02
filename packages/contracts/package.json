@@ -1,5 +1,17 @@
 {
   "name": "@my-app/contracts",
   "version": "1.0.0",
-  "main": "./src/index.js"
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "mocha",
+    "compile": "node scripts/compile.js",
+    "deploy": "node scripts/deploy.js"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.0.10",
+    "ganache-cli": "^6.12.2",
+    "mocha": "^10.0.0",
+    "solc": "^0.8.15",
+    "web3": "^1.7.4"
+  }
 }

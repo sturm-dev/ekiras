@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -36,19 +36,19 @@ export const Screen_Slides: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      handleResetNavigation({
+        stack: 'Stack_App',
+        screen: 'Screen_Home',
+      });
+    }, 1000);
+  }, [handleResetNavigation]);
+
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <TextByScale>Slides</TextByScale>
-        <TouchableOpacity
-          onPress={() =>
-            handleResetNavigation({
-              stack: 'Stack_App',
-              screen: 'Screen_Home',
-            })
-          }>
-          <TextByScale>Go To Home</TextByScale>
-        </TouchableOpacity>
       </View>
     </ScreenSafeArea>
   );

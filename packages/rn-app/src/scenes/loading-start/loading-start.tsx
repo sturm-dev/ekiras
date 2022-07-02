@@ -20,7 +20,10 @@ export const Screen_LoadingStart: React.FC<{
 
   useEffect(() => {
     setTimeout(() => {
-      handleResetNavigation({screen: 'Screen_Slides'});
+      handleResetNavigation({
+        stack: 'Stack_Onboarding',
+        screen: 'Screen_Slides',
+      });
     }, 1000);
   }, [handleResetNavigation]);
 

@@ -1,4 +1,4 @@
-export const mockData_loggedIn = true;
+export const mockData_loggedIn = false;
 
 export const mockData_userId = '0x365aEf443783331c487Eaf8C576A248f15e221c5';
 export const mockData_username = 'Nathan Michael';
