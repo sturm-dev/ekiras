@@ -29,5 +29,3 @@ const input = {
 module.exports = JSON.parse(solc.compile(JSON.stringify(input))).contracts[
   "JustFeedback.sol"
 ].JustFeedback;
-
-console.log(JSON.parse(solc.compile(JSON.stringify(input))).contracts);

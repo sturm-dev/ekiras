@@ -5,41 +5,77 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "enter",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPlayers",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "internalType": "address payable[]",
-        "name": "",
-        "type": "address[]"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_id",
+        "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "CreatePostEvent",
+    "type": "event"
   },
   {
+    "anonymous": false,
     "inputs": [],
-    "name": "manager",
-    "outputs": [
+    "name": "UpdateUsernameEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_postId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_upVotesCount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_downVotesCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "VoteEvent",
+    "type": "event"
+  },
+  {
+    "inputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
       }
     ],
+    "name": "addressToUsername",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "pickWinner",
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_text",
+        "type": "string"
+      }
+    ],
+    "name": "createPost",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -52,15 +88,80 @@
         "type": "uint256"
       }
     ],
-    "name": "players",
+    "name": "posts",
     "outputs": [
       {
-        "internalType": "address payable",
+        "internalType": "address",
+        "name": "author",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "upVotesCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "downVotesCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_text",
+        "type": "string"
+      }
+    ],
+    "name": "updateMyUsername",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "name": "usernameToAddress",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_postId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_voteIsTypeUp",
+        "type": "bool"
+      }
+    ],
+    "name": "votePost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
