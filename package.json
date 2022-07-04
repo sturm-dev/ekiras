@@ -9,11 +9,8 @@
   ],
   "private": true,
   "scripts": {
-    "subgraph:auth": "yarn workspace @my-app/subgraph auth",
-    "subgraph:codegen": "yarn workspace @my-app/subgraph codegen",
-    "subgraph:build": "yarn workspace @my-app/subgraph build",
-    "subgraph:deploy": "yarn workspace @my-app/subgraph deploy",
-    "ios": "yarn workspace @my-app/rn-app ios"
+    "ios": "yarn workspace @my-app/rn-app ios",
+    "deploy": "yarn workspace @my-app/contracts deploy:bttc"
   },
   "workspaces": {
     "packages": [

@@ -2,10 +2,12 @@ import React from 'react';
 import {FlatList, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import * as ethers from 'ethers';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {
+  bttcChain,
   mockData_lorem,
   mockData_userId,
   mockData_username,
@@ -63,7 +65,26 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    connectWithSmartContract();
   }, []);
+
+  // TODO: try https://github.com/rkalis/truffle-plugin-verify
+  // TODO: try this
+  const connectWithSmartContract = async () => {
+    const {rpcUrl, chainId, chainName} = bttcChain;
+    const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
+      chainId,
+      name: chainName,
+    });
+
+    await new ethers.Contract(
+      '0x2cc65f5649Bf9DC2b5347DeB36B1f50D595CB6A1',
+      require('./abi.json'),
+      provider,
+      // wallet,
+    ).posts(0);
+  };
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
