@@ -19,9 +19,12 @@ module.exports = {
           // -----
           _utils: './src/utils',
           // -----
+          _db: './src/db',
+          // -----
           _hooks: './src/hooks',
         },
       },
     ],
+    ['module:react-native-dotenv', {moduleName: 'react-native-dotenv'}],
   ],
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
@@ -6,16 +7,23 @@ import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
 
 interface PostPreviewProps {
+  id: number;
   user: {
-    id: string;
+    address: string;
     username: string;
   };
   text: string;
+  votes: {
+    up: number;
+    down: number;
+  };
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
+  id,
   user,
   text,
+  votes,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -23,6 +31,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+    console.log(`post id`, id, typeof id);
   }, []);
 
   return (
@@ -31,7 +40,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         <View style={styles.userImage} />
         <View>
           <TextByScale>{user.username}</TextByScale>
-          <TextByScale scale="caption">{shortAccountId(user.id)}</TextByScale>
+          <TextByScale scale="caption">
+            {shortAccountId(user.address)}
+          </TextByScale>
         </View>
       </View>
       <View style={styles.body}>
@@ -40,9 +51,15 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button}>
           <CustomIcon name="thumbs-up" type="feather" />
+          <TextByScale style={{marginLeft: 5}} scale="caption">
+            {`(${votes.up})`}
+          </TextByScale>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
           <CustomIcon name="thumbs-down" type="feather" />
+          <TextByScale style={{marginLeft: 5}} scale="caption">
+            {`(${votes.down})`}
+          </TextByScale>
         </TouchableOpacity>
       </View>
     </View>
@@ -82,6 +99,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   },
   button: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,

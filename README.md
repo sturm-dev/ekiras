@@ -1,5 +1,10 @@
 This project was bootstrapped with [Create Eth App](https://github.com/paulrberg/create-eth-app).
 
+## TODO before make this repo public
+
+- [ ] new getBlock.io node (new apikey)
+- [ ] move funds to another wallet/accounts
+
 ## Project Structure
 
 The default template is a monorepo created with [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/).

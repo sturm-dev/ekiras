@@ -5,6 +5,5 @@ export * from './fonts';
 export * from './short-account-id';
 export * from './get-percentage-in-hex';
 export * from './platform';
-export * from './mockData';
-export * from './bttcChain';
-export * from './formatBTT';
+export * from './mock-data';
+export * from './format-btt';

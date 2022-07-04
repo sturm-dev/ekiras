@@ -1,47 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {FlatList, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import * as ethers from 'ethers';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
-import {
-  bttcChain,
-  mockData_lorem,
-  mockData_userId,
-  mockData_username,
-  MyThemeInterfaceColors,
-  themedStyleSheet,
-} from '_utils';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {getPosts, PostInterface} from '_db';
 
 import {PostPreview} from './post-preview-component';
 
 export type Screen_Home__Params = undefined;
-
-// ────────────────────────────────────────────────────────────────────────────────
-
-type itemType = {
-  id: number;
-  user: {
-    userId: string;
-    username: string;
-  };
-  text: string;
-};
-
-// ───────────────────────────────────
-
-const listOfItems: itemType[] = [];
-[0, 1, 2].forEach((e, i) =>
-  listOfItems.push({
-    id: i,
-    user: {userId: mockData_userId, username: mockData_username},
-    text: mockData_lorem,
-  }),
-);
-
-// ────────────────────────────────────────────────────────────────────────────────
 
 type Screen_Home__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -59,31 +28,24 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
+  const [posts, setPosts] = useState<PostInterface[]>([]);
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
-    connectWithSmartContract();
+    getSomePosts();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // TODO: try https://github.com/rkalis/truffle-plugin-verify
-  // TODO: try this
-  const connectWithSmartContract = async () => {
-    const {rpcUrl, chainId, chainName} = bttcChain;
-    const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
-      chainId,
-      name: chainName,
-    });
+  const getSomePosts = async () => {
+    const _posts = await getPosts(10);
+    setPosts(_posts);
 
-    await new ethers.Contract(
-      '0x2cc65f5649Bf9DC2b5347DeB36B1f50D595CB6A1',
-      require('./abi.json'),
-      provider,
-      // wallet,
-    ).posts(0);
+    console.log(`posts`, JSON.stringify(posts, null, 2));
   };
 
   return (
@@ -105,13 +67,17 @@ export const Screen_Home: React.FC<{
           </TouchableOpacity>
         </View>
         <FlatList
-          data={listOfItems}
+          data={posts}
           renderItem={({
-            item: {
-              text,
-              user: {userId, username},
-            },
-          }) => <PostPreview user={{id: userId, username}} text={text} />}
+            item: {id, text, author, downVotesCount, upVotesCount},
+          }) => (
+            <PostPreview
+              id={id}
+              user={{address: author, username: ''}}
+              text={text}
+              votes={{up: upVotesCount, down: downVotesCount}}
+            />
+          )}
           keyExtractor={item => item.id.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
