@@ -5,5 +5,4 @@ export * from './fonts';
 export * from './short-account-id';
 export * from './get-percentage-in-hex';
 export * from './platform';
-export * from './mock-data';
 export * from './format-btt';

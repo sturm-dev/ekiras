@@ -1,10 +1,13 @@
-import React from 'react';
-import {View} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useState} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import * as ethers from 'ethers';
+import * as Keychain from 'react-native-keychain';
 
 import {BackButton, ListOf12Words, ScreenSafeArea, TextByScale} from '_atoms';
-import {arrayOf12Words, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
 import {useNavigationReset} from '_hooks';
@@ -29,35 +32,59 @@ export const Screen_CreateWallet: React.FC<{
 
   const {handleResetNavigation} = useNavigationReset();
 
+  const [loading, setLoading] = useState(true);
+  const [mnemonic, setMnemonic] = useState(['']);
+  const [saveWalletLoading, setSaveWalletLoading] = useState(false);
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    createWallet();
   }, []);
+
+  const createWallet = async () => {
+    setTimeout(() => {
+      const wallet = ethers.Wallet.createRandom();
+      setMnemonic(wallet.mnemonic.phrase.split(' '));
+      setLoading(false);
+    }, 1000);
+  };
+
+  const onLogInWithNewWallet = async () => {
+    setSaveWalletLoading(true);
+    await Keychain.setGenericPassword('', mnemonic.join(' '));
+    // TODO: show success message - account created
+    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+  };
 
   return (
     <ScreenSafeArea withBottomEdgeToo>
       <BackButton onPress={() => navigation.goBack()} />
-      <View style={styles.container}>
-        <TextByScale scale="h3">Your wallet was created! 🎉</TextByScale>
-        <TextByScale
-          style={{marginTop: 10, marginBottom: 25}}
-          color={colors.text2}>
-          Write this 12 words in paper and save in a safe place
-        </TextByScale>
-        <ListOf12Words words={arrayOf12Words} />
-        <Button
-          text="Continue"
-          style={{marginTop: 30}}
-          onPress={() =>
-            handleResetNavigation({
-              stack: 'Stack_App',
-              screen: 'Screen_Home',
-            })
-          }
-        />
-      </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.text} />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <TextByScale scale="h3">Your wallet was created! 🎉</TextByScale>
+          <TextByScale
+            style={{marginTop: 10, marginBottom: 25}}
+            color={colors.text2}>
+            Write this 12 words in paper and save in a safe place
+          </TextByScale>
+          <ListOf12Words words={mnemonic} />
+          <Button
+            loading={saveWalletLoading}
+            text="Words already written on paper! 📝"
+            style={{marginTop: 30, height: 80, paddingHorizontal: 50}}
+            numberOfLines={3}
+            onPress={onLogInWithNewWallet}
+          />
+        </View>
+      )}
     </ScreenSafeArea>
   );
 };
@@ -67,5 +94,10 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));

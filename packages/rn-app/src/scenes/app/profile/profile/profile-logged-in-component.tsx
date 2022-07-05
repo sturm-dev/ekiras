@@ -1,5 +1,10 @@
 import React, {useState} from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -31,6 +36,7 @@ export const ProfileLoggedIn: React.FC<
 
   const [userAddress, setUserAddress] = useState('');
   const [username, setUsername] = useState('');
+  const [logOutLoading, setLogOutLoading] = useState(false);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -62,6 +68,7 @@ export const ProfileLoggedIn: React.FC<
   };
 
   const onLogout = async () => {
+    setLogOutLoading(true);
     await Keychain.resetGenericPassword();
     handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
   };
@@ -103,8 +110,15 @@ export const ProfileLoggedIn: React.FC<
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>
-        <TouchableOpacity style={styles.footer} onPress={onLogout}>
-          <TextByScale color={colors.text2}>Log out</TextByScale>
+        <TouchableOpacity
+          style={styles.footer}
+          onPress={logOutLoading ? () => null : onLogout}
+          activeOpacity={logOutLoading ? 1 : 0.8}>
+          {logOutLoading ? (
+            <ActivityIndicator size="large" color={colors.text} />
+          ) : (
+            <TextByScale color={colors.text2}>Log out</TextByScale>
+          )}
         </TouchableOpacity>
       </SafeAreaView>
       {/* • • • • • */}

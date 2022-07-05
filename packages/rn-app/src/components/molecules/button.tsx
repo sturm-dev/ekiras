@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {ReactElement} from 'react';
 import {
   ActivityIndicator,
@@ -26,15 +27,12 @@ interface ButtonProps {
   // ────────────────────────────────────────────────────────────────────────────────
   text?: string;
   style?: StyleProp<ViewStyle>;
-  // eslint-disable-next-line react/no-unused-prop-types
   textStyle?: StyleProp<TextStyle>;
   textScale?: fontSizeScales;
   icon?: string;
   iconType?: IconType;
   loading?: boolean;
-  // eslint-disable-next-line react/no-unused-prop-types
   autoWidth?: boolean;
-  // eslint-disable-next-line react/no-unused-prop-types
   background?: string;
   color?: string;
   size?: 'xs' | 'small' | 'medium' | 'large';
@@ -42,6 +40,7 @@ interface ButtonProps {
   iconSize?: number;
   locked?: boolean;
   disabled?: boolean;
+  numberOfLines?: number;
 }
 
 const sizes = {
@@ -67,6 +66,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
     iconSize,
     locked,
     disabled,
+    numberOfLines,
   } = props;
   const styles = useStyles(props);
 
@@ -91,7 +91,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
               scale={
                 textScale || (sizes[size || 'large'].fontSize as fontSizeScales)
               }
-              numberOfLines={1}
+              numberOfLines={numberOfLines || 1}
               style={styles.buttonText}
               color={color || colors.text2}
               bold>
