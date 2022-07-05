@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
@@ -29,7 +30,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
-  const [username, setUsername] = useState<string>('');
+  const [username, setUsername] = useState('');
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars

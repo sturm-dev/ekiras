@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useImperativeHandle} from 'react';
 import {
   View,

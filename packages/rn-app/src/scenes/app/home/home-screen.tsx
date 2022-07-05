@@ -1,5 +1,10 @@
 import React, {useState} from 'react';
-import {FlatList, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -29,6 +34,7 @@ export const Screen_Home: React.FC<{
   const {params} = route;
 
   const [posts, setPosts] = useState<PostInterface[]>([]);
+  const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -44,6 +50,7 @@ export const Screen_Home: React.FC<{
   const getSomePosts = async () => {
     const _posts = await getPosts(10);
     setPosts(_posts);
+    setLoading(false);
 
     console.log(`posts`, JSON.stringify(posts, null, 2));
   };
@@ -66,29 +73,34 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={posts}
-          renderItem={({
-            item: {id, text, author, downVotesCount, upVotesCount},
-          }) => (
-            <PostPreview
-              id={id}
-              user={{address: author, username: ''}}
-              text={text}
-              votes={{up: upVotesCount, down: downVotesCount}}
-            />
-          )}
-          keyExtractor={item => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-          ItemSeparatorComponent={() => <View style={{height: 10}} />}
-        />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.text} />
+          </View>
+        ) : (
+          <FlatList
+            data={posts}
+            renderItem={({
+              item: {id, text, author, downVotesCount, upVotesCount},
+            }) => (
+              <PostPreview
+                id={id}
+                user={{address: author, username: ''}}
+                text={text}
+                votes={{up: upVotesCount, down: downVotesCount}}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
+            ItemSeparatorComponent={() => <View style={{height: 10}} />}
+          />
+        )}
       </View>
     </ScreenSafeArea>
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
@@ -98,5 +110,10 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));

@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import * as Keychain from 'react-native-keychain';
+import * as ethers from 'ethers';
 
 import {
   BackButton,
@@ -33,6 +35,7 @@ export const Screen_ImportWallet: React.FC<{
   const [words, setWords] = useState<string[]>([]);
   const [word, setWord] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<Screen_ImportWallet__Prop>();
   const {params} = route;
@@ -44,7 +47,45 @@ export const Screen_ImportWallet: React.FC<{
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const onImportWallet = async () => {
+    setLoading(true);
+    try {
+      ethers.Wallet.fromMnemonic(words.join(' '));
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === 'invalid mnemonic')
+          Alert.alert('Invalid mnemonic');
+      } else
+        console.log(`ethers.Wallet.fromMnemonic error`, error, typeof error);
+    }
+
+    await Keychain.setGenericPassword('', words.join(' '));
+    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+  };
+
+  const onPressPrev = () => {
+    setWord(words[wordIndex - 1]);
+    setWordIndex(wordIndex - 1);
+  };
+
+  const onPressNext = () => {
+    if (wordIndex === words.length) {
+      const newWords = [...words, word];
+      setWords(newWords);
+      setWord('');
+    } else {
+      const newWords = [...words];
+      newWords[wordIndex] = word;
+      setWords(newWords);
+
+      setWord(words[wordIndex + 1]);
+    }
+    setWordIndex(wordIndex + 1);
+  };
 
   return (
     <ScreenSafeArea withBottomEdgeToo>
@@ -59,64 +100,28 @@ export const Screen_ImportWallet: React.FC<{
         }
       />
       <CustomKeyboardAvoidingView>
-        {wordIndex === 12 ? (
-          <View style={styles.finishContainer}>
-            <TextByScale scale="h3" center style={{marginBottom: 20}}>
-              The 12 words of your existing wallet:
-            </TextByScale>
-            <ListOf12Words words={words} grayWords />
-            <Button
-              text="Import wallet"
-              style={{marginTop: 30}}
-              onPress={() =>
-                handleResetNavigation({
-                  stack: 'Stack_App',
-                  screen: 'Screen_Home',
-                })
-              }
-            />
-          </View>
-        ) : (
+        {wordIndex !== 12 ? (
           <View style={styles.container}>
             <TextInput
               placeholder={`${wordIndex + 1}º word`}
               value={word}
               onChangeText={newWord => setWord(newWord.toLowerCase())}
+              onSubmitEditing={onPressNext}
+              returnKeyType="next"
             />
             <View style={styles.buttonsContainer}>
               {words.length > 0 ? (
                 <Button
-                  onPress={() => {
-                    setWord(words[wordIndex - 1]);
-                    setWordIndex(wordIndex - 1);
-                  }}
+                  onPress={onPressPrev}
                   icon="arrow-back-ios"
                   iconType="material"
                   autoWidth={false}
-                  style={{
-                    width: 60,
-                    height: 60,
-                    marginTop: 40,
-                    marginRight: 15,
-                  }}
+                  style={styles.button}
                   disabled={wordIndex === 0}
                 />
               ) : null}
               <Button
-                onPress={() => {
-                  if (wordIndex === words.length) {
-                    const newWords = [...words, word];
-                    setWords(newWords);
-                    setWord('');
-                  } else {
-                    const newWords = [...words];
-                    newWords[wordIndex] = word;
-                    setWords(newWords);
-
-                    setWord(words[wordIndex + 1]);
-                  }
-                  setWordIndex(wordIndex + 1);
-                }}
+                onPress={onPressNext}
                 icon="arrow-forward-ios"
                 iconType="material"
                 autoWidth={false}
@@ -130,6 +135,19 @@ export const Screen_ImportWallet: React.FC<{
               />
             </View>
           </View>
+        ) : (
+          <View style={styles.finishContainer}>
+            <TextByScale scale="h3" center style={{marginBottom: 20}}>
+              The 12 words of your existing wallet:
+            </TextByScale>
+            <ListOf12Words words={words} grayWords />
+            <Button
+              text="Import wallet"
+              style={{marginTop: 30}}
+              onPress={onImportWallet}
+              loading={loading}
+            />
+          </View>
         )}
       </CustomKeyboardAvoidingView>
     </ScreenSafeArea>
@@ -142,6 +160,12 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  button: {
+    width: 60,
+    height: 60,
+    marginTop: 40,
+    marginRight: 15,
   },
   buttonsContainer: {
     flexDirection: 'row',

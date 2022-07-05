@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import * as ethers from 'ethers';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {
@@ -9,27 +12,46 @@ import {
   shortAccountId,
   getPercentageInHex,
 } from '_utils';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigationReset} from '_hooks';
+
 import {Screen_Profile__Prop} from './profile-screen';
+import {getUsername} from '_db';
 
-interface ProfileLoggedInProps {
-  userId: string;
-  username: string;
-}
+interface ProfileLoggedInProps {}
 
-export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
-  userId,
-  username,
-}: ProfileLoggedInProps) => {
+export const ProfileLoggedIn: React.FC<
+  ProfileLoggedInProps
+> = ({}: ProfileLoggedInProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Profile__Prop>();
 
+  const {handleResetNavigation} = useNavigationReset();
+
+  const [userAddress, setUserAddress] = useState('');
+  const [username, setUsername] = useState('');
+
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+
+    getUserInfo();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getUserInfo = async () => {
+    const credentials = await Keychain.getGenericPassword();
+    if (!credentials) return;
+
+    const accountFromMnemonic = ethers.Wallet.fromMnemonic(
+      credentials.password,
+    );
+
+    setUserAddress(accountFromMnemonic.address);
+    setUsername(await getUsername(accountFromMnemonic.address));
+  };
 
   const Item = ({text, onPress}: {text: string; onPress?: () => void}) => {
     return (
@@ -37,6 +59,11 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TextByScale>{text}</TextByScale>
       </TouchableOpacity>
     );
+  };
+
+  const onLogout = async () => {
+    await Keychain.resetGenericPassword();
+    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
   };
 
   return (
@@ -50,7 +77,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
           <View style={{flex: 1}}>
             <TextByScale>{username}</TextByScale>
             <TextByScale scale="caption" color={colors.text2}>
-              {shortAccountId(userId)}
+              {shortAccountId(userAddress)}
             </TextByScale>
           </View>
         </TouchableOpacity>
@@ -76,7 +103,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>
-        <TouchableOpacity style={styles.footer}>
+        <TouchableOpacity style={styles.footer} onPress={onLogout}>
           <TextByScale color={colors.text2}>Log out</TextByScale>
         </TouchableOpacity>
       </SafeAreaView>
@@ -85,7 +112,6 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
