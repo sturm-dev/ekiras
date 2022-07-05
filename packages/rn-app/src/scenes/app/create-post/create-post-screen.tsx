@@ -13,6 +13,7 @@ import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
 import {useNavigationReset} from '_hooks';
+import {createPost} from '_db';
 
 export type Screen_CreatePost__Params = undefined;
 
@@ -37,6 +38,7 @@ export const Screen_CreatePost: React.FC<{
   // ────────────────────────────────────────────────────────────────────────────────
 
   const [text, setText] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -48,9 +50,22 @@ export const Screen_CreatePost: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onCreatePost = async () => {
+    setLoading(true);
+    await createPost(text);
+    setLoading(false);
+
+    handleResetNavigation({
+      stack: 'Stack_App',
+      screen: 'Screen_Home',
+    });
+
+    // navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+  };
+
   return (
     <ScreenSafeArea colorStatusBar={colors.background} withBottomEdgeToo>
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton onPress={loading ? () => null : () => navigation.goBack()} />
       <CustomKeyboardAvoidingView>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -61,14 +76,10 @@ export const Screen_CreatePost: React.FC<{
           </View>
           <View style={styles.footer}>
             <Button
-              onPress={() =>
-                handleResetNavigation({
-                  stack: 'Stack_App',
-                  screen: 'Screen_Home',
-                })
-              }
+              onPress={onCreatePost}
               text="Create post"
               disabled={!text || text.length < 10 || text.length > 140}
+              loading={loading}
             />
           </View>
         </View>
