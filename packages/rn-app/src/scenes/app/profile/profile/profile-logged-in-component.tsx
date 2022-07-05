@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -22,11 +22,13 @@ import {useNavigationReset} from '_hooks';
 import {Screen_Profile__Prop} from './profile-screen';
 import {getUsername} from '_db';
 
-interface ProfileLoggedInProps {}
+interface ProfileLoggedInProps {
+  updateTime?: number;
+}
 
-export const ProfileLoggedIn: React.FC<
-  ProfileLoggedInProps
-> = ({}: ProfileLoggedInProps) => {
+export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
+  updateTime,
+}: ProfileLoggedInProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
@@ -35,6 +37,8 @@ export const ProfileLoggedIn: React.FC<
   const {handleResetNavigation} = useNavigationReset();
 
   const [userAddress, setUserAddress] = useState('');
+  const [userAddressOrUsernameLoading, setUserAddressOrUsernameLoading] =
+    useState(true);
   const [username, setUsername] = useState('');
   const [logOutLoading, setLogOutLoading] = useState(false);
 
@@ -42,12 +46,17 @@ export const ProfileLoggedIn: React.FC<
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
-    getUserInfo();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // do refresh after update username
+  useEffect(() => {
+    getUserInfo();
+  }, [updateTime]);
+
   const getUserInfo = async () => {
+    setUserAddressOrUsernameLoading(true);
+    // ────────────────────────────────────────────────────────────────────────────────
     const credentials = await Keychain.getGenericPassword();
     if (!credentials) return;
 
@@ -57,6 +66,8 @@ export const ProfileLoggedIn: React.FC<
 
     setUserAddress(accountFromMnemonic.address);
     setUsername(await getUsername(accountFromMnemonic.address));
+    // ────────────────────────────────────────────────────────────────────────────────
+    setUserAddressOrUsernameLoading(false);
   };
 
   const Item = ({text, onPress}: {text: string; onPress?: () => void}) => {
@@ -79,13 +90,27 @@ export const ProfileLoggedIn: React.FC<
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerSubContainer}
-          onPress={() => navigation.navigate('Screen_UpdateUsername')}>
+          onPress={() =>
+            navigation.navigate('Screen_UpdateUsername', {
+              userAddress,
+              username,
+            })
+          }>
           <View style={styles.userImage} />
           <View style={{flex: 1}}>
-            <TextByScale>{username}</TextByScale>
-            <TextByScale scale="caption" color={colors.text2}>
-              {shortAccountId(userAddress)}
-            </TextByScale>
+            {userAddressOrUsernameLoading ? (
+              <ActivityIndicator
+                size="small"
+                style={{alignSelf: 'flex-start'}}
+              />
+            ) : (
+              <>
+                <TextByScale>{username}</TextByScale>
+                <TextByScale scale="caption" color={colors.text2}>
+                  {shortAccountId(userAddress)}
+                </TextByScale>
+              </>
+            )}
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.amountOfCredits}>
@@ -100,11 +125,7 @@ export const ProfileLoggedIn: React.FC<
       </View>
       {/* • • • • • */}
       <View style={styles.body}>
-        <Item text="My Posts" />
-        <View style={styles.separator} />
-        <Item text="My Posts" />
-        <View style={styles.separator} />
-        <Item text="My Posts" />
+        <Item text="See my public address" />
         <View style={styles.separator} />
         <Item text="My Posts" />
       </View>

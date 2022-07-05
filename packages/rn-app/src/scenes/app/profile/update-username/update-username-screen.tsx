@@ -1,18 +1,19 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {BackButton, CustomKeyboardAvoidingView, ScreenSafeArea} from '_atoms';
-import {
-  mockData_username,
-  MyThemeInterfaceColors,
-  themedStyleSheet,
-} from '_utils';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button, TextInput} from '_molecules';
+import {updateUsername} from '_db';
 
-export type Screen_UpdateUsername__Params = undefined;
+export type Screen_UpdateUsername__Params = {
+  username: string;
+  userAddress: string;
+};
 
 type Screen_UpdateUsername__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -30,7 +31,8 @@ export const Screen_UpdateUsername: React.FC<{
   const navigation = useNavigation<Screen_UpdateUsername__Prop>();
   const {params} = route;
 
-  const [username, setUsername] = useState(mockData_username);
+  const [username, setUsername] = useState(params.username);
+  const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -39,9 +41,17 @@ export const Screen_UpdateUsername: React.FC<{
     if (!params) console.log();
   }, []);
 
+  const onUpdateUsername = async () => {
+    setLoading(true);
+    await updateUsername(username);
+    setLoading(false);
+
+    navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+  };
+
   return (
     <ScreenSafeArea withBottomEdgeToo>
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton onPress={loading ? () => null : () => navigation.goBack()} />
       <CustomKeyboardAvoidingView>
         <View style={styles.container}>
           <TextInput
@@ -50,8 +60,9 @@ export const Screen_UpdateUsername: React.FC<{
             placeholder="username"
           />
           <Button
+            loading={loading}
             text="Update username"
-            onPress={() => navigation.goBack()}
+            onPress={onUpdateUsername}
             style={{marginTop: 30}}
           />
           <View style={{flex: 0.5}} />
@@ -67,5 +78,9 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  addressContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
 }));

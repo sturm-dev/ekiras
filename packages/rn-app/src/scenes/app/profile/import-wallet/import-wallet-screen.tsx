@@ -142,7 +142,7 @@ export const Screen_ImportWallet: React.FC<{
             </TextByScale>
             <ListOf12Words words={words} grayWords />
             <Button
-              text="Import wallet"
+              text="Import wallet 🔐"
               style={{marginTop: 30}}
               onPress={onImportWallet}
               loading={loading}

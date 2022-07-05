@@ -10,7 +10,9 @@ import {ProfileLoggedIn} from './profile-logged-in-component';
 import {ProfileLoggedOut} from './profile-logged-out-component';
 import {ActivityIndicator, View} from 'react-native';
 
-export type Screen_Profile__Params = undefined;
+export type Screen_Profile__Params = {
+  updateTime?: number;
+};
 
 export type Screen_Profile__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -55,7 +57,7 @@ export const Screen_Profile: React.FC<{
           <ActivityIndicator size="large" color={colors.text} />
         </View>
       ) : userLogged ? (
-        <ProfileLoggedIn />
+        <ProfileLoggedIn updateTime={route.params?.updateTime} />
       ) : (
         <ProfileLoggedOut />
       )}

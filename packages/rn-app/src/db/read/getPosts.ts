@@ -1,7 +1,6 @@
 import * as ethers from 'ethers';
-import {BTTC_RPC_API_KEY} from 'react-native-dotenv';
 
-import {abi, chainData, PostInterface, contractAddress} from '_db';
+import {abi, provider, PostInterface, contractAddress} from '_db';
 
 export const getPosts = async (
   amountOfPosts: number,
@@ -9,12 +8,6 @@ export const getPosts = async (
   console.log(`amountOfPosts`, amountOfPosts, typeof amountOfPosts);
 
   // TODO: make the amountOfPosts work with this get
-
-  const {rpcUrl, chainId, chainName} = chainData;
-  const provider = new ethers.providers.StaticJsonRpcProvider(
-    rpcUrl(BTTC_RPC_API_KEY),
-    {chainId, name: chainName},
-  );
 
   const posts: PostInterface[] = [];
 
