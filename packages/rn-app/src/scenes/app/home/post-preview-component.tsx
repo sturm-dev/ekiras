@@ -1,10 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
+import {getUsername} from '_db';
 
 interface PostPreviewProps {
   id: number;
@@ -28,18 +29,25 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
+  const [username, setUsername] = useState<string>('');
+
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
     console.log(`post id`, id, typeof id);
+
+    getAndSetUsername();
   }, []);
+
+  const getAndSetUsername = async () =>
+    setUsername(await getUsername(user.address));
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <View style={styles.userImage} />
         <View>
-          <TextByScale>{user.username}</TextByScale>
+          <TextByScale>{username}</TextByScale>
           <TextByScale scale="caption">
             {shortAccountId(user.address)}
           </TextByScale>
