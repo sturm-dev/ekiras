@@ -52,7 +52,7 @@ export const Screen_Home: React.FC<{
     setPosts(_posts);
     setLoading(false);
 
-    console.log(`posts`, JSON.stringify(posts, null, 2));
+    console.log(`posts`, JSON.stringify(_posts, null, 2));
   };
 
   return (

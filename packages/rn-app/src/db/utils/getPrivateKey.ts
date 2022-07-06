@@ -1,12 +1,5 @@
-import * as Keychain from 'react-native-keychain';
 import * as ethers from 'ethers';
+import {getMnemonic} from './getMnemonic';
 
-export const getPrivateKey = async (): Promise<string> => {
-  const credentials = await Keychain.getGenericPassword();
-  if (!credentials) {
-    console.error('No private key found');
-    return '';
-  }
-
-  return ethers.Wallet.fromMnemonic(credentials.password).privateKey;
-};
+export const getPrivateKey = async (): Promise<string> =>
+  ethers.Wallet.fromMnemonic(await getMnemonic()).privateKey;

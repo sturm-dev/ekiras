@@ -6,9 +6,8 @@ import {
   View,
 } from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
-import * as Keychain from 'react-native-keychain';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import * as ethers from 'ethers';
+import * as Keychain from 'react-native-keychain';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {
@@ -20,7 +19,13 @@ import {
 import {useNavigationReset} from '_hooks';
 
 import {Screen_Profile__Prop} from './profile-screen';
-import {getUsername} from '_db';
+import {
+  getBalance,
+  getUserAddress,
+  getUsername,
+  smallInteractionCostApprox,
+} from '_db';
+import {formatBigNumber} from 'src/utils/format-big-number';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
@@ -36,15 +41,23 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
 
   const {handleResetNavigation} = useNavigationReset();
 
+  // ────────────────────────────────────────────────────────────────────────────────
   const [userAddress, setUserAddress] = useState('');
+  const [username, setUsername] = useState('');
   const [userAddressOrUsernameLoading, setUserAddressOrUsernameLoading] =
     useState(true);
-  const [username, setUsername] = useState('');
+  // ────────────────────────
+  const [userBalance, setUserBalance] = useState('0');
+  const [userBalanceLoading, setUserBalanceLoading] = useState(true);
+  // ────────────────────────
   const [logOutLoading, setLogOutLoading] = useState(false);
+  // ────────────────────────────────────────────────────────────────────────────────
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+
+    getUserBalance();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -54,21 +67,38 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     getUserInfo();
   }, [updateTime]);
 
+  // ────────────────────────────────────────────────────────────────────────────────
+
   const getUserInfo = async () => {
     setUserAddressOrUsernameLoading(true);
-    // ────────────────────────────────────────────────────────────────────────────────
-    const credentials = await Keychain.getGenericPassword();
-    if (!credentials) return;
+    // ─────────────────────────────────────────
+    const _userAddress = await getUserAddress();
 
-    const accountFromMnemonic = ethers.Wallet.fromMnemonic(
-      credentials.password,
-    );
-
-    setUserAddress(accountFromMnemonic.address);
-    setUsername(await getUsername(accountFromMnemonic.address));
-    // ────────────────────────────────────────────────────────────────────────────────
+    setUserAddress(_userAddress);
+    setUsername(await getUsername(_userAddress));
+    // ─────────────────────────────────────────
     setUserAddressOrUsernameLoading(false);
   };
+
+  const getUserBalance = async () => {
+    setUserBalanceLoading(true);
+    // ─────────────────────────────────────────
+    const _userAddress = await getUserAddress();
+    const balance = await getBalance(_userAddress);
+
+    if (balance)
+      setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
+    // ─────────────────────────────────────────
+    setUserBalanceLoading(false);
+  };
+
+  const onLogout = async () => {
+    setLogOutLoading(true);
+    await Keychain.resetGenericPassword();
+    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+  };
+
+  // ──────────────────────────────────────────────────────────────
 
   const Item = ({text, onPress}: {text: string; onPress?: () => void}) => {
     return (
@@ -78,11 +108,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     );
   };
 
-  const onLogout = async () => {
-    setLogOutLoading(true);
-    await Keychain.resetGenericPassword();
-    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
-  };
+  // ────────────────────────────────────────────────────────────────────────────────
 
   return (
     <ScrollView style={styles.container}>
@@ -115,12 +141,19 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         </TouchableOpacity>
         <TouchableOpacity style={styles.amountOfCredits}>
           <CustomIcon type="octicon" name="comment" color={colors.text} />
-          <TextByScale
-            scale="caption"
-            style={{marginTop: 5}}
-            color={colors.text2}>
-            320
-          </TextByScale>
+          {userBalanceLoading ? (
+            <ActivityIndicator
+              size="large"
+              style={{transform: [{scale: 0.4}]}}
+            />
+          ) : (
+            <TextByScale
+              scale="caption"
+              style={{marginTop: 5}}
+              color={colors.text2}>
+              {userBalance}
+            </TextByScale>
+          )}
         </TouchableOpacity>
       </View>
       {/* • • • • • */}
