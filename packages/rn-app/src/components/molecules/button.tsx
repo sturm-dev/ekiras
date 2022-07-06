@@ -106,7 +106,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
 
   return Platform.OS === 'ios' ? (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={loading || disabled ? 1 : 0.8}
       onPress={loading || disabled ? undefined : onPress}>
       <View
         style={{
@@ -146,7 +146,7 @@ const useStyles = themedStyleSheet(
       alignSelf: props.autoWidth ? 'auto' : 'center',
       backgroundColor:
         props.locked || props.disabled
-          ? colors.primary + getPercentageInHex(60)
+          ? colors.primary + getPercentageInHex(20)
           : props.background || colors.button_bg,
     },
     buttonText: {

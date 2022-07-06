@@ -78,7 +78,7 @@ export const Screen_CreateWallet: React.FC<{
           <ListOf12Words words={mnemonic} />
           <Button
             loading={saveWalletLoading}
-            text="Words already written on paper! 📝"
+            text="I have already written the words! 📝"
             style={{marginTop: 30, height: 80, paddingHorizontal: 50}}
             numberOfLines={3}
             onPress={onLogInWithNewWallet}

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
@@ -14,7 +15,7 @@ import {
 } from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
-import {Button, TextInput} from '_molecules';
+import {Button, TextInput, TextInputRef} from '_molecules';
 import {useNavigationReset} from '_hooks';
 
 export type Screen_ImportWallet__Params = undefined;
@@ -40,6 +41,10 @@ export const Screen_ImportWallet: React.FC<{
   const navigation = useNavigation<Screen_ImportWallet__Prop>();
   const {params} = route;
 
+  // ────────────────────────────────────────────────────────────────────────────────
+  const textInputRef = React.createRef<TextInputRef>();
+  // ────────────────────────────────────────────────────────────────────────────────
+
   const {handleResetNavigation} = useNavigationReset();
 
   React.useEffect(() => {
@@ -48,23 +53,28 @@ export const Screen_ImportWallet: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
+    textInputRef.current?.focus();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onImportWallet = async () => {
     setLoading(true);
-    try {
-      ethers.Wallet.fromMnemonic(words.join(' '));
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === 'invalid mnemonic')
-          Alert.alert('Invalid mnemonic');
-      } else
-        console.log(`ethers.Wallet.fromMnemonic error`, error, typeof error);
-    }
-
-    await Keychain.setGenericPassword('', words.join(' '));
-    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+    setTimeout(async () => {
+      try {
+        ethers.Wallet.fromMnemonic(words.join(' '));
+        // only save if it is a valid mnemonic
+        await Keychain.setGenericPassword('', words.join(' '));
+        handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+      } catch (error) {
+        setLoading(false);
+        if (error instanceof Error) {
+          if (error.message === 'invalid mnemonic')
+            Alert.alert('Invalid mnemonic, go back and modify it.');
+        } else
+          console.log(`ethers.Wallet.fromMnemonic error`, error, typeof error);
+      }
+    }, 1000);
   };
 
   const onPressPrev = () => {
@@ -72,19 +82,24 @@ export const Screen_ImportWallet: React.FC<{
     setWordIndex(wordIndex - 1);
   };
 
-  const onPressNext = () => {
-    if (wordIndex === words.length) {
-      const newWords = [...words, word];
-      setWords(newWords);
-      setWord('');
-    } else {
-      const newWords = [...words];
-      newWords[wordIndex] = word;
-      setWords(newWords);
+  const pressNextButtonIsDisabled =
+    !word || word.includes(' ') || word.length < 4 || word.length > 9;
 
-      setWord(words[wordIndex + 1]);
+  const onPressNext = () => {
+    if (!pressNextButtonIsDisabled) {
+      if (wordIndex === words.length) {
+        const newWords = [...words, word.toLowerCase()];
+        setWords(newWords);
+        setWord('');
+      } else {
+        const newWords = [...words];
+        newWords[wordIndex] = word;
+        setWords(newWords);
+
+        setWord(words[wordIndex + 1]);
+      }
+      setWordIndex(wordIndex + 1);
     }
-    setWordIndex(wordIndex + 1);
   };
 
   return (
@@ -103,11 +118,14 @@ export const Screen_ImportWallet: React.FC<{
         {wordIndex !== 12 ? (
           <View style={styles.container}>
             <TextInput
+              ref={textInputRef}
               placeholder={`${wordIndex + 1}º word`}
               value={word}
-              onChangeText={newWord => setWord(newWord.toLowerCase())}
+              onChangeText={setWord}
               onSubmitEditing={onPressNext}
               returnKeyType="next"
+              blurOnSubmit={false}
+              autoCapitalize="none"
             />
             <View style={styles.buttonsContainer}>
               {words.length > 0 ? (
@@ -126,12 +144,7 @@ export const Screen_ImportWallet: React.FC<{
                 iconType="material"
                 autoWidth={false}
                 style={{width: 60, height: 60, marginTop: 40}}
-                disabled={
-                  !word ||
-                  word.includes(' ') ||
-                  word.length < 4 ||
-                  word.length > 9
-                }
+                disabled={pressNextButtonIsDisabled}
               />
             </View>
           </View>
