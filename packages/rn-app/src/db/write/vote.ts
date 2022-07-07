@@ -3,7 +3,7 @@ import * as ethers from 'ethers';
 import {
   abi,
   contractAddress,
-  getPrivateKey,
+  internalUse_getPrivateKey,
   provider,
   handleSolidityErrors,
 } from '_db';
@@ -18,7 +18,7 @@ export const vote = async (
     const tx = await new ethers.Contract(
       contractAddress,
       abi,
-      new ethers.Wallet(await getPrivateKey(), provider),
+      new ethers.Wallet(await internalUse_getPrivateKey(), provider),
     ).votePost(postId, voteIsTypeUp);
 
     await tx.wait();

@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import * as Keychain from 'react-native-keychain';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {
@@ -24,6 +23,7 @@ import {
   getBalance,
   getUserAddress,
   getUsername,
+  onLogout,
   smallInteractionCostApprox,
 } from '_db';
 import {formatBigNumber} from 'src/utils/format-big-number';
@@ -58,8 +58,6 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
-    getUserBalance();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,34 +66,59 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     getUserInfo();
   }, [updateTime]);
 
+  useEffect(() => {
+    getUserBalance(userAddress);
+  }, [userAddress]);
+
   // ────────────────────────────────────────────────────────────────────────────────
 
   const getUserInfo = async () => {
     setUserAddressOrUsernameLoading(true);
-    // ─────────────────────────────────────────
-    const _userAddress = await getUserAddress();
+    const {userAddress: _userAddress, error: getUserAddressError} =
+      await getUserAddress();
 
-    setUserAddress(_userAddress);
-    setUsername((await getUsername(_userAddress)).username);
-    // ─────────────────────────────────────────
-    setUserAddressOrUsernameLoading(false);
-  };
+    if (getUserAddressError) {
+      Alert.alert('Error', getUserAddressError);
+      setUserAddressOrUsernameLoading(false);
+    } else {
+      setUserAddress(_userAddress);
+      const {username: _username, error: getUsernameError} = await getUsername(
+        _userAddress,
+      );
 
-  const getUserBalance = async () => {
-    setUserBalanceLoading(true);
-    const {balance, error} = await getBalance(await getUserAddress());
-    setUserBalanceLoading(false);
-
-    if (error) Alert.alert('Error', error);
-    else {
-      setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
+      if (getUsernameError) {
+        Alert.alert('Error', getUsernameError);
+        setUserAddressOrUsernameLoading(false);
+      } else {
+        setUsername(_username);
+        setUserAddressOrUsernameLoading(false);
+      }
     }
   };
 
-  const onLogout = async () => {
+  const getUserBalance = async (_userAddress: string) => {
+    if (_userAddress) {
+      setUserBalanceLoading(true);
+      const {balance, error} = await getBalance(_userAddress);
+      setUserBalanceLoading(false);
+
+      if (error) Alert.alert('Error', error);
+      else {
+        setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
+      }
+    }
+  };
+
+  const handleLogout = async () => {
     setLogOutLoading(true);
-    await Keychain.resetGenericPassword();
-    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+    const {error} = await onLogout();
+
+    if (error) {
+      setLogOutLoading(false);
+      Alert.alert('Error', error);
+    } else {
+      handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+    }
   };
 
   // ──────────────────────────────────────────────────────────────
@@ -168,7 +191,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       <SafeAreaView edges={['bottom']}>
         <TouchableOpacity
           style={styles.footer}
-          onPress={logOutLoading ? () => null : onLogout}
+          onPress={logOutLoading ? () => null : handleLogout}
           activeOpacity={logOutLoading ? 1 : 0.8}>
           {logOutLoading ? (
             <ActivityIndicator size="large" color={colors.text} />
