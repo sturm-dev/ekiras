@@ -1,13 +1,28 @@
 import * as ethers from 'ethers';
 
-import {abi, contractAddress, getPrivateKey, provider} from '_db';
+import {
+  abi,
+  contractAddress,
+  getPrivateKey,
+  provider,
+  handleSolidityErrors,
+} from '_db';
 
-export const createPost = async (text: string) => {
-  const tx = await new ethers.Contract(
-    contractAddress,
-    abi,
-    new ethers.Wallet(await getPrivateKey(), provider),
-  ).createPost(text);
+export const createPost = async (
+  text: string,
+): Promise<{
+  error?: string;
+}> => {
+  try {
+    const tx = await new ethers.Contract(
+      contractAddress,
+      abi,
+      new ethers.Wallet(await getPrivateKey(), provider),
+    ).createPost(text);
 
-  return await tx.wait();
+    await tx.wait();
+    return {};
+  } catch (error) {
+    return handleSolidityErrors(error);
+  }
 };

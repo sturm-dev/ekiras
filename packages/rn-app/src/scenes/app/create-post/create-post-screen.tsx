@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -52,15 +52,13 @@ export const Screen_CreatePost: React.FC<{
 
   const onCreatePost = async () => {
     setLoading(true);
-    await createPost(text);
+    const {error} = await createPost(text);
     setLoading(false);
 
-    handleResetNavigation({
-      stack: 'Stack_App',
-      screen: 'Screen_Home',
-    });
-
-    // navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+    if (error) Alert.alert('Error', error);
+    else {
+      handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+    }
   };
 
   return (
@@ -72,7 +70,11 @@ export const Screen_CreatePost: React.FC<{
             <TextByScale scale="h3">Create Post</TextByScale>
           </View>
           <View style={styles.body}>
-            <MultilineTextInput value={text} onChangeText={setText} />
+            <MultilineTextInput
+              value={text}
+              onChangeText={setText}
+              autoCapitalize="none"
+            />
           </View>
           <View style={styles.footer}>
             <Button

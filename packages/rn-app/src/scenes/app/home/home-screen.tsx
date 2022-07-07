@@ -1,6 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   TouchableOpacity,
   View,
@@ -48,11 +50,13 @@ export const Screen_Home: React.FC<{
   }, []);
 
   const getSomePosts = async () => {
-    const _posts = await getPosts(10);
-    setPosts(_posts);
+    const {posts: _posts, error} = await getPosts(10);
     setLoading(false);
 
-    console.log(`posts`, JSON.stringify(_posts, null, 2));
+    console.log(`_posts`, JSON.stringify(_posts, null, 2));
+
+    if (error) Alert.alert('Error', error);
+    else setPosts(_posts);
   };
 
   return (
@@ -81,13 +85,14 @@ export const Screen_Home: React.FC<{
           <FlatList
             data={posts}
             renderItem={({
-              item: {id, text, author, downVotesCount, upVotesCount},
+              item: {id, author, text, downVotesCount, upVotesCount},
             }) => (
               <PostPreview
                 id={id}
-                user={{address: author, username: ''}}
+                userAddress={author}
                 text={text}
                 votes={{up: upVotesCount, down: downVotesCount}}
+                refreshPosts={getSomePosts}
               />
             )}
             keyExtractor={item => item.id.toString()}

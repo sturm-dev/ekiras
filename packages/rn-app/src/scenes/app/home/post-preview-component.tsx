@@ -1,86 +1,123 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
-import {getUsername} from '_db';
+import {getUsername, vote} from '_db';
 
 interface PostPreviewProps {
   id: number;
-  user: {
-    address: string;
-    username: string;
-  };
+  userAddress: string;
   text: string;
   votes: {
     up: number;
     down: number;
   };
+  refreshPosts: () => void;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
   id,
-  user,
+  userAddress,
   text,
   votes,
+  refreshPosts,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const [username, setUsername] = useState('');
+  const [loadingUsername, setLoadingUsername] = React.useState(true);
+
+  const [loadingUpVote, setLoadingUpVote] = React.useState(false);
+  const [loadingDownVote, setLoadingDownVote] = React.useState(false);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
-    console.log(`post id`, id, typeof id);
 
     getAndSetUsername();
   }, []);
 
-  const getAndSetUsername = async () =>
-    setUsername(await getUsername(user.address));
+  const getAndSetUsername = async () => {
+    const {username: _username, error} = await getUsername(userAddress);
+    setLoadingUsername(false);
+
+    if (error) Alert.alert('Error', error);
+    else setUsername(_username);
+  };
+
+  const onVote = async (type: 'up' | 'down') => {
+    type === 'up' ? setLoadingUpVote(true) : setLoadingDownVote(true);
+
+    const {error} = await vote(id, type === 'up');
+    type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
+
+    if (error) Alert.alert('Error', error);
+    else refreshPosts();
+  };
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <View style={styles.userImage} />
         <View>
-          <TextByScale>{username}</TextByScale>
-          <TextByScale scale="caption">
-            {shortAccountId(user.address)}
-          </TextByScale>
+          {loadingUsername ? (
+            <ActivityIndicator size="small" style={{alignSelf: 'flex-start'}} />
+          ) : (
+            <>
+              {username ? <TextByScale>{username}</TextByScale> : null}
+              <TextByScale
+                scale={username ? 'caption' : 'body1'}
+                color={username ? colors.text2 : colors.text}>
+                {shortAccountId(userAddress)}
+              </TextByScale>
+            </>
+          )}
         </View>
       </View>
       <View style={styles.body}>
         <TextByScale>{text}</TextByScale>
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
-          <CustomIcon name="thumbs-up" type="feather" />
-          <TextByScale style={{marginLeft: 5}} scale="caption">
-            {`(${votes.up})`}
-          </TextByScale>
+        <TouchableOpacity style={styles.button} onPress={() => onVote('up')}>
+          {loadingUpVote ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <>
+              <CustomIcon name="thumbs-up" type="feather" />
+              <TextByScale
+                style={{marginLeft: 10}}
+                scale="caption"
+                color={colors.text2}>
+                {`${votes.up}`}
+              </TextByScale>
+            </>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <CustomIcon name="thumbs-down" type="feather" />
-          <TextByScale style={{marginLeft: 5}} scale="caption">
-            {`(${votes.down})`}
-          </TextByScale>
+        <TouchableOpacity style={styles.button} onPress={() => onVote('down')}>
+          {loadingDownVote ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <>
+              <CustomIcon name="thumbs-down" type="feather" />
+              <TextByScale
+                style={{marginLeft: 10}}
+                scale="caption"
+                color={colors.text2}>
+                {`${votes.down}`}
+              </TextByScale>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-PostPreview.defaultProps = {
-  user: undefined,
-  text: undefined,
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   mainContainer: {
     flex: 1,

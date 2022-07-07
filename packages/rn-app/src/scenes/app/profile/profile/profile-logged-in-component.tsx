@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   TouchableOpacity,
   View,
@@ -75,21 +76,20 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     const _userAddress = await getUserAddress();
 
     setUserAddress(_userAddress);
-    setUsername(await getUsername(_userAddress));
+    setUsername((await getUsername(_userAddress)).username);
     // ─────────────────────────────────────────
     setUserAddressOrUsernameLoading(false);
   };
 
   const getUserBalance = async () => {
     setUserBalanceLoading(true);
-    // ─────────────────────────────────────────
-    const _userAddress = await getUserAddress();
-    const balance = await getBalance(_userAddress);
-
-    if (balance)
-      setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
-    // ─────────────────────────────────────────
+    const {balance, error} = await getBalance(await getUserAddress());
     setUserBalanceLoading(false);
+
+    if (error) Alert.alert('Error', error);
+    else {
+      setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
+    }
   };
 
   const onLogout = async () => {
@@ -131,8 +131,10 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
               />
             ) : (
               <>
-                <TextByScale>{username}</TextByScale>
-                <TextByScale scale="caption" color={colors.text2}>
+                {username ? <TextByScale>{username}</TextByScale> : null}
+                <TextByScale
+                  scale={username ? 'caption' : 'body1'}
+                  color={username ? colors.text2 : colors.text}>
                   {shortAccountId(userAddress)}
                 </TextByScale>
               </>

@@ -1,8 +1,6 @@
 import * as ethers from 'ethers';
 
-export const formatBTT = (balanceInHex: string): number | undefined => {
-  if (!balanceInHex) return undefined;
-
+export const formatBTT = (balanceInHex: string): number => {
   const balance = ethers.BigNumber.from(balanceInHex);
   const amountOfBTT = ethers.utils.formatEther(balance);
   return mathRound(amountOfBTT);

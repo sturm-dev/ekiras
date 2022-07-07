@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -43,10 +43,13 @@ export const Screen_UpdateUsername: React.FC<{
 
   const onUpdateUsername = async () => {
     setLoading(true);
-    await updateUsername(username);
+    const {error} = await updateUsername(username);
     setLoading(false);
 
-    navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+    if (error) Alert.alert('Error', error);
+    else {
+      navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+    }
   };
 
   return (
@@ -58,6 +61,7 @@ export const Screen_UpdateUsername: React.FC<{
             value={username}
             onChangeText={setUsername}
             placeholder="username"
+            autoCapitalize="none"
           />
           <Button
             loading={loading}
