@@ -6,10 +6,11 @@ import {
   PostInterface,
   contractAddress,
   handleSolidityErrors,
+  emptyAddress,
 } from '_db';
 
 export const getPosts = async (
-  amountOfPosts: number,
+  amountOfPosts: number = 10,
 ): Promise<{
   posts: PostInterface[];
   error?: string;
@@ -17,22 +18,15 @@ export const getPosts = async (
   try {
     const posts: PostInterface[] = [];
 
-    if (!amountOfPosts) console.log();
-    // TODO: make the amountOfPosts work with this get
-
     await Promise.all(
-      [
-        0, 1, 2, 3, 4,
-        // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-        // 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-      ].map(
-        async e =>
-          await new ethers.Contract(contractAddress, abi, provider).posts(e),
+      Array.from({length: amountOfPosts}).map(
+        async (e, i) =>
+          await new ethers.Contract(contractAddress, abi, provider).posts(i),
       ),
     )
       .then(values => {
         values.forEach((value, i) => {
-          if (value[0] !== '0x0000000000000000000000000000000000000000') {
+          if (value[0] !== emptyAddress) {
             posts.push({
               id: i,
               author: value[0],

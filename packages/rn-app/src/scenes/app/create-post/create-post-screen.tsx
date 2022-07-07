@@ -55,8 +55,11 @@ export const Screen_CreatePost: React.FC<{
     const {error} = await createPost(text);
     setLoading(false);
 
-    if (error) Alert.alert('Error', error);
-    else {
+    if (error) {
+      if (error === 'no mnemonic found') {
+        Alert.alert('You need to log-in to interact with the app');
+      } else Alert.alert('Error', error);
+    } else {
       handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
     }
   };

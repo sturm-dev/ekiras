@@ -56,8 +56,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     const {error} = await vote(id, type === 'up');
     type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
 
-    if (error) Alert.alert('Error', error);
-    else refreshPosts();
+    if (error) {
+      if (error === 'no mnemonic found') {
+        Alert.alert('You need to log-in to interact with the app');
+      } else Alert.alert('Error', error);
+    } else refreshPosts();
   };
 
   return (

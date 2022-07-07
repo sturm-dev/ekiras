@@ -16,6 +16,7 @@ import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getPosts, PostInterface} from '_db';
 
 import {PostPreview} from './post-preview-component';
+import {Button} from '_molecules';
 
 export type Screen_Home__Params = undefined;
 
@@ -38,6 +39,9 @@ export const Screen_Home: React.FC<{
   const [posts, setPosts] = useState<PostInterface[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [amountOfPosts, setAmountOfPosts] = useState(10);
+  const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
@@ -49,14 +53,21 @@ export const Screen_Home: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getSomePosts = async () => {
-    const {posts: _posts, error} = await getPosts(10);
+  const getSomePosts = async (amountOfPostsToQuery?: number) => {
+    const {posts: _posts, error} = await getPosts(amountOfPostsToQuery);
     setLoading(false);
+    setGetMorePostsLoading(false);
 
     console.log(`_posts`, JSON.stringify(_posts, null, 2));
 
     if (error) Alert.alert('Error', error);
     else setPosts(_posts);
+  };
+
+  const getMorePosts = async () => {
+    setGetMorePostsLoading(true);
+    getSomePosts(amountOfPosts + 10);
+    setAmountOfPosts(amountOfPosts + 10);
   };
 
   return (
@@ -82,24 +93,38 @@ export const Screen_Home: React.FC<{
             <ActivityIndicator size="large" color={colors.text} />
           </View>
         ) : (
-          <FlatList
-            data={posts}
-            renderItem={({
-              item: {id, author, text, downVotesCount, upVotesCount},
-            }) => (
-              <PostPreview
-                id={id}
-                userAddress={author}
-                text={text}
-                votes={{up: upVotesCount, down: downVotesCount}}
-                refreshPosts={getSomePosts}
-              />
-            )}
-            keyExtractor={item => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-            ItemSeparatorComponent={() => <View style={{height: 10}} />}
-          />
+          <>
+            <FlatList
+              data={posts}
+              renderItem={({
+                item: {id, author, text, downVotesCount, upVotesCount},
+              }) => (
+                <PostPreview
+                  id={id}
+                  userAddress={author}
+                  text={text}
+                  votes={{up: upVotesCount, down: downVotesCount}}
+                  refreshPosts={getSomePosts}
+                />
+              )}
+              keyExtractor={item => item.id.toString()}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
+              ItemSeparatorComponent={() => <View style={{height: 10}} />}
+              ListFooterComponent={
+                <Button
+                  onPress={getMorePosts}
+                  loading={getMorePostsLoading}
+                  text="Get more posts"
+                  style={{
+                    marginVertical: 30,
+                    width: '80%',
+                    alignSelf: 'center',
+                  }}
+                />
+              }
+            />
+          </>
         )}
       </View>
     </ScreenSafeArea>

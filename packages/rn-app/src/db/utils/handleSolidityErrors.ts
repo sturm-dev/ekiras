@@ -6,7 +6,11 @@ export const handleSolidityErrors = (error: any): {error: string} => {
   solidityErrors.forEach(errorMessage => {
     if ((error as any).toString().includes(errorMessage)) {
       errorMessageToReturn = errorMessage;
-    } else return {error: 'unknown error'};
+    } else {
+      console.log(`error`, error);
+
+      return {error: 'unknown error'};
+    }
   });
 
   return {error: errorMessageToReturn};
