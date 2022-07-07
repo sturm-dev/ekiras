@@ -68,6 +68,7 @@ export const Screen_UpdateUsername: React.FC<{
             text="Update username"
             onPress={onUpdateUsername}
             style={{marginTop: 30}}
+            disabled={username === params.username}
           />
           <View style={{flex: 0.5}} />
         </View>

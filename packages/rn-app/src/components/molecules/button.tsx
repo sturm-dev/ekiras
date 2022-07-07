@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {ReactElement} from 'react';
 import {
   ActivityIndicator,

@@ -6,6 +6,7 @@ import {
   Screen_CreateWallet,
   Screen_Home,
   Screen_ImportWallet,
+  Screen_MyPublicAddress,
   Screen_Profile,
   Screen_UpdateUsername,
 } from '_scenes';
@@ -32,6 +33,10 @@ export const Stack_App = (): any => {
       <Stack.Screen
         name="Screen_UpdateUsername"
         component={Screen_UpdateUsername}
+      />
+      <Stack.Screen
+        name="Screen_MyPublicAddress"
+        component={Screen_MyPublicAddress}
       />
     </Stack.Navigator>
   );

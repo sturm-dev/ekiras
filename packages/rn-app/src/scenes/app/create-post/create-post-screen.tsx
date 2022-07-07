@@ -12,7 +12,6 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
-import {useNavigationReset} from '_hooks';
 import {createPost} from '_db';
 
 export type Screen_CreatePost__Params = undefined;
@@ -32,8 +31,6 @@ export const Screen_CreatePost: React.FC<{
 
   const navigation = useNavigation<Screen_CreatePost__Prop>();
   const {params} = route;
-
-  const {handleResetNavigation} = useNavigationReset();
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -60,7 +57,9 @@ export const Screen_CreatePost: React.FC<{
         Alert.alert('You need to log-in to interact with the app');
       } else Alert.alert('Error', error);
     } else {
-      handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+      navigation.navigate('Screen_Home', {
+        updateTime: new Date().getTime(),
+      });
     }
   };
 
@@ -78,6 +77,13 @@ export const Screen_CreatePost: React.FC<{
               onChangeText={setText}
               autoCapitalize="none"
             />
+            <TextByScale
+              color={colors.text2}
+              scale="caption"
+              center
+              style={{marginTop: 5}}>
+              Tip: you need to be logged to create a post
+            </TextByScale>
           </View>
           <View style={styles.footer}>
             <Button

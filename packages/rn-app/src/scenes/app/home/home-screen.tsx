@@ -1,5 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -18,7 +17,9 @@ import {getPosts, PostInterface} from '_db';
 import {PostPreview} from './post-preview-component';
 import {Button} from '_molecules';
 
-export type Screen_Home__Params = undefined;
+export type Screen_Home__Params = {
+  updateTime?: number;
+};
 
 type Screen_Home__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -48,17 +49,21 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
-    getSomePosts();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // do refresh when go back to this screen and updateTime is changed
+  // and get when this screen is opened
+  useEffect(() => {
+    setLoading(true);
+    setPosts([]);
+    getSomePosts();
+  }, [params?.updateTime]);
 
   const getSomePosts = async (amountOfPostsToQuery?: number) => {
     const {posts: _posts, error} = await getPosts(amountOfPostsToQuery);
     setLoading(false);
     setGetMorePostsLoading(false);
-
-    console.log(`_posts`, JSON.stringify(_posts, null, 2));
 
     if (error) Alert.alert('Error', error);
     else setPosts(_posts);
@@ -83,7 +88,7 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="add" type="material" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Screen_Profile')}
+            onPress={() => navigation.navigate('Screen_Profile', {})}
             style={{padding: 10}}>
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>

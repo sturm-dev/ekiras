@@ -51,13 +51,22 @@ export const Screen_Profile: React.FC<{
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background} withBottomEdgeToo>
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton
+        onPress={
+          userLogged
+            ? () =>
+                navigation.navigate('Screen_Home', {
+                  updateTime: new Date().getTime(),
+                })
+            : () => navigation.goBack()
+        }
+      />
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.text} />
         </View>
       ) : userLogged ? (
-        <ProfileLoggedIn updateTime={route.params?.updateTime} />
+        <ProfileLoggedIn updateTime={params?.updateTime} />
       ) : (
         <ProfileLoggedOut />
       )}

@@ -164,7 +164,11 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
             )}
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.amountOfCredits}>
+        <TouchableOpacity
+          style={styles.amountOfCredits}
+          onPress={() =>
+            Alert.alert('credits screen - show amount of BTT and interactions')
+          }>
           <CustomIcon type="octicon" name="comment" color={colors.text} />
           {userBalanceLoading ? (
             <ActivityIndicator
@@ -183,9 +187,17 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       </View>
       {/* • • • • • */}
       <View style={styles.body}>
-        <Item text="See my public address" />
+        <Item
+          text="See my public address"
+          onPress={() =>
+            navigation.navigate('Screen_MyPublicAddress', {userAddress})
+          }
+        />
         <View style={styles.separator} />
-        <Item text="My Posts" />
+        <Item
+          text="My Posts"
+          onPress={() => Alert.alert('show only my posts')}
+        />
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>

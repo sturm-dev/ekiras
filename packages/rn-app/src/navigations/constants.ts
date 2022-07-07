@@ -10,6 +10,7 @@ import {
   Screen_CreateWallet__Params,
   Screen_ImportWallet__Params,
   Screen_UpdateUsername__Params,
+  Screen_MyPublicAddress__Params,
 } from '_scenes';
 
 export type RootStackParamList = {
@@ -31,4 +32,5 @@ export type AppStackParamList = {
   Screen_CreateWallet: Screen_CreateWallet__Params;
   Screen_ImportWallet: Screen_ImportWallet__Params;
   Screen_UpdateUsername: Screen_UpdateUsername__Params;
+  Screen_MyPublicAddress: Screen_MyPublicAddress__Params;
 };
