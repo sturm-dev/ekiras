@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
 
+// the BTTC network is not supported yet on "the graph" https://github.com/graphprotocol/graph-cli/issues/920
+// so the sorting of "trending" posts is done not so efficiently here
+
 pragma solidity 0.8.8;
 
 contract JustFeedback {
