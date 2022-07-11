@@ -1,10 +1,8 @@
 import * as ethers from 'ethers';
 
 import {
-  abi,
-  provider,
   PostInterface,
-  contractAddress,
+  contractWithoutSigner,
   handleSolidityErrors,
   emptyAddress,
 } from '_db';
@@ -20,8 +18,7 @@ export const getPosts = async (
 
     await Promise.all(
       Array.from({length: amountOfPosts}).map(
-        async (e, i) =>
-          await new ethers.Contract(contractAddress, abi, provider).posts(i),
+        async (e, i) => await contractWithoutSigner.posts(i),
       ),
     )
       .then(values => {

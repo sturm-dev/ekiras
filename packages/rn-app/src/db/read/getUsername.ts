@@ -1,6 +1,4 @@
-import * as ethers from 'ethers';
-
-import {abi, provider, contractAddress, handleSolidityErrors} from '_db';
+import {contractWithoutSigner, handleSolidityErrors} from '_db';
 
 export const getUsername = async (
   userAddress: string,
@@ -9,13 +7,9 @@ export const getUsername = async (
   error?: string;
 }> => {
   try {
-    return {
-      username: await new ethers.Contract(
-        contractAddress,
-        abi,
-        provider,
-      ).addressToUsername(userAddress),
-    };
+    const username = await contractWithoutSigner.addressToUsername(userAddress);
+
+    return {username};
   } catch (error) {
     return {username: '', ...handleSolidityErrors(error)};
   }

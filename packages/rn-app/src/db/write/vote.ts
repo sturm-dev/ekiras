@@ -1,12 +1,4 @@
-import * as ethers from 'ethers';
-
-import {
-  abi,
-  contractAddress,
-  internalUse_getPrivateKey,
-  provider,
-  handleSolidityErrors,
-} from '_db';
+import {handleSolidityErrors, contractWithSigner} from '_db';
 
 export const vote = async (
   postId: number,
@@ -15,13 +7,11 @@ export const vote = async (
   error?: string;
 }> => {
   try {
-    const tx = await new ethers.Contract(
-      contractAddress,
-      abi,
-      new ethers.Wallet(await internalUse_getPrivateKey(), provider),
-    ).votePost(postId, voteIsTypeUp);
+    const contract = await contractWithSigner();
 
-    await tx.wait();
+    await contract.votePost(postId, voteIsTypeUp);
+    await new Promise<void>(res => contract.on('VoteEvent', res));
+
     return {};
   } catch (error) {
     return handleSolidityErrors(error);

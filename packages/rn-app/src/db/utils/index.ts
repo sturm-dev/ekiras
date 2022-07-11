@@ -4,3 +4,4 @@ export * from './getUserAddress';
 export * from './formatBTT';
 export * from './handleSolidityErrors';
 export * from './onLogout';
+export * from './contract';

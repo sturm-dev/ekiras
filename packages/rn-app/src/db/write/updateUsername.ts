@@ -1,12 +1,4 @@
-import * as ethers from 'ethers';
-
-import {
-  abi,
-  contractAddress,
-  internalUse_getPrivateKey,
-  provider,
-  handleSolidityErrors,
-} from '_db';
+import {contractWithSigner, handleSolidityErrors} from '_db';
 
 export const updateUsername = async (
   newUsername: string,
@@ -14,13 +6,11 @@ export const updateUsername = async (
   error?: string;
 }> => {
   try {
-    const tx = await new ethers.Contract(
-      contractAddress,
-      abi,
-      new ethers.Wallet(await internalUse_getPrivateKey(), provider),
-    ).updateMyUsername(newUsername);
+    const contract = await contractWithSigner();
 
-    await tx.wait();
+    await contract.updateMyUsername(newUsername);
+    await new Promise<void>(res => contract.on('UpdateUsernameEvent', res));
+
     return {};
   } catch (error) {
     return handleSolidityErrors(error);
