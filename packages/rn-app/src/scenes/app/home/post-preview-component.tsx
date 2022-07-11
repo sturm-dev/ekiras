@@ -86,7 +86,14 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         <TextByScale>{text}</TextByScale>
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={() => onVote('up')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={
+            !(loadingUpVote || loadingDownVote)
+              ? () => onVote('up')
+              : () => null
+          }
+          activeOpacity={loadingUpVote || loadingDownVote ? 1 : 0.8}>
           {loadingUpVote ? (
             <ActivityIndicator size="small" />
           ) : (
@@ -101,7 +108,14 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
             </>
           )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => onVote('down')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={
+            !(loadingUpVote || loadingDownVote)
+              ? () => onVote('down')
+              : () => null
+          }
+          activeOpacity={loadingUpVote || loadingDownVote ? 1 : 0.8}>
           {loadingDownVote ? (
             <ActivityIndicator size="small" />
           ) : (

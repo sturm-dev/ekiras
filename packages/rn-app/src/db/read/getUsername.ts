@@ -1,4 +1,4 @@
-import {contractWithoutSigner, handleSolidityErrors} from '_db';
+import {contractWithoutSigner, handleError} from '_db';
 
 export const getUsername = async (
   userAddress: string,
@@ -11,6 +11,6 @@ export const getUsername = async (
 
     return {username};
   } catch (error) {
-    return {username: '', ...handleSolidityErrors(error)};
+    return {username: '', ...handleError(error)};
   }
 };

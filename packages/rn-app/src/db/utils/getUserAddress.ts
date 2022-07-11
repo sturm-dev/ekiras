@@ -1,7 +1,7 @@
 import * as ethers from 'ethers';
 
 import {internalUse_getMnemonic} from './internalUse_getMnemonic';
-import {handleSolidityErrors} from './handleSolidityErrors';
+import {handleError} from './handleError';
 
 export const getUserAddress = async (): Promise<{
   userAddress: string;
@@ -13,6 +13,6 @@ export const getUserAddress = async (): Promise<{
         .address,
     };
   } catch (error) {
-    return {userAddress: '', ...handleSolidityErrors(error)};
+    return {userAddress: '', ...handleError(error)};
   }
 };

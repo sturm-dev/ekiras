@@ -1,4 +1,4 @@
-import {contractWithSigner, handleSolidityErrors} from '_db';
+import {contractWithSigner, handleError} from '_db';
 
 export const createPost = async (
   text: string,
@@ -13,6 +13,6 @@ export const createPost = async (
 
     return {};
   } catch (error) {
-    return handleSolidityErrors(error);
+    return handleError(error);
   }
 };

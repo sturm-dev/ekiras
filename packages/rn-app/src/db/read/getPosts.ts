@@ -3,7 +3,7 @@ import * as ethers from 'ethers';
 import {
   PostInterface,
   contractWithoutSigner,
-  handleSolidityErrors,
+  handleError,
   emptyAddress,
 } from '_db';
 
@@ -41,6 +41,6 @@ export const getPosts = async (
 
     return {posts};
   } catch (error) {
-    return {posts: [], ...handleSolidityErrors(error)};
+    return {posts: [], ...handleError(error)};
   }
 };

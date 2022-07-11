@@ -1,4 +1,4 @@
-import {handleSolidityErrors, contractWithSigner} from '_db';
+import {handleError, contractWithSigner} from '_db';
 
 export const vote = async (
   postId: number,
@@ -14,6 +14,6 @@ export const vote = async (
 
     return {};
   } catch (error) {
-    return handleSolidityErrors(error);
+    return handleError(error);
   }
 };

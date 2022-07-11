@@ -1,4 +1,4 @@
-import {contractWithSigner, handleSolidityErrors} from '_db';
+import {contractWithSigner, handleError} from '_db';
 
 export const updateUsername = async (
   newUsername: string,
@@ -13,6 +13,6 @@ export const updateUsername = async (
 
     return {};
   } catch (error) {
-    return handleSolidityErrors(error);
+    return handleError(error);
   }
 };

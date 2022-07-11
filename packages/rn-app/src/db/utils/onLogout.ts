@@ -1,6 +1,6 @@
 import * as Keychain from 'react-native-keychain';
 
-import {handleSolidityErrors} from './handleSolidityErrors';
+import {handleError} from './handleError';
 
 export const onLogout = async (): Promise<{
   error?: string;
@@ -9,6 +9,6 @@ export const onLogout = async (): Promise<{
     await Keychain.resetGenericPassword();
     return {};
   } catch (error) {
-    return handleSolidityErrors(error);
+    return handleError(error);
   }
 };
