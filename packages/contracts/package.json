@@ -15,7 +15,7 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19"
   },
   "scripts": {
-    "deploy": "yarn hardhat run scripts/deploy.js",
-    "deploy:bttc": "yarn hardhat run scripts/deploy.js --network bttc"
+    "deploy:hardhat": "yarn hardhat run scripts/deploy.js",
+    "deploy": "yarn hardhat run scripts/deploy.js --network bttc"
   }
 }

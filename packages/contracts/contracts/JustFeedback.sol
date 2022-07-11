@@ -22,6 +22,7 @@ contract JustFeedback {
   address emptyAddress;
 
   event CreatePostEvent(uint256 _id);
+  event DeletePostEvent(uint256 _id);
   event VoteEvent(
     uint256 _postId,
     uint256 _upVotesCount,
@@ -43,6 +44,14 @@ contract JustFeedback {
     emit CreatePostEvent(postIndex);
 
     postIndex += 1;
+  }
+
+  function deleteOwnPost(uint256 _postId) public {
+    require(msg.sender == posts[_postId].author, "only the author can delete his posts");
+
+    delete posts[_postId];
+
+    emit DeletePostEvent(postIndex);
   }
 
   function votePost(uint256 _postId, bool _voteIsTypeUp) public {
