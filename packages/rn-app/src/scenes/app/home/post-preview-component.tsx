@@ -8,6 +8,8 @@ import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
 import {getUsername, vote} from '_db';
 
+// TODO: not allow to vote if another vote is in progress
+
 interface PostPreviewProps {
   id: number;
   userAddress: string;
@@ -59,6 +61,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     if (error) {
       if (error === 'no mnemonic found') {
         Alert.alert('You need to log-in to interact with the app');
+      } else if (error === 'gas required exceeds allowance') {
+        Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else refreshPosts();
   };

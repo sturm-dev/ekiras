@@ -1,11 +1,25 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
+import {
+  ONLY_DEV__SEED_1,
+  ONLY_DEV__SEED_2,
+  ONLY_DEV__SEED_3,
+  ONLY_DEV__SEED_4,
+} from 'react-native-dotenv';
 
 import {Screen_Profile__Prop} from './profile-screen';
+
+const devSeeds = [
+  ONLY_DEV__SEED_1,
+  ONLY_DEV__SEED_2,
+  ONLY_DEV__SEED_3,
+  ONLY_DEV__SEED_4,
+];
 
 interface ProfileLoggedOutProps {}
 
@@ -20,6 +34,8 @@ export const ProfileLoggedOut: React.FC<
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -45,6 +61,20 @@ export const ProfileLoggedOut: React.FC<
           Create a new wallet
         </TextByScale>
       </TouchableOpacity>
+      {}
+      <View style={styles.fastLogInContainer_onlyDevTesting}>
+        {[1, 2, 3, 4].map(i => (
+          <TouchableOpacity
+            key={i}
+            style={styles.fastLogIn_onlyDevTesting}
+            onPress={async () => {
+              await Keychain.setGenericPassword('', devSeeds[i - 1]);
+              navigation.goBack();
+            }}>
+            <TextByScale>{i}</TextByScale>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };
@@ -76,5 +106,16 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   },
   text: {
     flex: 1,
+  },
+  fastLogInContainer_onlyDevTesting: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  fastLogIn_onlyDevTesting: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff10',
   },
 }));

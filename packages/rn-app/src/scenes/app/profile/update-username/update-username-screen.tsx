@@ -46,8 +46,11 @@ export const Screen_UpdateUsername: React.FC<{
     const {error} = await updateUsername(username);
     setLoading(false);
 
-    if (error) Alert.alert('Error', error);
-    else {
+    if (error) {
+      if (error === 'gas required exceeds allowance') {
+        Alert.alert("You don't have enough gas");
+      } else Alert.alert('Error', error);
+    } else {
       navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
     }
   };
