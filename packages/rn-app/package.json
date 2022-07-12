@@ -18,6 +18,7 @@
     "@react-native-community/blur": "^3.6.0",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
+    "dayjs": "^1.11.3",
     "ethers": "5.0.5",
     "react": "18.0.0",
     "react-native": "0.69.0",

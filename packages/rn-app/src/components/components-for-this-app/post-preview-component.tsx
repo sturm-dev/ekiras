@@ -12,28 +12,29 @@ import {
   DEVICE_WIDTH,
   getPercentageInHex,
 } from '_utils';
-import {deletePost, getDownVote, getUpVote, getUsername, vote} from '_db';
+import {
+  deletePost,
+  getDownVote,
+  getUpVote,
+  getUsername,
+  PostInterface,
+  vote,
+} from '_db';
 import {Overlay} from '_molecules';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 // TODO: not allow to vote if another vote is in progress
 
 interface PostPreviewProps {
-  id: number;
-  userAddress: string;
-  text: string;
-  votes: {
-    up: number;
-    down: number;
-  };
+  post: PostInterface;
   refreshPosts?: () => void;
   myAddress: string;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
-  id,
-  userAddress,
-  text,
-  votes,
+  post: {id, author, createdDate, text, downVotesCount, upVotesCount},
   refreshPosts,
   myAddress,
 }: PostPreviewProps) => {
@@ -61,7 +62,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   }, []);
 
   const getAndSetUsername = async () => {
-    const {username: _username, error} = await getUsername(userAddress);
+    const {username: _username, error} = await getUsername(author);
     setLoadingUsername(false);
 
     if (error) Alert.alert('Error', error);
@@ -137,12 +138,12 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
               <TextByScale
                 scale={username ? 'caption' : 'body1'}
                 color={username ? colors.text2 : colors.text}>
-                {shortAccountId(userAddress)}
+                {shortAccountId(author)}
               </TextByScale>
             </>
           )}
         </View>
-        {myAddress === userAddress ? (
+        {myAddress === author ? (
           <TouchableOpacity
             style={styles.threeDots}
             onPress={() => setShowModal(true)}>
@@ -171,7 +172,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
                 style={{marginLeft: 10}}
                 scale="caption"
                 color={colors.text2}>
-                {`${votes.up}`}
+                {`${upVotesCount}`}
               </TextByScale>
             </>
           )}
@@ -195,11 +196,19 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
                 style={{marginLeft: 10}}
                 scale="caption"
                 color={colors.text2}>
-                {`${votes.down}`}
+                {`${downVotesCount}`}
               </TextByScale>
             </>
           )}
         </TouchableOpacity>
+      </View>
+      <View style={styles.dateContainer}>
+        <TextByScale
+          scale="body2"
+          color={colors.text2}
+          style={{backgroundColor: colors.background, paddingHorizontal: 2}}>
+          {dayjs(dayjs.unix(createdDate)).fromNow()}
+        </TextByScale>
       </View>
       {showModal ? (
         <Overlay
@@ -270,6 +279,12 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   },
   downVote: {
     backgroundColor: colors.error + getPercentageInHex(20),
+  },
+  dateContainer: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 5,
+    paddingTop: 2,
+    marginBottom: -20,
   },
   modal: {
     padding: 0,

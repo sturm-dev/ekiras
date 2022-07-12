@@ -106,6 +106,7 @@
           "_atoms": ["src/components/atoms/index.ts"],
           "_molecules": ["src/components/molecules/index.ts"],
           "_organisms": ["src/components/organisms/index.ts"],
+          "_componentsForThisApp": ["src/components/components-for-this-app/index.ts"],
           // -----
           "_navigations": ["src/navigations/index.ts"],
           // -----

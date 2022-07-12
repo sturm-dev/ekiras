@@ -4,7 +4,8 @@ import {
   PostInterface,
   contractWithoutSigner,
   handleError,
-  emptyAddress,
+  postOwnerIsNotEmptyAddress,
+  formatPost,
 } from '_db';
 
 export const getPosts = async (
@@ -27,26 +28,13 @@ export const getPosts = async (
       .map((e, i) => (i < amountOfPosts ? e : null))
       .filter(e => e !== null);
 
-    await Promise.all(
+    const values = await Promise.all(
       postsIndexes.map(async e => await contractWithoutSigner.posts(e)),
-    )
-      .then(values => {
-        values.forEach(value => {
-          if (value[1] !== emptyAddress) {
-            posts.push({
-              id: ethers.BigNumber.from(value[0]._hex).toNumber(),
-              author: value[1],
-              text: value[2],
-              upVotesCount: ethers.BigNumber.from(value[3]._hex).toNumber(),
-              downVotesCount: ethers.BigNumber.from(value[4]._hex).toNumber(),
-            });
-          }
-        });
-      })
-      .catch(e => {
-        console.log(`e`, e, typeof e);
-        throw new Error(e);
-      });
+    );
+
+    values.forEach(value =>
+      postOwnerIsNotEmptyAddress(value) ? posts.push(formatPost(value)) : null,
+    );
 
     return {posts};
   } catch (error) {

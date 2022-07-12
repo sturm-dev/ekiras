@@ -12,6 +12,7 @@ module.exports = {
           _atoms: './src/components/atoms',
           _molecules: './src/components/molecules',
           _organisms: './src/components/organisms',
+          _componentsForThisApp: './src/components/components-for-this-app',
           // -----
           _navigations: './src/navigations',
           // -----

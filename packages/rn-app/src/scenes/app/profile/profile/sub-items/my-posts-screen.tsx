@@ -8,7 +8,7 @@ import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {getMyPosts, PostInterface} from '_db';
-import {PostPreview} from 'src/scenes/app/home/post-preview-component';
+import {PostPreview} from '_componentsForThisApp';
 
 // TODO: refresh posts after delete
 // TODO: show loading when fetching posts
@@ -54,12 +54,12 @@ export const Screen_MyPosts: React.FC<{
       typeof params.userAddress,
     );
 
-    getPosts();
+    onGetMyPosts();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getPosts = async (amountOfPostsToQuery?: number) => {
+  const onGetMyPosts = async (amountOfPostsToQuery?: number) => {
     const {posts: _posts, error} = await getMyPosts(amountOfPostsToQuery);
     setLoading(false);
 
@@ -71,7 +71,7 @@ export const Screen_MyPosts: React.FC<{
 
   const getMorePosts = async () => {
     setGetMorePostsLoading(true);
-    getPosts(amountOfPosts + 10);
+    onGetMyPosts(amountOfPosts + 10);
     setAmountOfPosts(amountOfPosts + 10);
   };
 
@@ -87,21 +87,13 @@ export const Screen_MyPosts: React.FC<{
           <>
             <FlatList
               data={posts}
-              renderItem={({
-                item: {id, author, text, downVotesCount, upVotesCount},
-              }) => (
-                <PostPreview
-                  id={id}
-                  userAddress={author}
-                  text={text}
-                  votes={{up: upVotesCount, down: downVotesCount}}
-                  myAddress={params.userAddress}
-                />
+              renderItem={({item}) => (
+                <PostPreview post={item} myAddress={params.userAddress} />
               )}
               keyExtractor={item => item.id.toString()}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 10}} />}
+              ItemSeparatorComponent={() => <View style={{height: 15}} />}
               ListFooterComponent={
                 <Button
                   onPress={getMorePosts}

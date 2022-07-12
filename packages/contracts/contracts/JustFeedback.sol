@@ -8,6 +8,7 @@ pragma solidity 0.8.8;
 contract JustFeedback {
   struct Post {
     uint256 id;
+    uint256 createdDate;
     address author;
     string text;
     uint256 upVotesCount;
@@ -39,6 +40,7 @@ contract JustFeedback {
 
   function createPost(string memory _text) public {
     posts[postIndex].id = postIndex;
+    posts[postIndex].createdDate = block.timestamp;
     posts[postIndex].author = msg.sender;
     posts[postIndex].text = _text;
     posts[postIndex].upVotesCount = 0;

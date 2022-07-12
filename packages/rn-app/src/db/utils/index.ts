@@ -5,3 +5,5 @@ export * from './formatBTT';
 export * from './handleError';
 export * from './onLogout';
 export * from './contract';
+export * from './formatPost';
+export * from './postOwnerIsNotEmptyAddress';

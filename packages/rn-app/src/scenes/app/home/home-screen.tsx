@@ -10,12 +10,12 @@ import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
+import {Button} from '_molecules';
+import {PostPreview} from '_componentsForThisApp';
+
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getPosts, getUserAddress, PostInterface} from '_db';
-
-import {PostPreview} from './post-preview-component';
-import {Button} from '_molecules';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -62,7 +62,7 @@ export const Screen_Home: React.FC<{
   useEffect(() => {
     setLoading(true);
     setPosts([]);
-    getSomePosts();
+    onGetPosts();
   }, [params?.updateTime]);
 
   const getAndSetUserAddress = async () => {
@@ -70,7 +70,7 @@ export const Screen_Home: React.FC<{
     if (!error) setMyAddress(userAddress);
   };
 
-  const getSomePosts = async (
+  const onGetPosts = async (
     amountOfPostsToQuery?: number,
     isRefreshPosts?: boolean,
   ) => {
@@ -86,7 +86,7 @@ export const Screen_Home: React.FC<{
 
   const getMorePosts = async () => {
     setGetMorePostsLoading(true);
-    getSomePosts(amountOfPosts + 10);
+    onGetPosts(amountOfPosts + 10);
     setAmountOfPosts(amountOfPosts + 10);
   };
 
@@ -119,22 +119,17 @@ export const Screen_Home: React.FC<{
           <>
             <FlatList
               data={posts}
-              renderItem={({
-                item: {id, author, text, downVotesCount, upVotesCount},
-              }) => (
+              renderItem={({item}) => (
                 <PostPreview
-                  id={id}
-                  userAddress={author}
-                  text={text}
-                  votes={{up: upVotesCount, down: downVotesCount}}
-                  refreshPosts={() => getSomePosts(amountOfPosts, true)}
+                  post={item}
+                  refreshPosts={() => onGetPosts(amountOfPosts, true)}
                   myAddress={myAddress}
                 />
               )}
               keyExtractor={item => item.id.toString()}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 10}} />}
+              ItemSeparatorComponent={() => <View style={{height: 15}} />}
               ListFooterComponent={
                 <Button
                   onPress={getMorePosts}
