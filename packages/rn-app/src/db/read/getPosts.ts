@@ -32,7 +32,7 @@ export const getPosts = async (
     )
       .then(values => {
         values.forEach(value => {
-          if (value[0] !== emptyAddress) {
+          if (value[1] !== emptyAddress) {
             posts.push({
               id: ethers.BigNumber.from(value[0]._hex).toNumber(),
               author: value[1],

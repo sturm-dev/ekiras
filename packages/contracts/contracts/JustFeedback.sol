@@ -21,6 +21,7 @@ contract JustFeedback {
   mapping(address => string) public addressToUsername;
   mapping(string => address) public usernameToAddress;
   address emptyAddress;
+  mapping(address => uint256[]) public addressToPostIds;
 
   event CreatePostEvent(uint256 _id);
   event DeletePostEvent(uint256 _id);
@@ -42,6 +43,8 @@ contract JustFeedback {
     posts[postIndex].text = _text;
     posts[postIndex].upVotesCount = 0;
     posts[postIndex].downVotesCount = 0;
+
+    addressToPostIds[msg.sender].push(postIndex);
 
     emit CreatePostEvent(postIndex);
 

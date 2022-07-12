@@ -25,7 +25,7 @@ interface PostPreviewProps {
     up: number;
     down: number;
   };
-  refreshPosts: () => void;
+  refreshPosts?: () => void;
   myAddress: string;
 }
 
@@ -103,7 +103,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      refreshPosts();
+      refreshPosts && refreshPosts();
       getAndSetUpVote();
       getAndSetDownVote();
     }
@@ -119,7 +119,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      refreshPosts();
+      refreshPosts && refreshPosts();
       setShowModal(false);
     }
   };

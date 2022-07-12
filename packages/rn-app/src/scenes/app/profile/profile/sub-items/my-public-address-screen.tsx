@@ -17,9 +17,6 @@ type Screen_MyPublicAddress__Prop = NativeStackNavigationProp<
   'Screen_MyPublicAddress'
 >;
 
-// TODO:
-// 3 - add this screen to current stack
-
 export const Screen_MyPublicAddress: React.FC<{
   route: RouteProp<{
     params: Screen_MyPublicAddress__Params;

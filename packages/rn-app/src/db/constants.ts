@@ -1,5 +1,5 @@
 export const emptyAddress = '0x0000000000000000000000000000000000000000';
-export const contractAddress = '0x57E1F89f70bdbeeB76C403862D2d709806EAeB99';
+export const contractAddress = '0xb6984a690828E7CdE251Dc294F8645bdd6637fA1';
 export const smallInteractionCostApprox = 40;
 export const listOfErrors = [
   'no mnemonic found',

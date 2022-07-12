@@ -196,7 +196,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <View style={styles.separator} />
         <Item
           text="My Posts"
-          onPress={() => Alert.alert('show only my posts')}
+          onPress={() => navigation.navigate('Screen_MyPosts', {userAddress})}
         />
       </View>
       {/* • • • • • */}
