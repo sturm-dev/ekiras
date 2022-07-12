@@ -12,7 +12,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getPosts, PostInterface} from '_db';
+import {getPosts, getUserAddress, PostInterface} from '_db';
 
 import {PostPreview} from './post-preview-component';
 import {Button} from '_molecules';
@@ -39,15 +39,20 @@ export const Screen_Home: React.FC<{
 
   const [posts, setPosts] = useState<PostInterface[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshingPosts, setRefreshPosts] = useState(false);
 
   const [amountOfPosts, setAmountOfPosts] = useState(10);
   const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
+
+  const [myAddress, setMyAddress] = useState('');
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    getAndSetUserAddress();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -60,8 +65,18 @@ export const Screen_Home: React.FC<{
     getSomePosts();
   }, [params?.updateTime]);
 
-  const getSomePosts = async (amountOfPostsToQuery?: number) => {
+  const getAndSetUserAddress = async () => {
+    const {userAddress, error} = await getUserAddress();
+    if (!error) setMyAddress(userAddress);
+  };
+
+  const getSomePosts = async (
+    amountOfPostsToQuery?: number,
+    isRefreshPosts?: boolean,
+  ) => {
+    if (isRefreshPosts) setRefreshPosts(true);
     const {posts: _posts, error} = await getPosts(amountOfPostsToQuery);
+    if (isRefreshPosts) setRefreshPosts(false);
     setLoading(false);
     setGetMorePostsLoading(false);
 
@@ -79,9 +94,12 @@ export const Screen_Home: React.FC<{
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TextByScale style={{flex: 1, padding: 10}} scale="h3">
-            Just Feedback
-          </TextByScale>
+          <View style={{flex: 1, padding: 10, flexDirection: 'row'}}>
+            <TextByScale scale="h3">Just Feedback</TextByScale>
+            {refreshingPosts ? (
+              <ActivityIndicator size="small" style={{marginLeft: 5}} />
+            ) : null}
+          </View>
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_CreatePost')}
             style={{padding: 10}}>
@@ -109,7 +127,8 @@ export const Screen_Home: React.FC<{
                   userAddress={author}
                   text={text}
                   votes={{up: upVotesCount, down: downVotesCount}}
-                  refreshPosts={getSomePosts}
+                  refreshPosts={() => getSomePosts(amountOfPosts, true)}
+                  myAddress={myAddress}
                 />
               )}
               keyExtractor={item => item.id.toString()}

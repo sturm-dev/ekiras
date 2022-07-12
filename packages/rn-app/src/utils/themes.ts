@@ -46,7 +46,7 @@ export const MyLightTheme: {
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',
-    error: '#e46959',
+    error: '#EB5353',
   },
 };
 
@@ -70,6 +70,6 @@ export const MyDarkTheme: {
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',
-    error: '#e46959',
+    error: '#EB5353',
   },
 };

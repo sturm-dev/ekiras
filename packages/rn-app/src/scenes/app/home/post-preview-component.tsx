@@ -5,8 +5,14 @@ import {ActivityIndicator, Alert, TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
 import {CustomIcon, TextByScale} from '_atoms';
-import {themedStyleSheet, MyThemeInterfaceColors, shortAccountId} from '_utils';
-import {getUsername, vote} from '_db';
+import {
+  themedStyleSheet,
+  MyThemeInterfaceColors,
+  shortAccountId,
+  DEVICE_WIDTH,
+} from '_utils';
+import {deletePost, getUsername, vote} from '_db';
+import {Overlay} from '_molecules';
 
 // TODO: not allow to vote if another vote is in progress
 
@@ -19,6 +25,7 @@ interface PostPreviewProps {
     down: number;
   };
   refreshPosts: () => void;
+  myAddress: string;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
@@ -27,6 +34,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   text,
   votes,
   refreshPosts,
+  myAddress,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -36,6 +44,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
   const [loadingUpVote, setLoadingUpVote] = React.useState(false);
   const [loadingDownVote, setLoadingDownVote] = React.useState(false);
+
+  const [showModal, setShowModal] = React.useState(false);
+  const [loadingModal, setLoadingModal] = React.useState(false);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -67,11 +78,26 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     } else refreshPosts();
   };
 
+  const onDeletePost = async () => {
+    setLoadingModal(true);
+    const {error} = await deletePost(id);
+    setLoadingModal(false);
+
+    if (error) {
+      if (error === 'gas required exceeds allowance') {
+        Alert.alert("You don't have enough gas");
+      } else Alert.alert('Error', error);
+    } else {
+      refreshPosts();
+      setShowModal(false);
+    }
+  };
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <View style={styles.userImage} />
-        <View>
+        <View style={{flex: 1}}>
           {loadingUsername ? (
             <ActivityIndicator size="small" style={{alignSelf: 'flex-start'}} />
           ) : (
@@ -85,6 +111,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
             </>
           )}
         </View>
+        {myAddress === userAddress ? (
+          <TouchableOpacity
+            style={styles.threeDots}
+            onPress={() => setShowModal(true)}>
+            <CustomIcon name="dots-three-horizontal" type="entypo" size={15} />
+          </TouchableOpacity>
+        ) : null}
       </View>
       <View style={styles.body}>
         <TextByScale>{text}</TextByScale>
@@ -135,6 +168,28 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           )}
         </TouchableOpacity>
       </View>
+      {showModal ? (
+        <Overlay
+          isVisible
+          onBackdropPress={
+            loadingModal ? () => null : () => setShowModal(false)
+          }
+          overlayStyle={styles.modal}
+          animationType="fade">
+          {loadingModal ? (
+            <ActivityIndicator
+              size="large"
+              style={{transform: [{scale: 1.5}]}}
+            />
+          ) : (
+            <TouchableOpacity style={styles.modalButton} onPress={onDeletePost}>
+              <TextByScale color={colors.error} bold>
+                Delete post
+              </TextByScale>
+            </TouchableOpacity>
+          )}
+        </Overlay>
+      ) : null}
     </View>
   );
 };
@@ -150,6 +205,9 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  threeDots: {
+    padding: 10,
   },
   userImage: {
     width: 30,
@@ -173,5 +231,17 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     borderRadius: 10,
     margin: 5,
     backgroundColor: '#ffffff10',
+  },
+  modal: {
+    padding: 0,
+    borderRadius: 10,
+    backgroundColor: '#fff0',
+  },
+  modalButton: {
+    borderRadius: 10,
+    backgroundColor: colors.background,
+    width: DEVICE_WIDTH * 0.8,
+    padding: 15,
+    alignItems: 'center',
   },
 }));

@@ -9,4 +9,5 @@ export const listOfErrors = [
   'the author cannot vote',
   'only one vote for post',
   'username already used',
+  'only the author can delete his posts',
 ];

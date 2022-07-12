@@ -2,15 +2,16 @@ import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
-
-import {CustomIcon, TextByScale} from '_atoms';
-import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
 import {
   ONLY_DEV__SEED_1,
   ONLY_DEV__SEED_2,
   ONLY_DEV__SEED_3,
   ONLY_DEV__SEED_4,
 } from 'react-native-dotenv';
+
+import {CustomIcon, TextByScale} from '_atoms';
+import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
+import {useNavigationReset} from '_hooks';
 
 import {Screen_Profile__Prop} from './profile-screen';
 
@@ -30,6 +31,8 @@ export const ProfileLoggedOut: React.FC<
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_Profile__Prop>();
+
+  const {handleResetNavigation} = useNavigationReset();
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -69,7 +72,10 @@ export const ProfileLoggedOut: React.FC<
             style={styles.fastLogIn_onlyDevTesting}
             onPress={async () => {
               await Keychain.setGenericPassword('', devSeeds[i - 1]);
-              navigation.goBack();
+              handleResetNavigation({
+                stack: 'Stack_App',
+                screen: 'Screen_Home',
+              });
             }}>
             <TextByScale>{i}</TextByScale>
           </TouchableOpacity>
