@@ -10,8 +10,9 @@ import {
   MyThemeInterfaceColors,
   shortAccountId,
   DEVICE_WIDTH,
+  getPercentageInHex,
 } from '_utils';
-import {deletePost, getUsername, vote} from '_db';
+import {deletePost, getDownVote, getUpVote, getUsername, vote} from '_db';
 import {Overlay} from '_molecules';
 
 // TODO: not allow to vote if another vote is in progress
@@ -40,19 +41,23 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const [username, setUsername] = useState('');
-  const [loadingUsername, setLoadingUsername] = React.useState(true);
+  const [loadingUsername, setLoadingUsername] = useState(true);
 
-  const [loadingUpVote, setLoadingUpVote] = React.useState(false);
-  const [loadingDownVote, setLoadingDownVote] = React.useState(false);
+  const [loadingUpVote, setLoadingUpVote] = useState(false);
+  const [upVote, setUpVote] = useState(false);
+  const [loadingDownVote, setLoadingDownVote] = useState(false);
+  const [downVote, setDownVote] = useState(false);
 
-  const [showModal, setShowModal] = React.useState(false);
-  const [loadingModal, setLoadingModal] = React.useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [loadingModal, setLoadingModal] = useState(false);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
     getAndSetUsername();
+    getAndSetUpVote();
+    getAndSetDownVote();
   }, []);
 
   const getAndSetUsername = async () => {
@@ -61,6 +66,28 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
     if (error) Alert.alert('Error', error);
     else setUsername(_username);
+  };
+
+  const getAndSetUpVote = async () => {
+    if (myAddress) {
+      setLoadingUpVote(true);
+      const {upVote: _upVote, error} = await getUpVote(id, myAddress);
+      setLoadingUpVote(false);
+
+      if (error) Alert.alert('Error', error);
+      else setUpVote(_upVote);
+    }
+  };
+
+  const getAndSetDownVote = async () => {
+    if (myAddress) {
+      setLoadingDownVote(true);
+      const {downVote: _downVote, error} = await getDownVote(id, myAddress);
+      setLoadingDownVote(false);
+
+      if (error) Alert.alert('Error', error);
+      else setDownVote(_downVote);
+    }
   };
 
   const onVote = async (type: 'up' | 'down') => {
@@ -75,7 +102,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       } else if (error === 'gas required exceeds allowance') {
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
-    } else refreshPosts();
+    } else {
+      refreshPosts();
+      getAndSetUpVote();
+      getAndSetDownVote();
+    }
   };
 
   const onDeletePost = async () => {
@@ -124,13 +155,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       </View>
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.button}
+          style={{...styles.button, ...(upVote ? styles.upVote : {})}}
           onPress={
-            !(loadingUpVote || loadingDownVote)
+            !(loadingUpVote || loadingDownVote || upVote)
               ? () => onVote('up')
               : () => null
           }
-          activeOpacity={loadingUpVote || loadingDownVote ? 1 : 0.8}>
+          activeOpacity={loadingUpVote || loadingDownVote || upVote ? 1 : 0.8}>
           {loadingUpVote ? (
             <ActivityIndicator size="small" />
           ) : (
@@ -146,13 +177,15 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
+          style={{...styles.button, ...(downVote ? styles.downVote : {})}}
           onPress={
-            !(loadingUpVote || loadingDownVote)
+            !(loadingUpVote || loadingDownVote || downVote)
               ? () => onVote('down')
               : () => null
           }
-          activeOpacity={loadingUpVote || loadingDownVote ? 1 : 0.8}>
+          activeOpacity={
+            loadingUpVote || loadingDownVote || downVote ? 1 : 0.8
+          }>
           {loadingDownVote ? (
             <ActivityIndicator size="small" />
           ) : (
@@ -231,6 +264,12 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     borderRadius: 10,
     margin: 5,
     backgroundColor: '#ffffff10',
+  },
+  upVote: {
+    backgroundColor: colors.success + getPercentageInHex(20),
+  },
+  downVote: {
+    backgroundColor: colors.error + getPercentageInHex(20),
   },
   modal: {
     padding: 0,

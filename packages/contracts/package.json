@@ -16,6 +16,7 @@
   },
   "scripts": {
     "deploy:hardhat": "yarn hardhat run scripts/deploy.js",
-    "deploy": "yarn hardhat run scripts/deploy.js --network bttc"
+    "deploy": "yarn prettier && yarn hardhat run scripts/deploy.js --network bttc",
+    "prettier": "prettier --write 'contracts/*.sol'"
   }
 }

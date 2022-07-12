@@ -16,20 +16,29 @@ export const getPosts = async (
   try {
     const posts: PostInterface[] = [];
 
+    const postIndex = ethers.BigNumber.from(
+      (await contractWithoutSigner.postIndex())._hex,
+    ).toNumber();
+
+    // return ${amountOfPosts} indexes sorted descending by index -> 32, 31, 30, ...
+    const postsIndexes = Array.from({length: postIndex})
+      .map((e, i) => i)
+      .reverse()
+      .map((e, i) => (i < amountOfPosts ? e : null))
+      .filter(e => e !== null);
+
     await Promise.all(
-      Array.from({length: amountOfPosts}).map(
-        async (e, i) => await contractWithoutSigner.posts(i),
-      ),
+      postsIndexes.map(async e => await contractWithoutSigner.posts(e)),
     )
       .then(values => {
-        values.forEach((value, i) => {
+        values.forEach(value => {
           if (value[0] !== emptyAddress) {
             posts.push({
-              id: i,
-              author: value[0],
-              text: value[1],
-              upVotesCount: ethers.BigNumber.from(value[2]._hex).toNumber(),
-              downVotesCount: ethers.BigNumber.from(value[3]._hex).toNumber(),
+              id: ethers.BigNumber.from(value[0]._hex).toNumber(),
+              author: value[1],
+              text: value[2],
+              upVotesCount: ethers.BigNumber.from(value[3]._hex).toNumber(),
+              downVotesCount: ethers.BigNumber.from(value[4]._hex).toNumber(),
             });
           }
         });

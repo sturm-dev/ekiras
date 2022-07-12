@@ -62,7 +62,7 @@ export const Screen_UpdateUsername: React.FC<{
         <View style={styles.container}>
           <TextInput
             value={username}
-            onChangeText={setUsername}
+            onChangeText={loading ? () => null : setUsername}
             placeholder="username"
             autoCapitalize="none"
           />

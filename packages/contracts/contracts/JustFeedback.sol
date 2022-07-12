@@ -7,16 +7,17 @@ pragma solidity 0.8.8;
 
 contract JustFeedback {
   struct Post {
+    uint256 id;
     address author;
     string text;
-    mapping(address => bool) upVotes;
     uint256 upVotesCount;
-    mapping(address => bool) downVotes;
     uint256 downVotesCount;
   }
+  mapping(uint256 => mapping(address => bool)) public votesUp;
+  mapping(uint256 => mapping(address => bool)) public votesDown;
 
   mapping(uint256 => Post) public posts;
-  uint256 postIndex;
+  uint256 public postIndex;
   mapping(address => string) public addressToUsername;
   mapping(string => address) public usernameToAddress;
   address emptyAddress;
@@ -36,6 +37,7 @@ contract JustFeedback {
   }
 
   function createPost(string memory _text) public {
+    posts[postIndex].id = postIndex;
     posts[postIndex].author = msg.sender;
     posts[postIndex].text = _text;
     posts[postIndex].upVotesCount = 0;
@@ -47,7 +49,10 @@ contract JustFeedback {
   }
 
   function deleteOwnPost(uint256 _postId) public {
-    require(msg.sender == posts[_postId].author, "only the author can delete his posts");
+    require(
+      msg.sender == posts[_postId].author,
+      "only the author can delete his posts"
+    );
 
     delete posts[_postId];
 
@@ -57,27 +62,26 @@ contract JustFeedback {
   function votePost(uint256 _postId, bool _voteIsTypeUp) public {
     require(posts[_postId].author != emptyAddress, "post not created yet");
     require(posts[_postId].author != msg.sender, "the author cannot vote");
-    require(
-      _voteIsTypeUp
-        ? !posts[_postId].upVotes[msg.sender]
-        : !posts[_postId].downVotes[msg.sender],
-      "only one vote for post"
-    );
+    if (_voteIsTypeUp) {
+      require(!votesUp[_postId][msg.sender], "only one upVote for post");
+    } else {
+      require(!votesDown[_postId][msg.sender], "only one downVote for post");
+    }
 
     if (_voteIsTypeUp) {
+      votesUp[_postId][msg.sender] = true;
       posts[_postId].upVotesCount += 1;
-      posts[_postId].upVotes[msg.sender] = true;
 
-      if (posts[_postId].downVotes[msg.sender]) {
-        posts[_postId].downVotes[msg.sender] = false;
+      if (votesDown[_postId][msg.sender]) {
+        votesDown[_postId][msg.sender] = false;
         posts[_postId].downVotesCount -= 1;
       }
     } else {
+      votesDown[_postId][msg.sender] = true;
       posts[_postId].downVotesCount += 1;
-      posts[_postId].downVotes[msg.sender] = true;
 
-      if (posts[_postId].upVotes[msg.sender]) {
-        posts[_postId].upVotes[msg.sender] = false;
+      if (votesUp[_postId][msg.sender]) {
+        votesUp[_postId][msg.sender] = false;
         posts[_postId].upVotesCount -= 1;
       }
     }
@@ -90,15 +94,24 @@ contract JustFeedback {
   }
 
   function updateMyUsername(string memory _text) public {
-    require(usernameToAddress[_text] == emptyAddress, "username already used");
+    // no username -> delete
+    if (bytes(_text).length == 0) {
+      delete usernameToAddress[addressToUsername[msg.sender]];
+      delete addressToUsername[msg.sender];
+    } else {
+      require(
+        usernameToAddress[_text] == emptyAddress,
+        "username already used"
+      );
 
-    // change of username -> delete previous
-    if (bytes(addressToUsername[msg.sender]).length != 0) {
-      usernameToAddress[addressToUsername[msg.sender]] = emptyAddress;
+      // change of username -> delete previous
+      if (bytes(addressToUsername[msg.sender]).length != 0) {
+        usernameToAddress[addressToUsername[msg.sender]] = emptyAddress;
+      }
+
+      usernameToAddress[_text] = msg.sender;
+      addressToUsername[msg.sender] = _text;
     }
-
-    usernameToAddress[_text] = msg.sender;
-    addressToUsername[msg.sender] = _text;
 
     emit UpdateUsernameEvent();
   }
