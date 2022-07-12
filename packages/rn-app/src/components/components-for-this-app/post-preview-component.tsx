@@ -25,18 +25,20 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-// TODO: not allow to vote if another vote is in progress
-
 interface PostPreviewProps {
   post: PostInterface;
   refreshPosts?: () => void;
   myAddress: string;
+  setVoteInProgress?: (value: boolean) => void;
+  voteInProgress?: boolean;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
   post: {id, author, createdDate, text, downVotesCount, upVotesCount},
   refreshPosts,
   myAddress,
+  setVoteInProgress,
+  voteInProgress,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -92,21 +94,29 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   };
 
   const onVote = async (type: 'up' | 'down') => {
-    type === 'up' ? setLoadingUpVote(true) : setLoadingDownVote(true);
-
-    const {error} = await vote(id, type === 'up');
-    type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
-
-    if (error) {
-      if (error === 'no mnemonic found') {
-        Alert.alert('You need to log-in to interact with the app');
-      } else if (error === 'gas required exceeds allowance') {
-        Alert.alert("You don't have enough gas");
-      } else Alert.alert('Error', error);
+    if (myAddress === author) {
+      Alert.alert('Error', "You can't vote for your own post");
+    } else if (voteInProgress) {
+      Alert.alert('Error', 'Vote in progress');
     } else {
-      refreshPosts && refreshPosts();
-      getAndSetUpVote();
-      getAndSetDownVote();
+      type === 'up' ? setLoadingUpVote(true) : setLoadingDownVote(true);
+      setVoteInProgress && setVoteInProgress(true);
+
+      const {error} = await vote(id, type === 'up');
+      type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
+      setVoteInProgress && setVoteInProgress(false);
+
+      if (error) {
+        if (error === 'no mnemonic found') {
+          Alert.alert('You need to log-in to interact with the app');
+        } else if (error === 'gas required exceeds allowance') {
+          Alert.alert("You don't have enough gas");
+        } else Alert.alert('Error', error);
+      } else {
+        refreshPosts && refreshPosts();
+        getAndSetUpVote();
+        getAndSetDownVote();
+      }
     }
   };
 
@@ -124,6 +134,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       setShowModal(false);
     }
   };
+
+  const canPressUpVote = !(loadingUpVote || loadingDownVote || upVote);
+  const canPressDownVote = !(loadingUpVote || loadingDownVote || downVote);
 
   return (
     <View style={styles.mainContainer}>
@@ -157,12 +170,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       <View style={styles.footer}>
         <TouchableOpacity
           style={{...styles.button, ...(upVote ? styles.upVote : {})}}
-          onPress={
-            !(loadingUpVote || loadingDownVote || upVote)
-              ? () => onVote('up')
-              : () => null
-          }
-          activeOpacity={loadingUpVote || loadingDownVote || upVote ? 1 : 0.8}>
+          onPress={canPressUpVote ? () => onVote('up') : () => null}
+          activeOpacity={canPressUpVote ? 0.8 : 1}>
           {loadingUpVote ? (
             <ActivityIndicator size="small" />
           ) : (
@@ -179,14 +188,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={{...styles.button, ...(downVote ? styles.downVote : {})}}
-          onPress={
-            !(loadingUpVote || loadingDownVote || downVote)
-              ? () => onVote('down')
-              : () => null
-          }
-          activeOpacity={
-            loadingUpVote || loadingDownVote || downVote ? 1 : 0.8
-          }>
+          onPress={canPressDownVote ? () => onVote('down') : () => null}
+          activeOpacity={canPressDownVote ? 0.8 : 1}>
           {loadingDownVote ? (
             <ActivityIndicator size="small" />
           ) : (

@@ -10,11 +10,8 @@ import {AppStackParamList} from '_navigations';
 import {getMyPosts, PostInterface} from '_db';
 import {PostPreview} from '_componentsForThisApp';
 
-// TODO: refresh posts after delete
-// TODO: show loading when fetching posts
-// TODO: show disabled the vote buttons
-// TODO: reutilize the post preview component (move to components)
 // TODO: organize files inside "profile folder"
+// TODO: show something when there are no posts
 
 export type Screen_MyPosts__Params = {
   userAddress: string;
@@ -36,7 +33,7 @@ export const Screen_MyPosts: React.FC<{
   const navigation = useNavigation<Screen_MyPosts__Prop>();
   const {params} = route;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<PostInterface[]>([]);
 
   const [amountOfPosts, setAmountOfPosts] = useState(10);
@@ -48,22 +45,16 @@ export const Screen_MyPosts: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
-    console.log(
-      `params.userAddress`,
-      params.userAddress,
-      typeof params.userAddress,
-    );
-
     onGetMyPosts();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onGetMyPosts = async (amountOfPostsToQuery?: number) => {
+    setLoading(true);
     const {posts: _posts, error} = await getMyPosts(amountOfPostsToQuery);
     setLoading(false);
-
-    console.log(`_posts`, JSON.stringify(_posts, null, 2));
+    setGetMorePostsLoading(false);
 
     if (error) Alert.alert('Error', error);
     else setPosts(_posts);
@@ -88,12 +79,16 @@ export const Screen_MyPosts: React.FC<{
             <FlatList
               data={posts}
               renderItem={({item}) => (
-                <PostPreview post={item} myAddress={params.userAddress} />
+                <PostPreview
+                  post={item}
+                  myAddress={params.userAddress}
+                  refreshPosts={() => onGetMyPosts(amountOfPosts)}
+                />
               )}
               keyExtractor={item => item.id.toString()}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 15}} />}
+              ItemSeparatorComponent={() => <View style={{height: 20}} />}
               ListFooterComponent={
                 <Button
                   onPress={getMorePosts}
@@ -118,7 +113,7 @@ export const Screen_MyPosts: React.FC<{
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
   },
   loadingContainer: {
     flex: 1,

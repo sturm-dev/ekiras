@@ -39,6 +39,7 @@ export const Screen_Home: React.FC<{
 
   const [posts, setPosts] = useState<PostInterface[]>([]);
   const [loading, setLoading] = useState(true);
+  const [voteInProgress, setVoteInProgress] = useState(false);
   const [refreshingPosts, setRefreshPosts] = useState(false);
 
   const [amountOfPosts, setAmountOfPosts] = useState(10);
@@ -124,12 +125,14 @@ export const Screen_Home: React.FC<{
                   post={item}
                   refreshPosts={() => onGetPosts(amountOfPosts, true)}
                   myAddress={myAddress}
+                  setVoteInProgress={setVoteInProgress}
+                  voteInProgress={voteInProgress}
                 />
               )}
               keyExtractor={item => item.id.toString()}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 15}} />}
+              ItemSeparatorComponent={() => <View style={{height: 20}} />}
               ListFooterComponent={
                 <Button
                   onPress={getMorePosts}
@@ -153,7 +156,7 @@ export const Screen_Home: React.FC<{
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     backgroundColor: colors.background,
   },
   header: {
