@@ -62,7 +62,7 @@ export const Screen_MyPublicAddress: React.FC<{
           </TextByScale>
         </TouchableOpacity>
         <TextByScale color={colors.text2} scale="caption" center>
-          Tip: touch to copy on clipboard
+          note: touch to copy on clipboard
         </TextByScale>
       </View>
     </ScreenSafeArea>

@@ -15,10 +15,10 @@ import {
   MyThemeInterfaceColors,
   shortAccountId,
   getPercentageInHex,
+  formatBigNumber,
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {Screen_Profile__Prop} from './profile-screen';
 import {
   getBalance,
   getUserAddress,
@@ -26,7 +26,8 @@ import {
   onLogout,
   smallInteractionCostApprox,
 } from '_db';
-import {formatBigNumber} from 'src/utils/format-big-number';
+
+import {Screen_Profile__Prop} from '../profile-screen';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
@@ -164,11 +165,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
             )}
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.amountOfCredits}
-          onPress={() =>
-            Alert.alert('credits screen - show amount of BTT and interactions')
-          }>
+        <View style={styles.amountOfCredits}>
           <CustomIcon type="octicon" name="comment" color={colors.text} />
           {userBalanceLoading ? (
             <ActivityIndicator
@@ -183,7 +180,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
               {userBalance}
             </TextByScale>
           )}
-        </TouchableOpacity>
+        </View>
       </View>
       {/* • • • • • */}
       <View style={styles.body}>

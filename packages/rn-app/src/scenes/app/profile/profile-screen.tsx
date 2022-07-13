@@ -2,13 +2,14 @@ import React, {useState} from 'react';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import * as Keychain from 'react-native-keychain';
+import {ActivityIndicator, View} from 'react-native';
 
 import {BackButton, ScreenSafeArea} from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {ProfileLoggedIn} from './profile-logged-in-component';
-import {ProfileLoggedOut} from './profile-logged-out-component';
-import {ActivityIndicator, View} from 'react-native';
+
+import {ProfileLoggedIn} from './logged-in';
+import {ProfileLoggedOut} from './logged-out';
 
 export type Screen_Profile__Params = {
   updateTime?: number;
