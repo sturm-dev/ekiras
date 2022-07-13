@@ -3,15 +3,15 @@ import {ActivityIndicator, Alert, FlatList, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {BackButton, ScreenSafeArea} from '_atoms';
+import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {getMyPosts, PostInterface} from '_db';
 import {PostPreview} from '_componentsForThisApp';
+import {useNavigationReset} from '_hooks';
 
 // TODO: organize files inside "profile folder"
-// TODO: show something when there are no posts
 
 export type Screen_MyPosts__Params = {
   userAddress: string;
@@ -32,6 +32,8 @@ export const Screen_MyPosts: React.FC<{
 
   const navigation = useNavigation<Screen_MyPosts__Prop>();
   const {params} = route;
+
+  const {handleResetNavigation} = useNavigationReset();
 
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<PostInterface[]>([]);
@@ -78,6 +80,14 @@ export const Screen_MyPosts: React.FC<{
           <>
             <FlatList
               data={posts}
+              ListEmptyComponent={
+                <View style={styles.noPostsContainer}>
+                  <TextByScale scale="h3" center>
+                    No posts created by you were found
+                  </TextByScale>
+                  <TextByScale scale="h0">🤷</TextByScale>
+                </View>
+              }
               renderItem={({item}) => (
                 <PostPreview
                   post={item}
@@ -90,16 +100,26 @@ export const Screen_MyPosts: React.FC<{
               contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
               ItemSeparatorComponent={() => <View style={{height: 20}} />}
               ListFooterComponent={
-                <Button
-                  onPress={getMorePosts}
-                  loading={getMorePostsLoading}
-                  text="Get more posts"
-                  style={{
-                    marginVertical: 30,
-                    width: '80%',
-                    alignSelf: 'center',
-                  }}
-                />
+                !posts.length ? (
+                  <Button
+                    onPress={() =>
+                      handleResetNavigation({
+                        stack: 'Stack_App',
+                        screen: 'Screen_Home',
+                        params: {redirectTo: 'Screen_CreatePost'},
+                      })
+                    }
+                    text="Create post"
+                    style={styles.button}
+                  />
+                ) : (
+                  <Button
+                    onPress={getMorePosts}
+                    loading={getMorePostsLoading}
+                    text="Get more posts"
+                    style={styles.button}
+                  />
+                )
               }
             />
           </>
@@ -119,5 +139,16 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  button: {
+    marginVertical: 30,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  noPostsContainer: {
+    height: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
   },
 }));

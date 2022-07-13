@@ -42,7 +42,7 @@ export const MyLightTheme: {
     text: '#222222',
     text2: '#888888',
     // -----------------------------------
-    button_bg: primaryColor + getPercentageInHex(80),
+    button_bg: '#FAF3E3',
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',
@@ -66,7 +66,7 @@ export const MyDarkTheme: {
     text: '#d9d9d9',
     text2: '#888888',
     // -----------------------------------
-    button_bg: primaryColor + getPercentageInHex(80),
+    button_bg: '#000000',
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',

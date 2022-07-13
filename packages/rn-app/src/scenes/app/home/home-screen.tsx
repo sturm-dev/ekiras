@@ -19,6 +19,7 @@ import {getPosts, getUserAddress, PostInterface} from '_db';
 
 export type Screen_Home__Params = {
   updateTime?: number;
+  redirectTo?: keyof AppStackParamList;
 };
 
 type Screen_Home__Prop = NativeStackNavigationProp<
@@ -65,6 +66,12 @@ export const Screen_Home: React.FC<{
     setPosts([]);
     onGetPosts();
   }, [params?.updateTime]);
+
+  useEffect(() => {
+    if (params?.redirectTo) {
+      navigation.navigate(params.redirectTo);
+    }
+  }, [params?.redirectTo, navigation]);
 
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();

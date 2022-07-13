@@ -84,7 +84,7 @@ export const Screen_CreatePost: React.FC<{
               scale="caption"
               center
               style={{marginTop: 5}}>
-              Tip: you need to be logged to create a post
+              {`note: you need to be logged & have balance \nto create a post`}
             </TextByScale>
           </View>
           <View style={styles.footer}>

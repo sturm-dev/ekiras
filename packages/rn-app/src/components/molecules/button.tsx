@@ -53,7 +53,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const {
-    color = colors.text,
+    color,
     onPress,
     style,
     text,
@@ -69,6 +69,12 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
   } = props;
   const styles = useStyles(props);
 
+  const _color =
+    color ||
+    (props.locked || props.disabled
+      ? colors.text + getPercentageInHex(30)
+      : colors.text);
+
   const buttonContent = () => {
     const {size} = props;
 
@@ -80,7 +86,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
             <CustomIcon
               name={icon || 'lock'}
               size={iconSize}
-              color={color}
+              color={_color}
               type={iconType as IconType}
               style={{marginRight: text ? 5 : 0}}
             />
@@ -92,8 +98,7 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
               }
               numberOfLines={numberOfLines || 1}
               style={styles.buttonText}
-              color={color || colors.text2}
-              bold>
+              color={_color}>
               {text}
             </TextByScale>
           )}
@@ -143,10 +148,11 @@ const useStyles = themedStyleSheet(
       justifyContent: 'center',
       flexDirection: 'row',
       alignSelf: props.autoWidth ? 'auto' : 'center',
-      backgroundColor:
-        props.locked || props.disabled
-          ? colors.primary + getPercentageInHex(20)
-          : props.background || colors.button_bg,
+      backgroundColor: props.background || colors.button_bg,
+      borderColor:
+        colors.primary +
+        getPercentageInHex(props.locked || props.disabled ? 30 : 80),
+      borderWidth: 1,
     },
     buttonText: {
       // fontFamily: DEFAULT_FONT,

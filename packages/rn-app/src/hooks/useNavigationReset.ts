@@ -18,12 +18,12 @@ export const useNavigationReset = () => {
         | {
             stack: 'Stack_Onboarding';
             screen?: keyof OnboardingStackParamList;
-            params?: {};
+            params?: OnboardingStackParamList[keyof OnboardingStackParamList];
           }
         | {
             stack?: 'Stack_App';
             screen?: keyof AppStackParamList;
-            params?: {};
+            params?: AppStackParamList[keyof AppStackParamList];
           },
     ) => {
       navigation.reset({
