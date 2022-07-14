@@ -1,5 +1,4 @@
 // import {DefaultTheme, DarkTheme} from '@react-navigation/native';
-import {getPercentageInHex} from './get-percentage-in-hex';
 
 export interface MyThemeInterfaceColors {
   primary: string; // The primary color of the app used to tint various elements. (brand color).
