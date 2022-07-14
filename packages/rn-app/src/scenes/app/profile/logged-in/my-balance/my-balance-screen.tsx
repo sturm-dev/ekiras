@@ -3,32 +3,26 @@ import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {ScreenSafeArea, TextByScale} from '_atoms';
+import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 
-export type Screen_Example__Params = undefined;
+export type Screen_MyBalance__Params = undefined;
 
-type Screen_Example__Prop = NativeStackNavigationProp<
+type Screen_MyBalance__Prop = NativeStackNavigationProp<
   AppStackParamList,
-  'Screen_Example'
+  'Screen_MyBalance'
 >;
 
-// TODO:
-// 1 - replace "Example" coincidences with screen name
-// 2 - add this file to export in ../index
-// 3 - add screen name & screen params to constants
-// 4 - add this screen to current stack
-
-export const Screen_Example: React.FC<{
+export const Screen_MyBalance: React.FC<{
   route: RouteProp<{
-    params: Screen_Example__Params;
+    params: Screen_MyBalance__Params;
   }>;
 }> = ({route}) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
-  const navigation = useNavigation<Screen_Example__Prop>();
+  const navigation = useNavigation<Screen_MyBalance__Prop>();
   const {params} = route;
 
   React.useEffect(() => {
@@ -36,12 +30,15 @@ export const Screen_Example: React.FC<{
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <ScreenSafeArea>
+      <BackButton onPress={() => navigation.goBack()} />
       <View style={styles.container}>
-        <TextByScale>Screen_Example screen</TextByScale>
+        <TextByScale>Screen_MyBalance screen</TextByScale>
       </View>
     </ScreenSafeArea>
   );
