@@ -11,8 +11,6 @@ import {getMyPosts, PostInterface} from '_db';
 import {PostPreview} from '_componentsForThisApp';
 import {useNavigationReset} from '_hooks';
 
-// TODO: organize files inside "profile folder"
-
 export type Screen_MyPosts__Params = {
   userAddress: string;
 };

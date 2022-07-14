@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import * as ethers from 'ethers';
@@ -56,8 +56,19 @@ export const Screen_CreateWallet: React.FC<{
   const onLogInWithNewWallet = async () => {
     setSaveWalletLoading(true);
     await Keychain.setGenericPassword('', mnemonic.join(' '));
-    // TODO: show success message - account created
-    handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+
+    Alert.alert(
+      'Your account is ready! 🎉',
+      'note: you will need to add balance to your account to be able to interact.',
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+          },
+        },
+      ],
+    );
   };
 
   return (
