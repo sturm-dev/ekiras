@@ -130,19 +130,21 @@ export const Screen_ImportWallet: React.FC<{
               {words.length > 0 ? (
                 <Button
                   onPress={onPressPrev}
-                  icon="arrow-back-ios"
-                  iconType="material"
+                  icon="chevron-back-outline"
+                  iconType="ionicon"
+                  iconSize={25}
                   autoWidth={false}
-                  style={styles.button}
+                  style={{...styles.button}}
                   disabled={wordIndex === 0}
                 />
               ) : null}
               <Button
                 onPress={onPressNext}
-                icon="arrow-forward-ios"
-                iconType="material"
+                icon="chevron-forward-outline"
+                iconType="ionicon"
+                iconSize={25}
                 autoWidth={false}
-                style={{width: 60, height: 60, marginTop: 40}}
+                style={{...styles.button, marginRight: 0, paddingLeft: 3}}
                 disabled={pressNextButtonIsDisabled}
               />
             </View>
@@ -178,6 +180,8 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     height: 60,
     marginTop: 40,
     marginRight: 15,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   buttonsContainer: {
     flexDirection: 'row',
