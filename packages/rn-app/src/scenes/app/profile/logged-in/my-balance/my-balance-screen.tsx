@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import IAP from 'react-native-iap';
+import IAP, {Product} from 'react-native-iap';
 
 import {BackButton, ScreenSafeArea} from '_atoms';
 import {Button} from '_molecules';
@@ -18,6 +18,8 @@ type Screen_MyBalance__Prop = NativeStackNavigationProp<
   'Screen_MyBalance'
 >;
 
+// TODO: show warning -> sandbox test can be very slow - https://youtu.be/4JLHRV2kiCU?t=2442
+
 export const Screen_MyBalance: React.FC<{
   route: RouteProp<{
     params: Screen_MyBalance__Params;
@@ -31,26 +33,45 @@ export const Screen_MyBalance: React.FC<{
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {params} = route;
 
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [purchased, setPurchased] = useState(false);
+
   React.useEffect(() => {
-    IAP.getProducts([consumableID])
-      .then(products => {
-        console.log(`products`, JSON.stringify(products, null, 2));
-      })
-      .catch(err => {
-        console.log(err);
+    IAP.initConnection()
+      .catch(err => console.log('initConnection error', err))
+      .then(() => {
+        console.log('initConnection success');
+
+        IAP.getProducts([consumableID])
+          .catch(err => console.log('getProducts error', err))
+          .then(_products => {
+            if (!_products) console.log('no products');
+            else setProducts(_products);
+          });
       });
 
     const purchaseUpdateListener = IAP.purchaseUpdatedListener(purchase => {
-      const receipt = purchase.transactionReceipt;
-      if (receipt) {
-        console.log(`receipt`, JSON.stringify(receipt, null, 2));
+      setLoading(false);
 
-        // fetch('backend', {
-        //   method: 'POST',
-        //   body: JSON.stringify({receipt}),
-        // });
+      try {
+        const receipt = purchase.transactionReceipt;
+        if (receipt) {
+          console.log(`receipt`, JSON.stringify(receipt, null, 2));
 
-        IAP.finishTransaction(purchase);
+          // TODO: send the receipt to the server
+
+          // fetch('backend', {
+          //   method: 'POST',
+          //   body: JSON.stringify({receipt}),
+          // });
+
+          // IAP.finishTransaction(purchase);
+
+          setPurchased(true);
+        }
+      } catch (err) {
+        console.log('purchaseUpdatedListener error', err);
       }
     });
 
@@ -59,13 +80,19 @@ export const Screen_MyBalance: React.FC<{
     };
   }, []);
 
+  const onRequestPurchase = () => {
+    setLoading(true);
+    IAP.requestPurchase(consumableID);
+  };
+
   return (
     <ScreenSafeArea>
       <BackButton onPress={() => navigation.goBack()} />
       <View style={styles.container}>
         <Button
           text="Buy some crypto for 0.99 usd"
-          onPress={() => IAP.requestPurchase(consumableID)}
+          onPress={onRequestPurchase}
+          loading={loading}
         />
       </View>
     </ScreenSafeArea>
