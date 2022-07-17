@@ -6,6 +6,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// make this endpoint https
+
 // TODO: if purchase is valid
 //  -> send balance from smart contract to user
 //  -> in the rn-app `finish purchase`

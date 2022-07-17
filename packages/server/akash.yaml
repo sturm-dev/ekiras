@@ -3,7 +3,7 @@ version: "2.0"
 
 services:
   validate-purchase-ios:
-    image: sturmenta/validate-purchase-ios:0.0.3
+    image: sturmenta/validate-purchase-ios:0.0.4
     expose:
       - port: 3000
         as: 80
