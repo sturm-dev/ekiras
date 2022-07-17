@@ -2,15 +2,16 @@
 version: "2.0"
 
 services:
-  speedtest-cli:
-    image: cryptoandcoffee/akash-speedtest-cli
+  validate-purchase-ios:
+    image: sturmenta/validate-purchase-ios:0.0.3
     expose:
-      - port: 80
+      - port: 3000
+        as: 80
         to:
           - global: true
 profiles:
   compute:
-    speedtest-cli:
+    validate-purchase-ios:
       resources:
         cpu:
           units: 1.0
@@ -21,11 +22,11 @@ profiles:
   placement:
     akash:
       pricing:
-        speedtest-cli:
+        validate-purchase-ios:
           denom: uakt
           amount: 10000
 deployment:
-  speedtest-cli:
+  validate-purchase-ios:
     akash:
-      profile: speedtest-cli
+      profile: validate-purchase-ios
       count: 1

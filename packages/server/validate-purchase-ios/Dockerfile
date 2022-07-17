@@ -1,8 +1,8 @@
-# syntax=docker/dockerfile:1
-FROM node:12-alpine
-RUN apk add --no-cache python2 g++ make
+FROM node:12
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
 COPY . .
-RUN yarn install --production
-CMD ["node", "index.js"]
+ENV PORT=3000
 EXPOSE 3000
+CMD ["node", "index.js"]
