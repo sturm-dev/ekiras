@@ -26,7 +26,7 @@ const formatResult = (postResult) => {
   };
 };
 
-app.post("/validate-ios-receipt", async (req, res) => {
+app.post("/validate-purchase-ios", async (req, res) => {
   try {
     const dataToSend = JSON.stringify({
       "receipt-data": req.body["receipt-data"],

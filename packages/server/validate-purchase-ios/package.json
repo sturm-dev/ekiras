@@ -1,5 +1,5 @@
 {
-  "name": "validate-in-app-purchase-receipt-ios",
+  "name": "validate-purchase-ios",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

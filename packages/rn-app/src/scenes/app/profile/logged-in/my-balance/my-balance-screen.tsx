@@ -164,3 +164,6 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     paddingHorizontal: 30,
   },
 }));
+
+// https://www.youtube.com/watch?v=4JLHRV2kiCU&ab_channel=EuanMorgan
+// https://react-native-iap.dooboolab.com/docs/usage_instructions/restoring_purchases
