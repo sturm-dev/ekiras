@@ -1,8 +1,12 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {ActivityIndicator, Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import IAP, {Product} from 'react-native-iap';
+import {
+  APP_STORE_SHARED_SECRET,
+  IN_APP_PURCHASES_TEST_MODE,
+} from 'react-native-dotenv';
 
 import {BackButton, ScreenSafeArea} from '_atoms';
 import {Button} from '_molecules';
@@ -49,7 +53,28 @@ export const Screen_MyBalance: React.FC<{
             if (!_products) console.log('no products');
             else setProducts(_products);
           });
+
+        IAP.getAvailablePurchases()
+          .catch(err => console.log('getPurchases error', err))
+          .then(async purchases => {
+            if (!purchases) console.log('no purchases');
+            else {
+              console.log(`purchases`, JSON.stringify(purchases, null, 2));
+
+              if (purchases.length > 0)
+                validateReceipt(purchases[0].transactionReceipt);
+            }
+          });
       });
+
+    const purchaseErrorListener = IAP.purchaseErrorListener(err => {
+      console.log(`err - purchaseErrorListener`, JSON.stringify(err, null, 2));
+
+      Alert.alert(
+        'Error',
+        'Error with your purchase, error code = ' + err.code,
+      );
+    });
 
     const purchaseUpdateListener = IAP.purchaseUpdatedListener(purchase => {
       setLoading(false);
@@ -58,6 +83,8 @@ export const Screen_MyBalance: React.FC<{
         const receipt = purchase.transactionReceipt;
         if (receipt) {
           console.log(`receipt`, JSON.stringify(receipt, null, 2));
+
+          validateReceipt(receipt);
 
           // TODO: send the receipt to the server
 
@@ -77,23 +104,54 @@ export const Screen_MyBalance: React.FC<{
 
     return () => {
       purchaseUpdateListener.remove();
+      purchaseErrorListener.remove();
     };
   }, []);
+
+  const validateReceipt = async (receipt: string) => {
+    const receiptBody = {
+      'receipt-data': receipt,
+      password: APP_STORE_SHARED_SECRET,
+    };
+
+    const result = await IAP.validateReceiptIos(
+      receiptBody,
+      IN_APP_PURCHASES_TEST_MODE,
+    )
+      .catch(e => console.log('validateReceipt error', e))
+      .then(_receipt => {
+        try {
+          console.log(`_receipt`, JSON.stringify(_receipt, null, 2));
+        } catch (e) {
+          console.log(`e`, e, typeof e);
+        }
+      });
+
+    console.log(`result`, result, typeof result);
+  };
 
   const onRequestPurchase = () => {
     setLoading(true);
     IAP.requestPurchase(consumableID);
   };
 
+  console.log(`products`, JSON.stringify(products, null, 2));
+
   return (
     <ScreenSafeArea>
       <BackButton onPress={() => navigation.goBack()} />
       <View style={styles.container}>
-        <Button
-          text="Buy some crypto for 0.99 usd"
-          onPress={onRequestPurchase}
-          loading={loading}
-        />
+        {!products || !products.length ? <ActivityIndicator /> : null}
+        {products.map(product => (
+          <Button
+            key={product.productId}
+            text={`Buy some BTT to interact inside the app for ${product.price} ${product.currency}`}
+            onPress={onRequestPurchase}
+            loading={loading || !products}
+            numberOfLines={2}
+            style={{height: 80}}
+          />
+        ))}
       </View>
     </ScreenSafeArea>
   );
