@@ -14,11 +14,11 @@ profiles:
     validate-purchase-ios:
       resources:
         cpu:
-          units: 1.0
+          units: 0.25
         memory:
-          size: 512Mi
+          size: 128Mi
         storage:
-          size: 512Mi
+          size: 128Mi
   placement:
     akash:
       pricing:
@@ -29,4 +29,4 @@ deployment:
   validate-purchase-ios:
     akash:
       profile: validate-purchase-ios
-      count: 1
+      count: 2
