@@ -1,22 +1,18 @@
 const axios = require("axios");
-const express = require("express");
 const bodyParser = require("body-parser");
-const app = express();
+const app = require("express")();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// make this endpoint https
+// TODO:
+// - [ ] get the public address of the user from POST
+// - [ ] get the mnemonic from .env
+// - [ ] send the balance to the user when purchase is valid
+// - [ ] store the transactionId in the smart contract to not repeat purchase
 
-// TODO: if purchase is valid
-//  -> send balance from smart contract to user
-//  -> in the rn-app `finish purchase`
-//  -> save transactionId in blockchain `alreadyUsedTransactionsIds` to not repeat transactions?
-
-// .env with seed in the server
-
-const formatResult = (postResult) => {
-  return {
+const validatePurchase = (postResult, userPublicAddress) => {
+  const result = {
     receipt: {
       receipt_type: postResult.data.receipt.receipt_type,
       bundle_id: postResult.data.receipt.bundle_id,
@@ -26,6 +22,11 @@ const formatResult = (postResult) => {
     environment: postResult.data.environment,
     status: postResult.data.status,
   };
+
+  console.log(`result`, result, typeof result);
+  console.log(`userPublicAddress`, userPublicAddress, typeof userPublicAddress);
+
+  return { message: "Success!" };
 };
 
 app.post("/validate-purchase-ios", async (req, res) => {
@@ -36,20 +37,23 @@ app.post("/validate-purchase-ios", async (req, res) => {
       "exclude-old-transactions": true,
     });
 
+    const userPublicAddress = req.body["user-public-address"];
+
     const postResult = await axios.post(
       "https://buy.itunes.apple.com/verifyReceipt",
       dataToSend
     );
 
+    // if receipt from sandbox
     if (postResult.data.status && postResult.data.status === 21007) {
       const postResultSandbox = await axios.post(
         "https://sandbox.itunes.apple.com/verifyReceipt",
         dataToSend
       );
 
-      res.json(formatResult(postResultSandbox));
+      res.json(await validatePurchase(postResultSandbox, userPublicAddress));
     } else {
-      res.json(formatResult(postResult));
+      res.json(await validatePurchase(postResult, userPublicAddress));
     }
   } catch (e) {
     res.json({ error: e, errorString: e.toString() });
