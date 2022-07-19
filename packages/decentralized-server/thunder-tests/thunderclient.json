@@ -8,12 +8,12 @@
     "method": "POST",
     "sortNum": 50000,
     "created": "2022-07-18T08:32:19.560Z",
-    "modified": "2022-07-18T09:44:48.789Z",
+    "modified": "2022-07-19T01:06:31.101Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\"\n}",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\",\n    \"user-public-address\": \"{{TEST_PUBLIC_ADDRESS}}\"\n}",
       "form": []
     },
     "tests": []
@@ -27,7 +27,7 @@
     "method": "POST",
     "sortNum": 20000,
     "created": "2022-07-18T08:47:02.581Z",
-    "modified": "2022-07-18T09:44:57.227Z",
+    "modified": "2022-07-18T09:50:20.194Z",
     "headers": [],
     "params": [],
     "body": {
@@ -46,12 +46,12 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-07-18T08:57:21.015Z",
-    "modified": "2022-07-18T09:45:02.555Z",
+    "modified": "2022-07-18T10:06:34.633Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\"\n}",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\",\n    \"user-public-address\": \"0xDdaCAe39c023cc587eAB8AE4E7183670620BE231\"\n}",
       "form": []
     },
     "tests": []
