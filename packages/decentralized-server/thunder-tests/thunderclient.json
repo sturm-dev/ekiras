@@ -46,12 +46,12 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-07-18T08:57:21.015Z",
-    "modified": "2022-07-18T10:06:34.633Z",
+    "modified": "2022-07-19T01:21:58.455Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\",\n    \"user-public-address\": \"0xDdaCAe39c023cc587eAB8AE4E7183670620BE231\"\n}",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\",\n    \"user-public-address\": \"{{TEST_PUBLIC_ADDRESS}}\"\n}",
       "form": []
     },
     "tests": []

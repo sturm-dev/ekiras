@@ -29,6 +29,9 @@ const validatePurchase = (postResult, req) => {
     status: postResult.data.status,
   };
 
+  // TODO:
+  // -[ ] read the smart contract -> check the transactionId is not saved
+
   console.log(`result`, result, typeof result);
   console.log(`userPublicAddress`, userPublicAddress, typeof userPublicAddress);
   console.log(`mnemonic`, mnemonic, typeof mnemonic);
