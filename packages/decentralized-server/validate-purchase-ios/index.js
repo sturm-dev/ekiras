@@ -1,6 +1,7 @@
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const app = require("express")();
+const ethers = require("ethers");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -14,9 +15,10 @@ app.use(bodyParser.json());
 // - [ ] send the balance to the user when purchase is valid
 // - [ ] store the transactionId in the smart contract to not repeat purchase
 
-const validatePurchase = (postResult, req) => {
+const validatePurchase = async (postResult, req) => {
   const userPublicAddress = req.body["user-public-address"];
-  const mnemonic = process.env.MAIN_MNEMONIC;
+  const MAIN_MNEMONIC = process.env.MAIN_MNEMONIC;
+  const BTTC_RPC_API_KEY = process.env.BTTC_RPC_API_KEY;
 
   const result = {
     receipt: {
@@ -29,12 +31,31 @@ const validatePurchase = (postResult, req) => {
     status: postResult.data.status,
   };
 
+  // ────────────────────────────────────────────────────────────────────────────────
   // TODO:
-  // -[ ] read the smart contract -> check the transactionId is not saved
+  // - [x] (ethers basic config) ask with ethers the balance of public address
+  // - [ ] read the smart contract -> check the transactionId is not saved
+
+  const provider = new ethers.providers.StaticJsonRpcProvider(
+    `https://bttc.getblock.io/mainnet/?api_key=${BTTC_RPC_API_KEY}`,
+    { chainId: 199, name: "BitTorrent Chain Mainnet" }
+  );
+
+  const balance = await provider.getBalance(userPublicAddress);
+
+  console.log(`balance`, balance, typeof balance);
+
+  const formattedBalance = ethers.utils.formatEther(
+    ethers.BigNumber.from(balance._hex)
+  );
+
+  console.log(`formattedBalance`, formattedBalance, typeof formattedBalance);
+
+  // ────────────────────────────────────────────────────────────────────────────────
 
   console.log(`result`, result, typeof result);
   console.log(`userPublicAddress`, userPublicAddress, typeof userPublicAddress);
-  console.log(`mnemonic`, mnemonic, typeof mnemonic);
+  console.log(`MAIN_MNEMONIC`, MAIN_MNEMONIC, typeof MAIN_MNEMONIC);
 
   return { message: "Success!" };
 };

@@ -3,9 +3,9 @@
 ## start docker app
 
 ```
-docker build -t sturmenta/validate-purchase-ios:latest .
+docker build -t validate-purchase-ios:latest .
 
-docker run --env-file ../.env -dp 3000:3000 sturmenta/validate-purchase-ios:latest
+docker run --env-file ../.env -dp 3000:3000 validate-purchase-ios:latest
 
 ```
 
@@ -14,11 +14,13 @@ docker run --env-file ../.env -dp 3000:3000 sturmenta/validate-purchase-ios:late
 ## update docker app
 
 ```
-docker ps
+docker ps -a
 
 docker stop <the-container-id>
 
 docker rm <the-container-id>
+
+docker rm -f <the-container-id>
 ```
 
 `and build and run docker app again`

@@ -6,6 +6,7 @@ services:
     image: sturmenta/validate-purchase-ios:latest
     env:
       - MAIN_MNEMONIC=<copy-from-.env>
+      - BTTC_RPC_API_KEY=<copy-from-.env>
     expose:
       - port: 3000
         as: 80
