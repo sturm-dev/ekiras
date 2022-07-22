@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "node:14.19.3": "source $HOME/.nvm/nvm.sh; nvm use v14.19.3",
+    "node:14.19.3": "echo 'you must use node_version = v14.19.3 to make it work'",
     "ios": "yarn node:14.19.3; react-native run-ios",
     "android": "react-native run-android",
     "pods": "yarn node:14.19.3 && npx pod-install",

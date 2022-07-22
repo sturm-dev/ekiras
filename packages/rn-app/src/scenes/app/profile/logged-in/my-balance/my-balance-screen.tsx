@@ -12,6 +12,7 @@ import {BackButton, ScreenSafeArea} from '_atoms';
 import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
+import {tokenName} from '_db';
 
 const consumableID = '0.99_USD';
 
@@ -145,7 +146,7 @@ export const Screen_MyBalance: React.FC<{
         {products.map(product => (
           <Button
             key={product.productId}
-            text={`Buy some BTT to interact inside the app for ${product.price} ${product.currency}`}
+            text={`Buy some ${tokenName} to interact inside the app for ${product.price} ${product.currency}`}
             onPress={onRequestPurchase}
             loading={loading || !products}
             numberOfLines={2}

@@ -59,6 +59,15 @@
   },
   {
     "inputs": [
+      {"internalType": "uint256", "name": "_transactionId", "type": "uint256"}
+    ],
+    "name": "addTransactionId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {"internalType": "address", "name": "", "type": "address"},
       {"internalType": "uint256", "name": "", "type": "uint256"}
     ],
@@ -92,6 +101,13 @@
   },
   {
     "inputs": [],
+    "name": "manager",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "postIndex",
     "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
     "stateMutability": "view",
@@ -108,6 +124,13 @@
       {"internalType": "uint256", "name": "upVotesCount", "type": "uint256"},
       {"internalType": "uint256", "name": "downVotesCount", "type": "uint256"}
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "name": "transactionIds",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
     "stateMutability": "view",
     "type": "function"
   },

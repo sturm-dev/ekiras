@@ -1,12 +1,6 @@
 {
   "name": "@my-app/monorepo",
   "version": "1.0.0",
-  "keywords": [
-    "ethereum",
-    "react",
-    "workspaces",
-    "yarn"
-  ],
   "private": true,
   "scripts": {
     "ios": "yarn workspace @my-app/rn-app ios",

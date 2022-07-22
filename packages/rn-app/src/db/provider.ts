@@ -1,11 +1,10 @@
 import * as ethers from 'ethers';
-import {BTTC_RPC_API_KEY} from 'react-native-dotenv';
+import {
+  MAINNET,
+  MAINNET__RPC_FULL_URL,
+  TESTNET__RPC_FULL_URL,
+} from 'react-native-dotenv';
 
-import {chainData} from './chainData';
-
-const {rpcUrl, chainId, chainName} = chainData;
-
-export const provider = new ethers.providers.StaticJsonRpcProvider(
-  rpcUrl(BTTC_RPC_API_KEY),
-  {chainId, name: chainName},
+export const provider = new ethers.providers.JsonRpcProvider(
+  MAINNET === 'true' ? MAINNET__RPC_FULL_URL : TESTNET__RPC_FULL_URL,
 );
