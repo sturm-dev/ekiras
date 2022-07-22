@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const app = require("express")();
 const ethers = require("ethers");
 
+const abi = require("./abi.json");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -17,45 +19,56 @@ app.use(bodyParser.json());
 
 const validatePurchase = async (postResult, req) => {
   const userPublicAddress = req.body["user-public-address"];
-  const MAIN_MNEMONIC = process.env.MAIN_MNEMONIC;
+  const PRIVATE_KEY = process.env.PRIVATE_KEY;
   const BTTC_RPC_API_KEY = process.env.BTTC_RPC_API_KEY;
+  const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 
-  const result = {
-    receipt: {
-      receipt_type: postResult.data.receipt.receipt_type,
-      bundle_id: postResult.data.receipt.bundle_id,
-      application_version: postResult.data.receipt.application_version,
-      in_app: postResult.data.receipt.in_app,
-    },
-    environment: postResult.data.environment,
-    status: postResult.data.status,
-  };
+  const in_app = postResult.data.receipt.in_app;
+  console.log(`in_app`, JSON.stringify(in_app, null, 2));
+
+  const transactionId = postResult.data.receipt.in_app[0].transaction_id;
+  console.log(`transactionId`, transactionId);
 
   // ────────────────────────────────────────────────────────────────────────────────
   // TODO:
   // - [x] (ethers basic config) ask with ethers the balance of public address
   // - [ ] read the smart contract -> check the transactionId is not saved
+  //   - [ ] add transactionsIds to the smart contract
 
-  const provider = new ethers.providers.StaticJsonRpcProvider(
-    `https://bttc.getblock.io/mainnet/?api_key=${BTTC_RPC_API_KEY}`,
-    { chainId: 199, name: "BitTorrent Chain Mainnet" }
-  );
+  try {
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+      `https://bttc.getblock.io/mainnet/?api_key=${BTTC_RPC_API_KEY}`,
+      { chainId: 199, name: "BitTorrent Chain Mainnet" }
+    );
 
-  const balance = await provider.getBalance(userPublicAddress);
+    // const balance = await provider.getBalance(userPublicAddress);
 
-  console.log(`balance`, balance, typeof balance);
+    // console.log(`balance`, balance, typeof balance);
 
-  const formattedBalance = ethers.utils.formatEther(
-    ethers.BigNumber.from(balance._hex)
-  );
+    // const formattedBalance = ethers.utils.formatEther(
+    //   ethers.BigNumber.from(balance._hex)
+    // );
 
-  console.log(`formattedBalance`, formattedBalance, typeof formattedBalance);
+    // console.log(`formattedBalance`, formattedBalance, typeof formattedBalance);
+
+    const contract = await new ethers.Contract(
+      CONTRACT_ADDRESS,
+      abi,
+      new ethers.Wallet(PRIVATE_KEY, provider)
+    );
+
+    await contract.addTransactionId(
+      postResult.data.receipt.in_app[0].transaction_id
+    );
+    await new Promise((res) => contract.on("CreatePostEvent", res));
+  } catch (e) {
+    console.log("error ->", e);
+  }
 
   // ────────────────────────────────────────────────────────────────────────────────
 
   console.log(`result`, result, typeof result);
   console.log(`userPublicAddress`, userPublicAddress, typeof userPublicAddress);
-  console.log(`MAIN_MNEMONIC`, MAIN_MNEMONIC, typeof MAIN_MNEMONIC);
 
   return { message: "Success!" };
 };
