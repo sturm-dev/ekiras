@@ -19,21 +19,22 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 
-const TESTNET__RPC_FULL_URL = process.env.TESTNET__RPC_FULL_URL
-const TESTNET__PRIVATE_KEY = process.env.TESTNET__PRIVATE_KEY
-const TESTNET__ETHERSCAN_API_KEY = process.env.TESTNET__ETHERSCAN_API_KEY
-
 module.exports = {
   defaultNetwork: "hardhat",
   networks: {
+    matic: {
+      url: process.env.MAINNET__RPC_FULL_URL,
+      accounts: [process.env.MAINNET__PRIVATE_KEY],
+    },
     polygonMumbai: {
-      url: TESTNET__RPC_FULL_URL,
-      accounts: [TESTNET__PRIVATE_KEY],
+      url: process.env.TESTNET__RPC_FULL_URL,
+      accounts: [process.env.TESTNET__PRIVATE_KEY],
     },
   },
   etherscan: {
     apiKey: {
-      polygonMumbai: TESTNET__ETHERSCAN_API_KEY,
+      polygon: process.env.ETHERSCAN_API_KEY,
+      polygonMumbai: process.env.ETHERSCAN_API_KEY,
     },
   },
   solidity: {
