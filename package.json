@@ -10,7 +10,7 @@
   "private": true,
   "scripts": {
     "ios": "yarn workspace @my-app/rn-app ios",
-    "deploy": "yarn workspace @my-app/contracts deploy:bttc"
+    "deploy": "yarn workspace @my-app/contracts deploy"
   },
   "workspaces": {
     "packages": [

@@ -1,6 +1,6 @@
 const ethers = require("ethers")
 
-const { bttcChain } = require("./bttcChainData")
+const TESTNET__RPC_FULL_URL = process.env.TESTNET__RPC_FULL_URL
 
 const fromPrivateKeyToAddress = (privateKey) => {
   const wallet = new ethers.Wallet(privateKey)
@@ -8,11 +8,7 @@ const fromPrivateKeyToAddress = (privateKey) => {
 }
 
 const getAccountBalance = async (address) => {
-  const { rpcUrl, chainId, chainName } = bttcChain
-  const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
-    chainId,
-    name: chainName,
-  })
+  const provider = new ethers.providers.JsonRpcProvider(TESTNET__RPC_FULL_URL)
 
   return formatBTT((await provider.getBalance(address))._hex)
 }

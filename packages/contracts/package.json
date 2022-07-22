@@ -15,8 +15,10 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19"
   },
   "scripts": {
+    "deploy": "yarn deploy:testnet",
     "deploy:hardhat": "yarn hardhat run scripts/deploy.js",
-    "deploy": "yarn prettier && yarn hardhat run scripts/deploy.js --network bttc",
-    "prettier": "prettier --write 'contracts/*.sol'"
+    "deploy:testnet": "yarn hardhat run scripts/deploy.js --network polygonMumbai",
+    "deploy:mainnet": "yarn hardhat run scripts/deploy.js --network matic",
+    "clean-cache": "rm -rf artifacts; rm -rf cache;"
   }
 }

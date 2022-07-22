@@ -19,35 +19,30 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 
-const BTTC_RPC_URL = process.env.BTTC_RPC_URL
-const BTTC_RPC_API_KEY = process.env.BTTC_RPC_API_KEY
-const PRIVATE_KEY = process.env.PRIVATE_KEY
-const BTTCSCAN_API_KEY = process.env.BTTCSCAN_API_KEY
+const TESTNET__RPC_FULL_URL = process.env.TESTNET__RPC_FULL_URL
+const TESTNET__PRIVATE_KEY = process.env.TESTNET__PRIVATE_KEY
+const TESTNET__ETHERSCAN_API_KEY = process.env.TESTNET__ETHERSCAN_API_KEY
 
 module.exports = {
   defaultNetwork: "hardhat",
   networks: {
-    bttc: {
-      url: BTTC_RPC_URL,
-      accounts: [PRIVATE_KEY],
-      chainId: 199,
-      httpHeaders: { "x-api-key": BTTC_RPC_API_KEY },
+    polygonMumbai: {
+      url: TESTNET__RPC_FULL_URL,
+      accounts: [TESTNET__PRIVATE_KEY],
     },
   },
   etherscan: {
     apiKey: {
-      bttc: BTTCSCAN_API_KEY,
+      polygonMumbai: TESTNET__ETHERSCAN_API_KEY,
     },
-    customChains: [
-      {
-        network: "bttc",
-        chainId: 199,
-        urls: {
-          apiURL: "https://api.bttcscan.com/api",
-          browserURL: "https://bttcscan.com",
-        },
-      },
-    ],
   },
-  solidity: "0.8.8",
+  solidity: {
+    version: "0.8.8",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
 }
