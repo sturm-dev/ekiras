@@ -7,3 +7,4 @@ export * from './onLogout';
 export * from './contract';
 export * from './formatPost';
 export * from './postOwnerIsNotEmptyAddress';
+export * from './handleEnvVars';

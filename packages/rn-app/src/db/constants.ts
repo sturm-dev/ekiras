@@ -1,6 +1,4 @@
 export const emptyAddress = '0x0000000000000000000000000000000000000000';
-export const contractAddress = '0xC99517dE9e9974BB142B53576e55e9d32F037356';
-export const tokenName = 'MATIC';
 export const listOfErrors = [
   'no mnemonic found',
   // solidity ────────────────────

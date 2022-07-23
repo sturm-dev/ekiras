@@ -6,13 +6,13 @@ import IAP, {Product} from 'react-native-iap';
 import {
   APP_STORE_SHARED_SECRET,
   IN_APP_PURCHASES_TEST_MODE,
+  TOKEN_NAME,
 } from 'react-native-dotenv';
 
 import {BackButton, ScreenSafeArea} from '_atoms';
 import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
-import {tokenName} from '_db';
 
 const consumableID = '0.99_USD';
 
@@ -117,7 +117,7 @@ export const Screen_MyBalance: React.FC<{
 
     const result = await IAP.validateReceiptIos(
       receiptBody,
-      IN_APP_PURCHASES_TEST_MODE,
+      IN_APP_PURCHASES_TEST_MODE === 'true',
     )
       .catch(e => console.log('validateReceipt error', e))
       .then(_receipt => {
@@ -146,7 +146,7 @@ export const Screen_MyBalance: React.FC<{
         {products.map(product => (
           <Button
             key={product.productId}
-            text={`Buy some ${tokenName} to interact inside the app for ${product.price} ${product.currency}`}
+            text={`Buy some ${TOKEN_NAME} to interact inside the app for ${product.price} ${product.currency}`}
             onPress={onRequestPurchase}
             loading={loading || !products}
             numberOfLines={2}

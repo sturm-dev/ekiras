@@ -1,9 +1,9 @@
 import * as ethers from 'ethers';
 
-import {contractAddress} from '../constants';
 import {provider} from '../provider';
 import {internalUse_getPrivateKey} from './internalUse_getPrivateKey';
 import abi from '../abi.json';
+import {CONTRACT_ADDRESS} from './handleEnvVars';
 
 let contractWithSignerCreated: ethers.Contract | undefined;
 
@@ -13,7 +13,7 @@ export const resetContractWithSigner = () =>
 export const contractWithSigner = async () => {
   if (!contractWithSignerCreated) {
     contractWithSignerCreated = new ethers.Contract(
-      contractAddress,
+      CONTRACT_ADDRESS,
       abi,
       new ethers.Wallet(await internalUse_getPrivateKey(), provider),
     );
@@ -23,7 +23,7 @@ export const contractWithSigner = async () => {
 };
 
 export const contractWithoutSigner = new ethers.Contract(
-  contractAddress,
+  CONTRACT_ADDRESS,
   abi,
   provider,
 );

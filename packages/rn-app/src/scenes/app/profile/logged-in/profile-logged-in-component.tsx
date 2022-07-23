@@ -19,14 +19,15 @@ import {
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {getBalance, getUserAddress, getUsername, onLogout} from '_db';
+import {
+  getBalance,
+  getUserAddress,
+  getUsername,
+  onLogout,
+  SMALL_INTERACTION_COST_APPROX,
+} from '_db';
 
 import {Screen_Profile__Prop} from '../profile-screen';
-import {
-  MAINNET,
-  MAINNET__SMALL_INTERACTION_COST_APPROX,
-  TESTNET__SMALL_INTERACTION_COST_APPROX,
-} from 'react-native-dotenv';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
@@ -104,13 +105,13 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
 
       if (error) Alert.alert('Error', error);
       else {
-        const smallInteractionCostApprox = parseFloat(
-          MAINNET === 'true'
-            ? MAINNET__SMALL_INTERACTION_COST_APPROX
-            : TESTNET__SMALL_INTERACTION_COST_APPROX,
+        setUserBalance(
+          balance === 0
+            ? '0'
+            : formatBigNumber(
+                balance / parseFloat(SMALL_INTERACTION_COST_APPROX),
+              ),
         );
-
-        setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
       }
     }
   };
