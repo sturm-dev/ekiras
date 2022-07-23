@@ -16,8 +16,8 @@
   },
   "scripts": {
     "deploy": "yarn deploy:testnet",
-    "deploy:testnet": "yarn hardhat run scripts/deployTestnet.js --network polygonMumbai",
-    "deploy:mainnet": "yarn hardhat run scripts/deployMainnet.js --network matic",
+    "deploy:testnet": "yarn clean-cache; yarn hardhat run scripts/deployTestnet.js --network polygonMumbai",
+    "deploy:mainnet": "yarn clean-cache; yarn hardhat run scripts/deployMainnet.js --network matic",
     "clean-cache": "rm -rf artifacts; rm -rf cache;"
   }
 }

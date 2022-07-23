@@ -31,7 +31,8 @@ contract JustFeedback {
     uint256 _upVotesCount,
     uint256 _downVotesCount
   );
-  event UpdateUsernameEvent();
+  event UpdateUsernameEvent(address _userAddress);
+  event AddTransactionIdEvent(uint256 _transactionId);
 
   constructor() {
     manager = msg.sender;
@@ -119,7 +120,7 @@ contract JustFeedback {
       addressToUsername[msg.sender] = _text;
     }
 
-    emit UpdateUsernameEvent();
+    emit UpdateUsernameEvent(msg.sender);
   }
 
   function addTransactionId(uint256 _transactionId) public {
@@ -133,5 +134,7 @@ contract JustFeedback {
     );
 
     transactionIds[_transactionId] = true;
+
+    emit AddTransactionIdEvent(_transactionId);
   }
 }

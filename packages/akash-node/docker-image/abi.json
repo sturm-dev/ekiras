@@ -1,5 +1,18 @@
 [
-  {"inputs": [], "stateMutability": "nonpayable", "type": "constructor"},
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_transactionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddTransactionIdEvent",
+    "type": "event"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -28,7 +41,14 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_userAddress",
+        "type": "address"
+      }
+    ],
     "name": "UpdateUsernameEvent",
     "type": "event"
   },
@@ -59,23 +79,32 @@
   },
   {
     "inputs": [
-      {"internalType": "address", "name": "", "type": "address"},
-      {"internalType": "uint256", "name": "", "type": "uint256"}
+      { "internalType": "uint256", "name": "_transactionId", "type": "uint256" }
+    ],
+    "name": "addTransactionId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
     "name": "addressToPostIds",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "addressToUsername",
-    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{"internalType": "string", "name": "_text", "type": "string"}],
+    "inputs": [{ "internalType": "string", "name": "_text", "type": "string" }],
     "name": "createPost",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -83,7 +112,7 @@
   },
   {
     "inputs": [
-      {"internalType": "uint256", "name": "_postId", "type": "uint256"}
+      { "internalType": "uint256", "name": "_postId", "type": "uint256" }
     ],
     "name": "deleteOwnPost",
     "outputs": [],
@@ -92,43 +121,57 @@
   },
   {
     "inputs": [],
-    "name": "postIndex",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "name": "manager",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "inputs": [],
+    "name": "postIndex",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "posts",
     "outputs": [
-      {"internalType": "uint256", "name": "id", "type": "uint256"},
-      {"internalType": "uint256", "name": "createdDate", "type": "uint256"},
-      {"internalType": "address", "name": "author", "type": "address"},
-      {"internalType": "string", "name": "text", "type": "string"},
-      {"internalType": "uint256", "name": "upVotesCount", "type": "uint256"},
-      {"internalType": "uint256", "name": "downVotesCount", "type": "uint256"}
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "uint256", "name": "createdDate", "type": "uint256" },
+      { "internalType": "address", "name": "author", "type": "address" },
+      { "internalType": "string", "name": "text", "type": "string" },
+      { "internalType": "uint256", "name": "upVotesCount", "type": "uint256" },
+      { "internalType": "uint256", "name": "downVotesCount", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{"internalType": "string", "name": "_text", "type": "string"}],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "transactionIds",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "string", "name": "_text", "type": "string" }],
     "name": "updateMyUsername",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "inputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "name": "usernameToAddress",
-    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {"internalType": "uint256", "name": "_postId", "type": "uint256"},
-      {"internalType": "bool", "name": "_voteIsTypeUp", "type": "bool"}
+      { "internalType": "uint256", "name": "_postId", "type": "uint256" },
+      { "internalType": "bool", "name": "_voteIsTypeUp", "type": "bool" }
     ],
     "name": "votePost",
     "outputs": [],
@@ -137,21 +180,21 @@
   },
   {
     "inputs": [
-      {"internalType": "uint256", "name": "", "type": "uint256"},
-      {"internalType": "address", "name": "", "type": "address"}
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" }
     ],
     "name": "votesDown",
-    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {"internalType": "uint256", "name": "", "type": "uint256"},
-      {"internalType": "address", "name": "", "type": "address"}
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" }
     ],
     "name": "votesUp",
-    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   }

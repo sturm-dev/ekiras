@@ -10,10 +10,16 @@
     "express": "^4.18.1"
   },
   "scripts": {
-    "build": "docker build -t validate-purchase-ios:latest .",
-    "start": "docker run --env-file ../.env -dp 3000:3000 validate-purchase-ios:latest",
+    "docker:build": "docker build -t validate-purchase-ios:latest .",
+    "docker:run": "docker run --env-file ../.env -dp 3000:3000 validate-purchase-ios:latest",
+    "docker:delete-images": "docker rm -f $(docker ps -a -q)",
+    "docker:logs": "docker logs -f $(docker ps -a -q)",
+    "───────────────────────────────": "-─────────────────────────────────",
+    "start": "yarn docker:build; yarn docker:run; yarn docker:logs",
+    "restart": "yarn docker:delete-images; yarn start",
     "ls": "docker ps -a",
-    "build:prod": "docker build --platform linux/amd64 -t sturmenta/validate-purchase-ios:latest .",
-    "push:prod": "docker push sturmenta/validate-purchase-ios:latest"
+    "────────────────────────────────": "-─────────────────────────────────",
+    "docker:build-prod": "docker build --platform linux/amd64 -t sturmenta/validate-purchase-ios:latest .",
+    "docker:push-prod": "docker push sturmenta/validate-purchase-ios:latest"
   }
 }

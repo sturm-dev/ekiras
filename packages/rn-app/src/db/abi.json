@@ -6,6 +6,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "_transactionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddTransactionIdEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "_id",
         "type": "uint256"
       }
@@ -28,7 +41,14 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_userAddress",
+        "type": "address"
+      }
+    ],
     "name": "UpdateUsernameEvent",
     "type": "event"
   },
