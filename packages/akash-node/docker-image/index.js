@@ -48,12 +48,13 @@ const validatePurchase = async (postResult, req) => {
   console.log(`userPublicAddress`, userPublicAddress, typeof userPublicAddress);
 
   const in_app = postResult.data.receipt.in_app;
-  console.log(`in_app`, JSON.stringify(in_app, null, 2));
+  // console.log(`in_app`, JSON.stringify(in_app, null, 2));
 
   // TODO: get transactionId from in_app from last purchase
 
-  const transactionId = in_app[0].transaction_id;
-  console.log(`transactionId`, transactionId);
+  let transactionId = in_app[0].transaction_id;
+  transactionId = Math.floor(Math.random() * 20000); // TODO: remove
+  // console.log(`transactionId`, transactionId);
 
   try {
     const provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
@@ -68,14 +69,21 @@ const validatePurchase = async (postResult, req) => {
 
     // TODO: add transactionId to the smart contract
 
-    // TODO: fix error "reason": "cannot estimate gas; transaction may fail or may require manual gas limit",
+    // ────────────────────────────────────────────────────────────────────────────────
 
-    const { result, error } = await contract.addTransactionId(transactionId);
+    const gasPrice = await recommendedGasPrice(provider);
 
-    console.log(`result`, result);
-    console.log(`error`, error);
+    console.log(`gasPrice`, gasPrice);
+
+    const tx = await contract.addTransactionId(transactionId, { gasPrice });
+
+    console.log("transactionId added", tx);
 
     await new Promise((res) => contract.on("AddTransactionIdEvent", res));
+
+    console.log("AddTransactionIdEvent emitted");
+
+    // ─────────────────────────────────────────────────────────────────
 
     // TODO: send balance to user-public-address
 
@@ -86,6 +94,26 @@ const validatePurchase = async (postResult, req) => {
     console.log("error ->", e);
     return { error: e, errorString: e.toString() };
   }
+};
+
+const recommendedGasPrice = async (provider) => {
+  const price = await provider.getGasPrice();
+  const str = ethers.utils.formatEther(price);
+  const eth = str * 1.3; // 1.3x gas price
+  const recommendedGasPrice = ethers.utils.parseEther(eth.toFixed(18));
+  console.log(`recommendedGasPrice`, recommendedGasPrice);
+
+  const gasOracle = await axios.get(
+    `https://api.polygonscan.com/api?module=gastracker&action=gasoracle&apikey=${process.env.ETHERSCAN_API_KEY}`
+  );
+
+  const fastPrice = gasOracle.data.result.FastGasPrice;
+  const fastPriceFormatted = ethers.utils.parseUnits(`${fastPrice}`, "gwei");
+  console.log(`fastPriceFormatted`, fastPriceFormatted);
+
+  return fastPriceFormatted > recommendedGasPrice
+    ? fastPriceFormatted
+    : recommendedGasPrice;
 };
 
 const postToItunesProd = (dataToSend) =>
@@ -125,7 +153,7 @@ app.post("/validate-purchase-ios", async (req, res) => {
     "exclude-old-transactions": true,
   });
 
-  console.log(`dataToSend`, JSON.stringify(JSON.parse(dataToSend), null, 2));
+  // console.log(`dataToSend`, JSON.stringify(JSON.parse(dataToSend), null, 2));
 
   let result;
 
