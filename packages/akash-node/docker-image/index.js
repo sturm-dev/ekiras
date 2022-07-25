@@ -118,11 +118,12 @@ const validatePurchase = async (postResult, req) => {
 
     return { message: "Success!" };
   } catch (e) {
-    console.log("error ->", e);
-
     if (e.toString().includes(errors.ALREADY_SAVED_THIS_TRANSACTION_ID)) {
       return { errorString: errors.ALREADY_SAVED_THIS_TRANSACTION_ID };
-    } else return { error: e, errorString: e.toString() };
+    } else {
+      console.log("error ->", e);
+      return { error: e, errorString: e.toString() };
+    }
   }
 };
 
