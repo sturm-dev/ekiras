@@ -11,12 +11,13 @@
 //   - no error (prod or sandbox) ->
 //     - validate purchase ->
 //       - get from response the transactionId of last purchase
-//       - ask if transactionId already saved to the smart contract
-//         - yes -> return error
-//         - no ->
-//           - add transactionId to the smart contract
-//           - send balance to user-public-address
-//           - return success to rn-app
+//       - get the tx fast price from polygon oracle
+//       - add transactionId (using tx fast price) to the smart contract (if error -> resolve error)
+//       - calculate the balance to send to user
+//         - get the price in USD of MATIC token from oracle
+//         - 15 % apple/google cost for the in-app purchase
+//       - send balance to user-public-address
+//       - return success to rn-app
 //
 // ────────────────────────────────────────────────────────────────────────────────
 
@@ -26,7 +27,12 @@ const app = require("express")();
 const ethers = require("ethers");
 
 const abi = require("./abi.json");
-const { getGasPrices, printGasPrices } = require("./utils.js");
+const {
+  getGasPrices,
+  printGasPrices,
+  printSpacer,
+  errors,
+} = require("./utils.js");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -47,22 +53,23 @@ const CONTRACT_ADDRESS =
 // ────────────────────────────────────────────────────────────────────────────────
 
 const validatePurchase = async (postResult, req) => {
-  console.log(`\n\n [1;33m -[0m Starting...\n\n`);
+  printSpacer("Start with purchase validation ...");
 
   const userPublicAddress = req.body["user-public-address"];
 
   const in_app = postResult.data.receipt.in_app;
   console.log(`in_app`, JSON.stringify(in_app, null, 2));
 
-  console.log(
-    `\n\n [1;33m -[0m TODO: get transactionId from in_app from last purchase (create more purchases)\n\n`
+  printSpacer(
+    "TODO: get transactionId from in_app from last purchase (create more purchases)"
   );
 
   let transactionId = in_app[0].transaction_id;
-  transactionId = Math.floor(Math.random() * 20000); // TODO: remove
-  // console.log(`transactionId`, transactionId);
+  // transactionId = Math.floor(Math.random() * 20000); // TODO: remove
 
   try {
+    printSpacer("Getting contract...");
+
     const provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
 
     const contract = await new ethers.Contract(
@@ -71,11 +78,9 @@ const validatePurchase = async (postResult, req) => {
       new ethers.Wallet(PRIVATE_KEY, provider)
     );
 
-    console.log(
-      `\n\n [1;33m -[0m TODO: check if transactionId already saved to the smart contract\n\n`
-    );
-
     // ────────────────────────────────────────────────────────────────────────────────
+
+    printSpacer("Getting gas prices from polygon oracle...");
 
     const { fastPriceByPolygonOracle, gasPriceMulBy_1_3 } = await getGasPrices(
       provider
@@ -86,30 +91,46 @@ const validatePurchase = async (postResult, req) => {
       gasPriceMulBy_1_3,
     });
 
+    // ────────────────────────────────────────────────────────────────────────────────
+
+    printSpacer("Adding transactionId to the smart contract...");
+
     const tx = await contract.addTransactionId(transactionId, {
       gasPrice: fastPriceByPolygonOracle,
     });
-    console.log("transactionId added", tx);
+    console.log("transactionId added", transactionId, tx);
 
     await new Promise((res) => contract.on("AddTransactionIdEvent", res));
     console.log("AddTransactionIdEvent emitted");
 
     // ─────────────────────────────────────────────────────────────────
 
-    console.log(`\n\n [1;33m -[0m TODO: send balance to user-public-address\n\n`);
+    printSpacer("TODO: send balance to user-public-address");
 
-    console.log(`\n\n [1;33m -[0m Success! 🎉\n\n`);
+    // - [ ] get with oracle the price in USD of MATIC token
+    // - [ ] calculate the amount to send to user
+    //   - 15 % apple/google for the in-app purchase
+    //   - 15 % to sturm.dev to reward of this tx
+    //   - the costs of this tx
+    // - [ ] send the amount of MATIC to user-public-address
+
+    printSpacer("Success! 🎉");
 
     return { message: "Success!" };
   } catch (e) {
     console.log("error ->", e);
-    return { error: e, errorString: e.toString() };
+
+    if (e.toString().includes(errors.ALREADY_SAVED_THIS_TRANSACTION_ID)) {
+      return { errorString: errors.ALREADY_SAVED_THIS_TRANSACTION_ID };
+    } else return { error: e, errorString: e.toString() };
   }
 };
 
 const postToItunesProd = (dataToSend) =>
   new Promise(async (res, rej) => {
     try {
+      printSpacer("axios post to itunes prod...");
+
       const postResult = await axios.post(
         "https://buy.itunes.apple.com/verifyReceipt",
         dataToSend
@@ -126,6 +147,8 @@ const postToItunesProd = (dataToSend) =>
 const postToItunesSandbox = (dataToSend) =>
   new Promise(async (res, rej) => {
     try {
+      printSpacer("axios post to itunes sandbox...");
+
       const postResult = await axios.post(
         "https://sandbox.itunes.apple.com/verifyReceipt",
         dataToSend
@@ -138,6 +161,8 @@ const postToItunesSandbox = (dataToSend) =>
   });
 
 app.post("/validate-purchase-ios", async (req, res) => {
+  printSpacer("Starting...");
+
   const dataToSend = JSON.stringify({
     "receipt-data": req.body["receipt-data"],
     password: req.body["password"],

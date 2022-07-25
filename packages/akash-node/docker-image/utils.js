@@ -43,7 +43,15 @@ const printGasPrices = ({ gasPriceMulBy_1_3, fastPriceByPolygonOracle }) => {
   console.log();
 };
 
+const printSpacer = (text) => console.log(`\n\n [1;33m -[0m ${text}\n\n`);
+
+const errors = {
+  ALREADY_SAVED_THIS_TRANSACTION_ID: "already saved this transactionId",
+};
+
 module.exports = {
   getGasPrices,
   printGasPrices,
+  printSpacer,
+  errors,
 };
