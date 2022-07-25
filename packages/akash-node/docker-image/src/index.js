@@ -32,6 +32,8 @@ const {
   printGasPrices,
   printSpacer,
   errors,
+  printInGreen,
+  getAccountBalance,
 } = require("./utils.js");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,44 +53,62 @@ const CONTRACT_ADDRESS =
     : process.env.TESTNET__CONTRACT_ADDRESS;
 
 // ────────────────────────────────────────────────────────────────────────────────
+const calculateTxFee = async (accountBalanceBefore, address, provider) => {
+  const accountBalanceAfter = await getAccountBalance(address, provider);
+  const txFee = accountBalanceBefore - accountBalanceAfter;
+
+  console.log(`accountBalanceBefore`, accountBalanceBefore);
+  console.log(`accountBalanceAfter`, accountBalanceAfter);
+
+  printSpacer("Transaction fee: " + txFee);
+
+  return txFee;
+};
+// ────────────────────────────────────────────────────────────────────────────────
 
 const validatePurchase = async (postResult, req) => {
-  printSpacer("Start with purchase validation ...");
-
-  const userPublicAddress = req.body["user-public-address"];
-
-  const in_app = postResult.data.receipt.in_app;
-  console.log(`in_app`, JSON.stringify(in_app, null, 2));
-
-  printSpacer(
-    "TODO: get transactionId from in_app from last purchase (create more purchases)"
-  );
-
-  let transactionId = in_app[0].transaction_id;
-  // transactionId = Math.floor(Math.random() * 20000); // TODO: remove
+  let provider;
+  let wallet;
+  let balanceBefore;
 
   try {
+    printSpacer("Start with purchase validation ...");
+
+    provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
+    wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+    balanceBefore = await getAccountBalance(wallet.address, provider);
+
+    const userPublicAddress = req.body["user-public-address"];
+
+    const in_app = postResult.data.receipt.in_app;
+    console.log(`in_app`, JSON.stringify(in_app, null, 2));
+
+    printSpacer(
+      "TODO: get transactionId from in_app from last purchase (create more purchases)"
+    );
+
+    let transactionId = in_app[0].transaction_id;
+    // transactionId = Math.floor(Math.random() * 20000); // TODO: remove
+
     printSpacer("Getting contract...");
 
-    const provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
-
-    const contract = await new ethers.Contract(
-      CONTRACT_ADDRESS,
-      abi,
-      new ethers.Wallet(PRIVATE_KEY, provider)
-    );
+    const contract = await new ethers.Contract(CONTRACT_ADDRESS, abi, wallet);
 
     // ────────────────────────────────────────────────────────────────────────────────
 
     printSpacer("Getting gas prices from polygon oracle...");
 
-    const { fastPriceByPolygonOracle, gasPriceMulBy_1_3 } = await getGasPrices(
-      provider
-    );
+    const {
+      usdPrice,
+      gasPriceBaseFromProvider,
+      fastPriceByPolygonOracle,
+      veryFastPrice,
+    } = await getGasPrices(provider);
 
     printGasPrices({
+      gasPriceBaseFromProvider,
       fastPriceByPolygonOracle,
-      gasPriceMulBy_1_3,
+      veryFastPrice,
     });
 
     // ────────────────────────────────────────────────────────────────────────────────
@@ -96,7 +116,7 @@ const validatePurchase = async (postResult, req) => {
     printSpacer("Adding transactionId to the smart contract...");
 
     const tx = await contract.addTransactionId(transactionId, {
-      gasPrice: fastPriceByPolygonOracle,
+      gasPrice: veryFastPrice,
     });
     console.log("transactionId added", transactionId, tx);
 
@@ -107,7 +127,18 @@ const validatePurchase = async (postResult, req) => {
 
     printSpacer("TODO: send balance to user-public-address");
 
-    // - [ ] get with oracle the price in USD of MATIC token
+    // TODO: save on .env
+    const costOfInAppPurchase = 0.15;
+    const costOfBuyMatic__sturm_dev = 0.15; // maintain server costs - risk of loss
+    const totalOfUsdToBuyMatic =
+      1 - costOfInAppPurchase - costOfBuyMatic__sturm_dev;
+    const amountOfMaticToTransferToTheUser = totalOfUsdToBuyMatic * usdPrice;
+
+    printInGreen(
+      "amountOfMaticToTransferToTheUser",
+      amountOfMaticToTransferToTheUser
+    );
+
     // - [ ] calculate the amount to send to user
     //   - 15 % apple/google for the in-app purchase
     //   - 15 % to sturm.dev to reward of this tx
@@ -116,13 +147,25 @@ const validatePurchase = async (postResult, req) => {
 
     printSpacer("Success! 🎉");
 
-    return { message: "Success!" };
+    // ─────────────────────────────────────────────────────────────────
+
+    const txFee = await calculateTxFee(balanceBefore, wallet.address, provider);
+
+    return { txFee, message: "Success!" };
   } catch (e) {
+    let txFee;
+
+    try {
+      txFee = await calculateTxFee(balanceBefore, wallet.address, provider);
+    } catch (e) {
+      console.log("calculateTxFee error ->", e);
+    }
+
     if (e.toString().includes(errors.ALREADY_SAVED_THIS_TRANSACTION_ID)) {
-      return { errorString: errors.ALREADY_SAVED_THIS_TRANSACTION_ID };
+      return { txFee, errorString: errors.ALREADY_SAVED_THIS_TRANSACTION_ID };
     } else {
       console.log("error ->", e);
-      return { error: e, errorString: e.toString() };
+      return { txFee, error: e, errorString: e.toString() };
     }
   }
 };
