@@ -60,7 +60,9 @@ const calculateTxFee = async (accountBalanceBefore, address, provider) => {
   console.log(`accountBalanceBefore`, accountBalanceBefore);
   console.log(`accountBalanceAfter`, accountBalanceAfter);
 
-  printSpacer("Transaction fee: " + txFee);
+  console.log();
+  printInGreen("⛽️ Tx fee: ", txFee);
+  console.log();
 
   return txFee;
 };
@@ -88,7 +90,7 @@ const validatePurchase = async (postResult, req) => {
     );
 
     let transactionId = in_app[0].transaction_id;
-    // transactionId = Math.floor(Math.random() * 20000); // TODO: remove
+    transactionId = Math.floor(Math.random() * 20000); // TODO: remove
 
     printSpacer("Getting contract...");
 
@@ -132,18 +134,41 @@ const validatePurchase = async (postResult, req) => {
     const costOfBuyMatic__sturm_dev = 0.15; // maintain server costs - risk of loss
     const totalOfUsdToBuyMatic =
       1 - costOfInAppPurchase - costOfBuyMatic__sturm_dev;
-    const amountOfMaticToTransferToTheUser = totalOfUsdToBuyMatic * usdPrice;
+    const amountOfMaticToTransferToTheUser = (
+      totalOfUsdToBuyMatic * usdPrice
+    ).toString();
 
     printInGreen(
       "amountOfMaticToTransferToTheUser",
       amountOfMaticToTransferToTheUser
     );
 
-    // - [ ] calculate the amount to send to user
-    //   - 15 % apple/google for the in-app purchase
-    //   - 15 % to sturm.dev to reward of this tx
-    //   - the costs of this tx
-    // - [ ] send the amount of MATIC to user-public-address
+    const valueToSend = ethers.utils.parseEther(
+      amountOfMaticToTransferToTheUser
+    );
+
+    console.log(`valueToSend`, valueToSend);
+
+    const limit = await wallet.estimateGas({
+      to: userPublicAddress,
+      value: valueToSend,
+      gasPrice: veryFastPrice,
+    });
+
+    console.log(`limit`, limit);
+
+    printSpacer("Mining transaction...");
+    const sendMatic = await wallet.sendTransaction({
+      to: userPublicAddress,
+      value: valueToSend,
+      gasPrice: veryFastPrice,
+      gasLimit: limit,
+    });
+
+    printSpacer("Transaction mined!", sendMatic.hash);
+    const receipt = await sendMatic.wait();
+    // The transaction is now on chain!
+    console.log(`Mined in block ${receipt.blockNumber}`);
 
     printSpacer("Success! 🎉");
 
@@ -153,6 +178,8 @@ const validatePurchase = async (postResult, req) => {
 
     return { txFee, message: "Success!" };
   } catch (e) {
+    printSpacer("INSIDE CATCH BLOCK");
+
     let txFee;
 
     try {
