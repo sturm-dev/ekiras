@@ -5,8 +5,18 @@ services:
   validate-purchase-ios:
     image: sturmenta/validate-purchase-ios:latest
     env:
-      - MAIN_MNEMONIC=<copy-from-.env>
-      - BTTC_RPC_API_KEY=<copy-from-.env>
+      - MAINNET=<copy-from-.env>
+      #
+      - MAINNET__RPC_FULL_URL=<copy-from-.env>
+      - TESTNET__RPC_FULL_URL=<copy-from-.env>
+      #
+      - MAINNET__CONTRACT_ADDRESS=<copy-from-.env>
+      - TESTNET__CONTRACT_ADDRESS=<copy-from-.env>
+      #
+      - MAINNET__PRIVATE_KEY=<copy-from-.env>
+      - TESTNET__PRIVATE_KEY=<copy-from-.env>
+      #
+      - ETHERSCAN_API_KEY=<copy-from-.env>
     expose:
       - port: 3000
         as: 80

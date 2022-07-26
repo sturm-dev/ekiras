@@ -25,7 +25,6 @@ const getGasPrices = async (provider) => {
 
   printGasPrices(gasPrices);
 
-  // TODO: make logic to know which gas price to use (from polygon oracle)
   return gasPrices;
 };
 
