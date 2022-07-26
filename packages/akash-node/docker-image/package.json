@@ -1,5 +1,5 @@
 {
-  "name": "validate-purchase-ios",
+  "name": "docker-image",
   "version": "0.0.4",
   "main": "index.js",
   "license": "MIT",
