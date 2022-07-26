@@ -48,6 +48,8 @@ const sendBalanceToUserAddress = async (
   const receipt = await tx.wait();
   // The transaction is now on chain!
   console.log(`Mined in block ${receipt.blockNumber}`);
+
+  return ethers.utils.formatUnits(valueToSend, "ether");
 };
 
 module.exports = sendBalanceToUserAddress;
