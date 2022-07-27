@@ -173,7 +173,9 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.amountOfCredits}
-          onPress={() => navigation.navigate('Screen_MyBalance')}>
+          onPress={() =>
+            navigation.navigate('Screen_MyBalance', {userAddress})
+          }>
           <CustomIcon type="octicon" name="comment" color={colors.text} />
           {userBalanceLoading ? (
             <ActivityIndicator

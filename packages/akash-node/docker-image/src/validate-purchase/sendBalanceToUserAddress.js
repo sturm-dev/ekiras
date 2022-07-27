@@ -49,7 +49,10 @@ const sendBalanceToUserAddress = async (
   // The transaction is now on chain!
   console.log(`Mined in block ${receipt.blockNumber}`);
 
-  return ethers.utils.formatUnits(valueToSend, "ether");
+  return {
+    amountOfMaticSentToTheUser: ethers.utils.formatUnits(valueToSend, "ether"),
+    txHash: tx.hash,
+  };
 };
 
 module.exports = sendBalanceToUserAddress;

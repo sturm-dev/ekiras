@@ -2,7 +2,7 @@
 //
 // - endpoint body:
 //   - receipt-data
-//   - password (app-store shared secret)
+//   - password (app-store shared secret) // TODO: get from .env
 //   - user-public-address
 //
 // - logic:

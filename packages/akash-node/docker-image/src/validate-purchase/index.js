@@ -58,12 +58,9 @@ const validatePurchase = async (postResult, req) => {
     await saveTxId(contract, gasPrices, postResult);
 
     printSpacer("Send balance to user...");
-    amountOfMaticSentToTheUser = await sendBalanceToUserAddress(
-      wallet,
-      gasPrices,
-      userAddress,
-      isSandbox
-    );
+    const { amountOfMaticSentToTheUser: _amountOfMaticSentToTheUser, txHash } =
+      await sendBalanceToUserAddress(wallet, gasPrices, userAddress, isSandbox);
+    amountOfMaticSentToTheUser = _amountOfMaticSentToTheUser;
     // ────────────────────────────────────────────────────────────
 
     printSpacer("Success! 🎉");
@@ -72,7 +69,7 @@ const validatePurchase = async (postResult, req) => {
 
     const txFee = await calculateTxFee(balanceBefore, wallet.address, provider);
 
-    return { txFee, amountOfMaticSentToTheUser, message: "Success!" };
+    return { txFee, txHash, amountOfMaticSentToTheUser, message: "Success!" };
   } catch (e) {
     console.log(`\n\n[1;33m -- INSIDE VALIDATE PURCHASE CATCH BLOCK --[0m\n\n`); // log in yellow
 
