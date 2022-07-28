@@ -17,6 +17,8 @@ services:
       - TESTNET__PRIVATE_KEY=<copy-from-.env>
       #
       - ETHERSCAN_API_KEY=<copy-from-.env>
+      #
+      - APP_STORE_SHARED_SECRET=<copy-from-.env>
     expose:
       - port: 3000
         as: 80

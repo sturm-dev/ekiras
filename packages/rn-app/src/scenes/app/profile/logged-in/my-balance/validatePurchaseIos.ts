@@ -1,5 +1,3 @@
-import {APP_STORE_SHARED_SECRET} from 'react-native-dotenv';
-
 export const validatePurchaseIos = async ({
   receipt,
   userAddress,
@@ -18,7 +16,6 @@ export const validatePurchaseIos = async ({
         },
         body: JSON.stringify({
           'receipt-data': receipt,
-          password: APP_STORE_SHARED_SECRET,
           'user-public-address': userAddress,
         }),
       },

@@ -2,7 +2,6 @@
 //
 // - endpoint body:
 //   - receipt-data
-//   - password (app-store shared secret) // TODO: get from .env
 //   - user-public-address
 //
 // - logic:
@@ -70,7 +69,7 @@ app.post("/validate-purchase-ios", async (req, res) => {
 
   const dataToSend = JSON.stringify({
     "receipt-data": req.body["receipt-data"],
-    password: req.body["password"],
+    password: process.env.APP_STORE_SHARED_SECRET,
     "exclude-old-transactions": true,
   });
 
