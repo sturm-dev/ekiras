@@ -4,11 +4,11 @@
     "colId": "a885d992-225a-46f0-b7cc-040658e3f07a",
     "containerId": "",
     "name": "[PROD] validate-purchase-ios",
-    "url": "{{SERVER_URL}}validate-purchase-ios",
+    "url": "{{SERVER_URL}}/validate-purchase-ios",
     "method": "POST",
     "sortNum": 50000,
     "created": "2022-07-18T08:32:19.560Z",
-    "modified": "2022-07-28T00:14:58.677Z",
+    "modified": "2022-07-28T00:27:56.411Z",
     "headers": [],
     "params": [],
     "body": {
