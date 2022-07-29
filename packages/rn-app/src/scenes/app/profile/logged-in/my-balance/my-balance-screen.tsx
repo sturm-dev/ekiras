@@ -2,12 +2,17 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import IAP, {Product} from 'react-native-iap';
+import IAP, {
+  Product,
+  ProductPurchase,
+  PurchaseError,
+  SubscriptionPurchase,
+} from 'react-native-iap';
 import {TOKEN_NAME} from 'react-native-dotenv';
 
-import {BackButton, ScreenSafeArea} from '_atoms';
-import {Button} from '_molecules';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
+import {Button, Overlay} from '_molecules';
+import {DEVICE_WIDTH, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {validatePurchaseIos} from './validatePurchaseIos';
 
@@ -34,19 +39,62 @@ export const Screen_MyBalance: React.FC<{
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
   const navigation = useNavigation<Screen_MyBalance__Prop>();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {params} = route;
 
-  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  // const [purchased, setPurchased] = useState(false);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [receiveCryptoLoading, setReceiveCryptoLoading] = useState(false);
+  const [purchaseModalLoadingVisible, setPurchaseModalLoadingVisible] =
+    useState(false);
+
+  const validatePurchaseInServer = React.useCallback(
+    async (
+      receipt: string,
+      purchase: ProductPurchase | SubscriptionPurchase,
+    ) => {
+      setPurchaseLoading(false);
+      setReceiveCryptoLoading(true);
+      try {
+        const result = await validatePurchaseIos({
+          userAddress: params.userAddress,
+          receipt,
+        });
+
+        if (result.status === 'ok') {
+          IAP.finishTransaction(purchase);
+          // TODO: integrate animations and show animation of success when purchase is finished
+        } else if (result.status === 'error') {
+          setPurchaseModalLoadingVisible(false);
+          console.error('FAILURE! 💩');
+          // TODO: show toast with error
+        }
+      } catch (e) {
+        console.log('validatePurchaseInServer error', e);
+      }
+
+      setReceiveCryptoLoading(false);
+    },
+    [params.userAddress],
+  );
+
+  const handleIAPPurchaseError = React.useCallback((err: PurchaseError) => {
+    setPurchaseLoading(false);
+    setPurchaseModalLoadingVisible(false);
+
+    console.log(`err - purchaseErrorListener`, JSON.stringify(err, null, 2));
+
+    if (err.code !== 'E_USER_CANCELLED') {
+      Alert.alert(
+        'Error',
+        'Error with your purchase, error code = ' + err.code,
+      );
+    }
+  }, []);
 
   React.useEffect(() => {
     IAP.initConnection()
       .catch(err => console.log('initConnection error', err))
       .then(() => {
-        console.log('initConnection success');
-
         IAP.getProducts([consumableID])
           .catch(err => console.log('getProducts error', err))
           .then(_products => {
@@ -57,77 +105,24 @@ export const Screen_MyBalance: React.FC<{
         IAP.getAvailablePurchases()
           .catch(err => console.log('getPurchases error', err))
           .then(async purchases => {
-            console.log(`\n\n [1;33m -[0m Get available purchases\n\n`);
-
-            if (!purchases) console.log('no purchases');
-            else {
-              console.log(`purchases`, JSON.stringify(purchases, null, 2));
-
-              if (purchases.length > 0) {
-                const result = await validatePurchaseIos({
-                  userAddress: params.userAddress,
-                  receipt: purchases[0].transactionReceipt,
-                });
-
-                if (result.status === 'ok') {
-                  // IAP.finishTransaction(purchase);
-                  // setPurchased(true);
-
-                  console.error('SUCCESS! 🎉');
-                }
-              }
-            }
+            if (!purchases || purchases.length === 0)
+              console.log('no purchases');
+            else
+              validatePurchaseInServer(
+                purchases[0].transactionReceipt,
+                purchases[0],
+              );
           });
       });
 
-    const purchaseErrorListener = IAP.purchaseErrorListener(err => {
-      setLoading(false);
-      console.log(`err - purchaseErrorListener`, JSON.stringify(err, null, 2));
-
-      // {
-      //   "debugMessage": "The operation couldn’t be completed. (SKErrorDomain error 2.)",
-      //   "message": "The operation couldn’t be completed. (SKErrorDomain error 2.)",
-      //   "responseCode": "2",
-      //   "code": "E_USER_CANCELLED",
-      //   "productId": "0.99_USD"
-      // }
-
-      if (err.code !== 'E_USER_CANCELLED') {
-        Alert.alert(
-          'Error',
-          'Error with your purchase, error code = ' + err.code,
-        );
-      }
-    });
+    const purchaseErrorListener = IAP.purchaseErrorListener(
+      handleIAPPurchaseError,
+    );
 
     const purchaseUpdateListener = IAP.purchaseUpdatedListener(
       async purchase => {
-        setLoading(false);
-
-        console.log(`\n\n [1;33m -[0m Purchase update listener\n\n`);
-
-        try {
-          const receipt = purchase.transactionReceipt;
-          if (receipt) {
-            console.log(`receipt`, JSON.stringify(receipt, null, 2));
-
-            const result = await validatePurchaseIos({
-              receipt,
-              userAddress: params.userAddress,
-            });
-
-            if (result.status === 'ok') {
-              console.error('SUCCESS! 🎉');
-              // setPurchased(true);
-
-              IAP.finishTransaction(purchase);
-            } else if (result.status === 'error') {
-              console.error('FAILURE! 💩');
-            }
-          }
-        } catch (err) {
-          console.log('purchaseUpdatedListener error', err);
-        }
+        const receipt = purchase.transactionReceipt;
+        if (receipt) validatePurchaseInServer(receipt, purchase);
       },
     );
 
@@ -135,31 +130,94 @@ export const Screen_MyBalance: React.FC<{
       purchaseUpdateListener.remove();
       purchaseErrorListener.remove();
     };
-  }, [params]);
+  }, [params.userAddress, validatePurchaseInServer, handleIAPPurchaseError]);
 
   const onRequestPurchase = () => {
-    setLoading(true);
+    setPurchaseLoading(true);
+    setPurchaseModalLoadingVisible(true);
     IAP.requestPurchase(consumableID);
   };
 
-  console.log(`products`, JSON.stringify(products, null, 2));
+  // TODO: show modal when making purchase
+  // TODO: hide modal when purchase is finished
+  // TODO: show friendly loading when "verifying purchase in decentralized server to receive the crypto"
+  // TODO: show big message of success when purchase in finished
 
   return (
     <ScreenSafeArea>
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton
+        onPress={purchaseLoading ? () => null : () => navigation.goBack()}
+      />
       <View style={styles.container}>
         {!products || !products.length ? <ActivityIndicator /> : null}
         {products.map(product => (
           <Button
             key={product.productId}
-            text={`Buy some ${TOKEN_NAME} to interact inside the app for ${product.price} ${product.currency}`}
+            text={`Buy some ${TOKEN_NAME} for ${product.price} ${product.currency}`}
             onPress={onRequestPurchase}
-            loading={loading || !products}
             numberOfLines={2}
             style={{height: 80}}
           />
         ))}
       </View>
+      {purchaseModalLoadingVisible ? (
+        <Overlay isVisible overlayStyle={styles.modal} animationType="fade">
+          <View style={styles.modalContainer}>
+            <View style={styles.row}>
+              <View style={styles.iconContainer}>
+                {purchaseLoading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <TextByScale>✅</TextByScale>
+                )}
+              </View>
+              <View style={styles.textContainer}>
+                {purchaseLoading ? (
+                  <TextByScale>
+                    Making the purchase on the Apple Servers...
+                  </TextByScale>
+                ) : (
+                  <TextByScale>
+                    Purchase on the Apple servers complete!
+                  </TextByScale>
+                )}
+              </View>
+            </View>
+            {!purchaseLoading ? (
+              <View style={styles.row}>
+                <View style={styles.iconContainer}>
+                  {receiveCryptoLoading ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <TextByScale>✅</TextByScale>
+                  )}
+                </View>
+                <View style={styles.textContainer}>
+                  {receiveCryptoLoading ? (
+                    <TextByScale>
+                      Validating the Apple purchase on own decentralized
+                      servers...
+                    </TextByScale>
+                  ) : (
+                    <TextByScale>
+                      {`Apple purchase validated & ${TOKEN_NAME} sended to the user! 🎉`}
+                    </TextByScale>
+                  )}
+                </View>
+              </View>
+            ) : null}
+            {!purchaseLoading && !receiveCryptoLoading ? (
+              <View style={{...styles.row, justifyContent: 'center'}}>
+                <Button
+                  disabled={purchaseLoading || receiveCryptoLoading}
+                  text="OK"
+                  onPress={() => setPurchaseModalLoadingVisible(false)}
+                />
+              </View>
+            ) : null}
+          </View>
+        </Overlay>
+      ) : null}
     </ScreenSafeArea>
   );
 };
@@ -169,6 +227,30 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     paddingHorizontal: 30,
+  },
+  modal: {
+    flex: 1,
+    padding: 0,
+    borderRadius: 10,
+    backgroundColor: '#fff0',
+  },
+  modalContainer: {
+    flex: 1,
+    width: DEVICE_WIDTH,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    padding: 20,
+  },
+  iconContainer: {
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
   },
 }));
 
