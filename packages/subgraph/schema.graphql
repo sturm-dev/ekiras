@@ -1,0 +1,26 @@
+type AddTransactionIdEvent @entity {
+  id: ID!
+  _transactionId: BigInt! # uint256
+}
+
+type CreatePostEvent @entity {
+  id: ID!
+  _id: BigInt! # uint256
+}
+
+type DeletePostEvent @entity {
+  id: ID!
+  _id: BigInt! # uint256
+}
+
+type UpdateUsernameEvent @entity {
+  id: ID!
+  _userAddress: Bytes! # address
+}
+
+type VoteEvent @entity {
+  id: ID!
+  _postId: BigInt! # uint256
+  _upVotesCount: BigInt! # uint256
+  _downVotesCount: BigInt! # uint256
+}

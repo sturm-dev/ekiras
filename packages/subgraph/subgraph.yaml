@@ -1,0 +1,35 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: JustFeedback
+    network: matic
+    source:
+      address: "0x3fcD32612057219997F0f59302C5F05cB12C3f39"
+      abi: JustFeedback
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AddTransactionIdEvent
+        - CreatePostEvent
+        - DeletePostEvent
+        - UpdateUsernameEvent
+        - VoteEvent
+      abis:
+        - name: JustFeedback
+          file: ./abis/JustFeedback.json
+      eventHandlers:
+        - event: AddTransactionIdEvent(uint256)
+          handler: handleAddTransactionIdEvent
+        - event: CreatePostEvent(uint256)
+          handler: handleCreatePostEvent
+        - event: DeletePostEvent(uint256)
+          handler: handleDeletePostEvent
+        - event: UpdateUsernameEvent(address)
+          handler: handleUpdateUsernameEvent
+        - event: VoteEvent(uint256,uint256,uint256)
+          handler: handleVoteEvent
+      file: ./src/just-feedback.ts
