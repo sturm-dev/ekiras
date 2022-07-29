@@ -1,39 +1,56 @@
 const { ethers, run, network } = require("hardhat")
+
 const {
   getAccountBalance,
   fromPrivateKeyToAddress,
   mathRound,
 } = require("./utils")
 
-async function main() {
+const { RPC_FULL_URL, ETHERSCAN_ADDRESS_URL } = require("../handleEnvVars")
+
+async function deploy({ MAINNET }) {
+  console.log(`\n\n [1;33m -[0m To deploy to ${MAINNET ? "mainnet" : "testnet"}...\n\n`)
+
   const JustFeedbackFactory = await ethers.getContractFactory("JustFeedback")
 
+  const address = fromPrivateKeyToAddress(network.config.accounts[0])
+
   const accountBalanceBefore = await getAccountBalance(
-    fromPrivateKeyToAddress(network.config.accounts[0])
+    address,
+    RPC_FULL_URL(MAINNET)
   )
+  console.log(`accountBalanceBefore`, mathRound(accountBalanceBefore))
   // ────────────────────────────────────────────────────────────────────────────────
-  console.log(`\n\n`, "Deploying contract...")
-  const justFeedback = await JustFeedbackFactory.deploy()
-  await justFeedback.deployed()
+  console.log(`\n\n [1;33m -[0m Deploying smart contracts...\n\n`)
+
+  const contract = await JustFeedbackFactory.deploy()
+  await contract.deployed()
+
   console.log(
     "Contract deployed at:",
-    `https://bttcscan.com/address/${justFeedback.address}`
+    `[1;32m ${ETHERSCAN_ADDRESS_URL(MAINNET)}${contract.address}[0m`
   )
-  if (network.config.chainId != 31337 && process.env.BTTCSCAN_API_KEY) {
-    console.log(`\n\n`, "Waiting for block confirmations...")
-    await justFeedback.deployTransaction.wait(6)
-    await verify(justFeedback.address, [])
+
+  // hardhat.chainId = 31337
+  if (network.config.chainId != 31337 && RPC_FULL_URL(MAINNET)) {
+    console.log(`\n\n [1;33m -[0m Waiting for block confirmations...\n\n`)
+    await contract.deployTransaction.wait(6)
+    await verify(contract.address, [])
   }
   // ────────────────────────────────────────────────────────────────────────────────
   const accountBalanceAfter = await getAccountBalance(
-    fromPrivateKeyToAddress(network.config.accounts[0])
+    fromPrivateKeyToAddress(network.config.accounts[0]),
+    RPC_FULL_URL(MAINNET)
   )
   const uploadContractFee = accountBalanceBefore - accountBalanceAfter
-  console.log(`uploadContractFee`, mathRound(uploadContractFee), "BTT")
+  console.log()
+  console.log()
+  console.log("accountBalanceAfter", mathRound(accountBalanceAfter))
+  console.log("uploadContractFee", mathRound(uploadContractFee))
 }
 
 async function verify(contractAddress, args) {
-  console.log(`\n\n`, "Verifying contract...")
+  console.log(`\n\n [1;33m -[0m Verifying contract...\n\n`)
   try {
     await run("verify:verify", {
       address: contractAddress,
@@ -41,17 +58,9 @@ async function verify(contractAddress, args) {
     })
   } catch (e) {
     if (e.message.toLowerCase().includes("already verified")) {
-      console.log("Already Verified!")
-    } else {
-      console.log(e)
-    }
+      console.log(`[1;32m Already Verified![0m`) // log in green
+    } else console.log(e)
   }
 }
 
-// main
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+module.exports = deploy

@@ -1,0 +1,23 @@
+[
+  {
+    "_id": "a885d992-225a-46f0-b7cc-040658e3f07a",
+    "colName": "akash-node",
+    "created": "2022-07-18T08:30:41.079Z",
+    "sortNum": 10000,
+    "folders": []
+  },
+  {
+    "_id": "5376b26e-389f-44ce-b436-7c356517ff2c",
+    "colName": "localhost",
+    "created": "2022-07-18T08:57:21.013Z",
+    "sortNum": 20000,
+    "folders": []
+  },
+  {
+    "_id": "62c1fe55-6729-4f66-a45b-8708a0d71b4e",
+    "colName": "itunes apple",
+    "created": "2022-07-18T09:16:17.902Z",
+    "sortNum": 15000,
+    "folders": []
+  }
+]

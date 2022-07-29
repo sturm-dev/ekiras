@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-// the BTTC network is not supported yet on "the graph" https://github.com/graphprotocol/graph-cli/issues/920
-// so the sorting of "trending" posts is done not so efficiently here
-
 pragma solidity 0.8.8;
 
 contract JustFeedback {
+  address public manager;
+
   struct Post {
     uint256 id;
     uint256 createdDate;
@@ -23,6 +22,7 @@ contract JustFeedback {
   mapping(string => address) public usernameToAddress;
   address emptyAddress;
   mapping(address => uint256[]) public addressToPostIds;
+  mapping(uint256 => bool) public transactionIds;
 
   event CreatePostEvent(uint256 _id);
   event DeletePostEvent(uint256 _id);
@@ -31,9 +31,11 @@ contract JustFeedback {
     uint256 _upVotesCount,
     uint256 _downVotesCount
   );
-  event UpdateUsernameEvent();
+  event UpdateUsernameEvent(address _userAddress);
+  event AddTransactionIdEvent(uint256 _transactionId);
 
   constructor() {
+    manager = msg.sender;
     postIndex = 0;
     emptyAddress = 0x0000000000000000000000000000000000000000;
   }
@@ -118,6 +120,21 @@ contract JustFeedback {
       addressToUsername[msg.sender] = _text;
     }
 
-    emit UpdateUsernameEvent();
+    emit UpdateUsernameEvent(msg.sender);
+  }
+
+  function addTransactionId(uint256 _transactionId) public {
+    require(
+      msg.sender == manager,
+      "only the manager can add new transactionIds"
+    );
+    require(
+      !transactionIds[_transactionId],
+      "already saved this transactionId"
+    );
+
+    transactionIds[_transactionId] = true;
+
+    emit AddTransactionIdEvent(_transactionId);
   }
 }

@@ -15,9 +15,10 @@ type Screen_Example__Prop = NativeStackNavigationProp<
 >;
 
 // TODO:
-// 1 - add this file to export in ../index
-// 2 - add screen name & screen params to constants
-// 3 - add this screen to current stack
+// 1 - replace "Example" coincidences with screen name
+// 2 - add this file to export in ../index
+// 3 - add screen name & screen params to constants
+// 4 - add this screen to current stack
 
 export const Screen_Example: React.FC<{
   route: RouteProp<{

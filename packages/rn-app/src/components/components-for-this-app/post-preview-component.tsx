@@ -286,8 +286,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   dateContainer: {
     alignItems: 'flex-end',
     paddingHorizontal: 5,
-    paddingTop: 2,
-    marginBottom: -20,
+    marginBottom: -18,
   },
   modal: {
     padding: 0,

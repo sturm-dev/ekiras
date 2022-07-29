@@ -115,6 +115,9 @@ export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
       <View
         style={{
           ...styles.buttonContainer,
+          ...(numberOfLines && numberOfLines > 1
+            ? {height: 'auto', paddingVertical: 13}
+            : {}),
           marginVertical: 8,
           ...(parseStyle(style) as object),
         }}>

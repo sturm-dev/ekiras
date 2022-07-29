@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "node:14.19.3": "source $HOME/.nvm/nvm.sh; nvm use v14.19.3",
+    "node:14.19.3": "echo 'must use node_version = v14.19.3'",
     "ios": "yarn node:14.19.3; react-native run-ios",
     "android": "react-native run-android",
     "pods": "yarn node:14.19.3 && npx pod-install",
@@ -24,6 +24,7 @@
     "react-native": "0.69.0",
     "react-native-dotenv": "^3.3.1",
     "react-native-get-random-values": "^1.8.0",
+    "react-native-iap": "^8.0.0-rc.6",
     "react-native-keychain": "^8.1.0",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^4.3.1",

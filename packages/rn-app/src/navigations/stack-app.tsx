@@ -6,6 +6,7 @@ import {
   Screen_CreateWallet,
   Screen_Home,
   Screen_ImportWallet,
+  Screen_MyBalance,
   Screen_MyPosts,
   Screen_MyPublicAddress,
   Screen_Profile,
@@ -40,6 +41,7 @@ export const Stack_App = (): any => {
         component={Screen_MyPublicAddress}
       />
       <Stack.Screen name="Screen_MyPosts" component={Screen_MyPosts} />
+      <Stack.Screen name="Screen_MyBalance" component={Screen_MyBalance} />
     </Stack.Navigator>
   );
 };

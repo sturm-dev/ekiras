@@ -73,6 +73,8 @@ export const Screen_Home: React.FC<{
     }
   }, [params?.redirectTo, navigation]);
 
+  console.log('re-render home');
+
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
     if (!error) setMyAddress(userAddress);

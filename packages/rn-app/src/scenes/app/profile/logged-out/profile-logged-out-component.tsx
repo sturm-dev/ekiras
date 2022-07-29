@@ -13,7 +13,7 @@ import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {Screen_Profile__Prop} from './profile-screen';
+import {Screen_Profile__Prop} from '../profile-screen';
 
 const devSeeds = [
   ONLY_DEV__SEED_1,

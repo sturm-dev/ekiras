@@ -1,35 +1,28 @@
 const ethers = require("ethers")
 
-const { bttcChain } = require("./bttcChainData")
-
 const fromPrivateKeyToAddress = (privateKey) => {
   const wallet = new ethers.Wallet(privateKey)
   return wallet.address
 }
 
-const getAccountBalance = async (address) => {
-  const { rpcUrl, chainId, chainName } = bttcChain
-  const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
-    chainId,
-    name: chainName,
-  })
-
-  return formatBTT((await provider.getBalance(address))._hex)
+const getAccountBalance = async (address, rpc_url) => {
+  const provider = new ethers.providers.JsonRpcProvider(rpc_url)
+  return formatBalance((await provider.getBalance(address))._hex)
 }
 
-const formatBTT = (balanceInHex) => {
+const formatBalance = (balanceInHex) => {
   if (!balanceInHex) return undefined
 
   const balance = ethers.BigNumber.from(balanceInHex)
-  const amountOfBTT = ethers.utils.formatEther(balance)
-  return mathRound(amountOfBTT)
+  const amountOfBalance = ethers.utils.formatEther(balance)
+  return mathRound(amountOfBalance)
 }
 
-const mathRound = (amountOfBTT) => Math.round(amountOfBTT * 1e4) / 1e4
+const mathRound = (amountOfBalance) => Math.round(amountOfBalance * 1e4) / 1e4
 
 module.exports = {
   getAccountBalance,
-  formatBTT,
+  formatBalance,
   fromPrivateKeyToAddress,
   mathRound,
 }

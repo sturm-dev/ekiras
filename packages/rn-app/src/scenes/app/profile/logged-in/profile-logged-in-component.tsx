@@ -24,7 +24,7 @@ import {
   getUserAddress,
   getUsername,
   onLogout,
-  smallInteractionCostApprox,
+  SMALL_INTERACTION_COST_APPROX,
 } from '_db';
 
 import {Screen_Profile__Prop} from '../profile-screen';
@@ -105,7 +105,13 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
 
       if (error) Alert.alert('Error', error);
       else {
-        setUserBalance(formatBigNumber(balance / smallInteractionCostApprox));
+        setUserBalance(
+          balance === 0
+            ? '0'
+            : formatBigNumber(
+                balance / parseFloat(SMALL_INTERACTION_COST_APPROX),
+              ),
+        );
       }
     }
   };
@@ -165,7 +171,11 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
             )}
           </View>
         </TouchableOpacity>
-        <View style={styles.amountOfCredits}>
+        <TouchableOpacity
+          style={styles.amountOfCredits}
+          onPress={() =>
+            navigation.navigate('Screen_MyBalance', {userAddress})
+          }>
           <CustomIcon type="octicon" name="comment" color={colors.text} />
           {userBalanceLoading ? (
             <ActivityIndicator
@@ -180,7 +190,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
               {userBalance}
             </TextByScale>
           )}
-        </View>
+        </TouchableOpacity>
       </View>
       {/* • • • • • */}
       <View style={styles.body}>

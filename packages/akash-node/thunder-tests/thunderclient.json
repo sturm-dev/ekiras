@@ -1,0 +1,59 @@
+[
+  {
+    "_id": "960774a2-ee1f-42be-830b-5f28a0ecc33d",
+    "colId": "a885d992-225a-46f0-b7cc-040658e3f07a",
+    "containerId": "",
+    "name": "[PROD] validate-purchase-ios",
+    "url": "{{SERVER_URL}}/validate-purchase-ios",
+    "method": "POST",
+    "sortNum": 50000,
+    "created": "2022-07-18T08:32:19.560Z",
+    "modified": "2022-07-28T00:27:56.411Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"user-public-address\": \"{{TEST_PUBLIC_ADDRESS}}\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "68fbd714-1dd0-4fce-8417-6228b6a3b269",
+    "colId": "62c1fe55-6729-4f66-a45b-8708a0d71b4e",
+    "containerId": "",
+    "name": "[SANDBOX] itunes apple - verify receipt",
+    "url": "https://sandbox.itunes.apple.com/verifyReceipt",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2022-07-18T08:47:02.581Z",
+    "modified": "2022-07-18T09:50:20.194Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"password\": \"{{APP_STORE_SHARED_SECRET}}\",\n    \"exclude-old-transactions\": true\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "01537ff0-de3e-4ffc-95f9-9a17f1233f77",
+    "colId": "5376b26e-389f-44ce-b436-7c356517ff2c",
+    "containerId": "",
+    "name": "validate-purchase-ios",
+    "url": "localhost:3000/validate-purchase-ios",
+    "method": "POST",
+    "sortNum": 10000,
+    "created": "2022-07-18T08:57:21.015Z",
+    "modified": "2022-07-28T00:14:50.464Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"receipt-data\": \"{{SANDBOX_RECEIPT}}\",\n    \"user-public-address\": \"{{TEST_PUBLIC_ADDRESS}}\"\n}",
+      "form": []
+    },
+    "tests": []
+  }
+]
