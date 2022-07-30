@@ -24,14 +24,21 @@ contract JustFeedback {
   mapping(address => uint256[]) public addressToPostIds;
   mapping(uint256 => bool) public transactionIds;
 
-  event CreatePostEvent(uint256 _id);
+  event CreatePostEvent(
+    uint256 _id,
+    uint256 _createdDate,
+    address _author,
+    string _text,
+    uint256 _upVotesCount,
+    uint256 _downVotesCount
+  );
   event DeletePostEvent(uint256 _id);
   event VoteEvent(
     uint256 _postId,
     uint256 _upVotesCount,
     uint256 _downVotesCount
   );
-  event UpdateUsernameEvent(address _userAddress);
+  event UpdateUsernameEvent(address _userAddress, string _text);
   event AddTransactionIdEvent(uint256 _transactionId);
 
   constructor() {
@@ -50,7 +57,7 @@ contract JustFeedback {
 
     addressToPostIds[msg.sender].push(postIndex);
 
-    emit CreatePostEvent(postIndex);
+    emit CreatePostEvent(postIndex, block.timestamp, msg.sender, _text, 0, 0);
 
     postIndex += 1;
   }
@@ -120,7 +127,7 @@ contract JustFeedback {
       addressToUsername[msg.sender] = _text;
     }
 
-    emit UpdateUsernameEvent(msg.sender);
+    emit UpdateUsernameEvent(msg.sender, _text);
   }
 
   function addTransactionId(uint256 _transactionId) public {

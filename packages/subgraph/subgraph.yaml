@@ -6,7 +6,7 @@ dataSources:
     name: JustFeedback
     network: matic
     source:
-      address: "0x3fcD32612057219997F0f59302C5F05cB12C3f39"
+      address: "0xb7Ca3185e621623A14a1bB471bc354581E4FaE01"
       abi: JustFeedback
       startBlock: 31073133
     mapping:
@@ -15,11 +15,10 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Post
-        - User
       abis:
         - name: JustFeedback
           file: ./abis/JustFeedback.json
       eventHandlers:
-        - event: CreatePostEvent(uint256)
+        - event: CreatePostEvent(uint256,uint256,address,string,uint256,uint256)
           handler: handleCreatePostEvent
       file: ./src/just-feedback.ts

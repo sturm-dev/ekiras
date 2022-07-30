@@ -1,14 +1,13 @@
 type Post @entity {
   id: ID!
-  # createdDate: BigInt! # uint256
-  # # author: Bytes! # address
-  # author: User
-  # text: String!
-  # upVotesCount: BigInt! # uint256
-  # downVotesCount: BigInt! # uint256
+  createdDate: BigInt! # uint256
+  author: User # without linking -> author: Bytes! # address
+  text: String!
+  upVotesCount: BigInt! # uint256
+  downVotesCount: BigInt! # uint256
 }
 
-# type User @entity {
-#   id: ID! # wallet address
-#   Posts: [Post!] @derivedFrom(field: "author")
-# }
+type User @entity {
+  id: ID! # wallet address
+  Posts: [Post!] @derivedFrom(field: "author")
+}

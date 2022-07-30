@@ -41,4 +41,106 @@ export class Post extends Entity {
   set id(value: string) {
     this.set("id", Value.fromString(value));
   }
+
+  get createdDate(): BigInt {
+    let value = this.get("createdDate");
+    return value!.toBigInt();
+  }
+
+  set createdDate(value: BigInt) {
+    this.set("createdDate", Value.fromBigInt(value));
+  }
+
+  get author(): string | null {
+    let value = this.get("author");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set author(value: string | null) {
+    if (!value) {
+      this.unset("author");
+    } else {
+      this.set("author", Value.fromString(<string>value));
+    }
+  }
+
+  get text(): string {
+    let value = this.get("text");
+    return value!.toString();
+  }
+
+  set text(value: string) {
+    this.set("text", Value.fromString(value));
+  }
+
+  get upVotesCount(): BigInt {
+    let value = this.get("upVotesCount");
+    return value!.toBigInt();
+  }
+
+  set upVotesCount(value: BigInt) {
+    this.set("upVotesCount", Value.fromBigInt(value));
+  }
+
+  get downVotesCount(): BigInt {
+    let value = this.get("downVotesCount");
+    return value!.toBigInt();
+  }
+
+  set downVotesCount(value: BigInt) {
+    this.set("downVotesCount", Value.fromBigInt(value));
+  }
+}
+
+export class User extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save User entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type User must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("User", id.toString(), this);
+    }
+  }
+
+  static load(id: string): User | null {
+    return changetype<User | null>(store.get("User", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get Posts(): Array<string> | null {
+    let value = this.get("Posts");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set Posts(value: Array<string> | null) {
+    if (!value) {
+      this.unset("Posts");
+    } else {
+      this.set("Posts", Value.fromStringArray(<Array<string>>value));
+    }
+  }
 }

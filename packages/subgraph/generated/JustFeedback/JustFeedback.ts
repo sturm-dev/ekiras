@@ -44,6 +44,26 @@ export class CreatePostEvent__Params {
   get _id(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
+
+  get _createdDate(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get _author(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _text(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get _upVotesCount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get _downVotesCount(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
 }
 
 export class DeletePostEvent extends ethereum.Event {
@@ -79,6 +99,10 @@ export class UpdateUsernameEvent__Params {
 
   get _userAddress(): Address {
     return this._event.parameters[0].value.toAddress();
+  }
+
+  get _text(): string {
+    return this._event.parameters[1].value.toString();
   }
 }
 

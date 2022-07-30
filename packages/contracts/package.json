@@ -15,9 +15,10 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19"
   },
   "scripts": {
-    "deploy": "yarn deploy:testnet",
-    "deploy:testnet": "yarn clean-cache; yarn hardhat run scripts/deployTestnet.js --network polygonMumbai",
-    "deploy:mainnet": "yarn clean-cache; yarn hardhat run scripts/deployMainnet.js --network matic",
-    "clean-cache": "rm -rf artifacts; rm -rf cache;"
+    "deploy": "yarn deploy:mainnet",
+    "deploy:testnet": "yarn clean-cache; yarn hardhat run scripts/deployTestnet.js --network polygonMumbai; yarn reminder",
+    "deploy:mainnet": "yarn clean-cache; yarn hardhat run scripts/deployMainnet.js --network matic; yarn reminder",
+    "clean-cache": "rm -rf artifacts; rm -rf cache;",
+    "reminder": "echo '\n\nRemember to copy the contract address and abi to other projects\n\n'"
   }
 }
