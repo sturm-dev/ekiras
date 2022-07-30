@@ -8,6 +8,8 @@ type Post @entity {
 }
 
 type User @entity {
-  id: ID! # wallet address
   Posts: [Post!] @derivedFrom(field: "author")
+
+  id: ID! # wallet address
+  username: String
 }

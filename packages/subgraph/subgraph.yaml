@@ -25,4 +25,6 @@ dataSources:
           handler: handleVoteEvent
         - event: DeletePostEvent(uint256)
           handler: handleDeletePostEvent
+        - event: UpdateUsernameEvent(address,string)
+          handler: handleUpdateUsernameEvent
       file: ./src/just-feedback.ts

@@ -118,15 +118,6 @@ export class User extends Entity {
     return changetype<User | null>(store.get("User", id));
   }
 
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
   get Posts(): Array<string> | null {
     let value = this.get("Posts");
     if (!value || value.kind == ValueKind.NULL) {
@@ -141,6 +132,32 @@ export class User extends Entity {
       this.unset("Posts");
     } else {
       this.set("Posts", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get username(): string | null {
+    let value = this.get("username");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set username(value: string | null) {
+    if (!value) {
+      this.unset("username");
+    } else {
+      this.set("username", Value.fromString(<string>value));
     }
   }
 }

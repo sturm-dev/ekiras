@@ -1,12 +1,13 @@
 import { store } from "@graphprotocol/graph-ts";
 import {
-  CreatePostEvent as CreatePostEventEvent,
-  VoteEvent as VoteEventEvent,
-  DeletePostEvent as DeletePostEventEvent,
+  CreatePostEvent,
+  VoteEvent,
+  DeletePostEvent,
+  UpdateUsernameEvent,
 } from "../generated/JustFeedback/JustFeedback";
 import { Post, User } from "../generated/schema";
 
-export function handleCreatePostEvent(event: CreatePostEventEvent): void {
+export function handleCreatePostEvent(event: CreatePostEvent): void {
   let post = Post.load(event.params._id.toString());
 
   if (post == null) {
@@ -26,7 +27,7 @@ export function handleCreatePostEvent(event: CreatePostEventEvent): void {
   }
 }
 
-export function handleVoteEvent(event: VoteEventEvent): void {
+export function handleVoteEvent(event: VoteEvent): void {
   let post = Post.load(event.params._postId.toString());
 
   if (post != null) {
@@ -37,6 +38,14 @@ export function handleVoteEvent(event: VoteEventEvent): void {
 }
 
 // https://thegraph.com/docs/en/developing/assemblyscript-api/#removing-entities-from-the-store
-export function handleDeletePostEvent(event: DeletePostEventEvent): void {
+export function handleDeletePostEvent(event: DeletePostEvent): void {
   store.remove("Post", event.params._id.toString());
+}
+
+export function handleUpdateUsernameEvent(event: UpdateUsernameEvent): void {
+  let user = User.load(event.params._userAddress.toHexString());
+  if (!user) user = new User(event.params._userAddress.toHexString());
+
+  user.username = event.params._text;
+  user.save();
 }
