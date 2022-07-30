@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class AddTransactionIdEvent extends Entity {
+export class Post extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,23 +19,18 @@ export class AddTransactionIdEvent extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save AddTransactionIdEvent entity without an ID"
-    );
+    assert(id != null, "Cannot save Post entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type AddTransactionIdEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Post must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("AddTransactionIdEvent", id.toString(), this);
+      store.set("Post", id.toString(), this);
     }
   }
 
-  static load(id: string): AddTransactionIdEvent | null {
-    return changetype<AddTransactionIdEvent | null>(
-      store.get("AddTransactionIdEvent", id)
-    );
+  static load(id: string): Post | null {
+    return changetype<Post | null>(store.get("Post", id));
   }
 
   get id(): string {
@@ -45,198 +40,5 @@ export class AddTransactionIdEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get _transactionId(): BigInt {
-    let value = this.get("_transactionId");
-    return value!.toBigInt();
-  }
-
-  set _transactionId(value: BigInt) {
-    this.set("_transactionId", Value.fromBigInt(value));
-  }
-}
-
-export class CreatePostEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save CreatePostEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type CreatePostEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("CreatePostEvent", id.toString(), this);
-    }
-  }
-
-  static load(id: string): CreatePostEvent | null {
-    return changetype<CreatePostEvent | null>(store.get("CreatePostEvent", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get _id(): BigInt {
-    let value = this.get("_id");
-    return value!.toBigInt();
-  }
-
-  set _id(value: BigInt) {
-    this.set("_id", Value.fromBigInt(value));
-  }
-}
-
-export class DeletePostEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save DeletePostEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type DeletePostEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("DeletePostEvent", id.toString(), this);
-    }
-  }
-
-  static load(id: string): DeletePostEvent | null {
-    return changetype<DeletePostEvent | null>(store.get("DeletePostEvent", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get _id(): BigInt {
-    let value = this.get("_id");
-    return value!.toBigInt();
-  }
-
-  set _id(value: BigInt) {
-    this.set("_id", Value.fromBigInt(value));
-  }
-}
-
-export class UpdateUsernameEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UpdateUsernameEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type UpdateUsernameEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("UpdateUsernameEvent", id.toString(), this);
-    }
-  }
-
-  static load(id: string): UpdateUsernameEvent | null {
-    return changetype<UpdateUsernameEvent | null>(
-      store.get("UpdateUsernameEvent", id)
-    );
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get _userAddress(): Bytes {
-    let value = this.get("_userAddress");
-    return value!.toBytes();
-  }
-
-  set _userAddress(value: Bytes) {
-    this.set("_userAddress", Value.fromBytes(value));
-  }
-}
-
-export class VoteEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save VoteEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type VoteEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("VoteEvent", id.toString(), this);
-    }
-  }
-
-  static load(id: string): VoteEvent | null {
-    return changetype<VoteEvent | null>(store.get("VoteEvent", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get _postId(): BigInt {
-    let value = this.get("_postId");
-    return value!.toBigInt();
-  }
-
-  set _postId(value: BigInt) {
-    this.set("_postId", Value.fromBigInt(value));
-  }
-
-  get _upVotesCount(): BigInt {
-    let value = this.get("_upVotesCount");
-    return value!.toBigInt();
-  }
-
-  set _upVotesCount(value: BigInt) {
-    this.set("_upVotesCount", Value.fromBigInt(value));
-  }
-
-  get _downVotesCount(): BigInt {
-    let value = this.get("_downVotesCount");
-    return value!.toBigInt();
-  }
-
-  set _downVotesCount(value: BigInt) {
-    this.set("_downVotesCount", Value.fromBigInt(value));
   }
 }
