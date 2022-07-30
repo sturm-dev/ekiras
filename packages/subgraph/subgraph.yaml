@@ -21,4 +21,6 @@ dataSources:
       eventHandlers:
         - event: CreatePostEvent(uint256,uint256,address,string,uint256,uint256)
           handler: handleCreatePostEvent
+        - event: VoteEvent(uint256,uint256,uint256)
+          handler: handleVoteEvent
       file: ./src/just-feedback.ts
