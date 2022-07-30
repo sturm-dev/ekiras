@@ -70,7 +70,7 @@ contract JustFeedback {
 
     delete posts[_postId];
 
-    emit DeletePostEvent(postIndex);
+    emit DeletePostEvent(_postId);
   }
 
   function votePost(uint256 _postId, bool _voteIsTypeUp) public {
