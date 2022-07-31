@@ -6,13 +6,16 @@ const exportTheAbi = () => {
     const abi = getTheAbiSync()
 
     // in packages/contracts
-    writeTheAbiSync(abi, "../../builded-abi/abi.json")
     // in packages/akash-node
-    writeTheAbiSync(abi, "../../../akash-node/docker-image/src/abi.json")
     // in packages/rn-app
-    writeTheAbiSync(abi, "../../../rn-app/src/db/abi.json")
     // in packages/subgraph
-    writeTheAbiSync(abi, "../../../subgraph/abis/JustFeedback.json")
+    const dirs = [
+      "../../../build/abi.json",
+      "../../../../akash-node/docker-image/src/abi.json",
+      "../../../../rn-app/src/db/abi.json",
+      "../../../../subgraph/abis/JustFeedback.json",
+    ]
+    dirs.forEach((dir) => writeTheAbiSync(abi, dir))
   } catch (e) {
     console.log(`e`, e)
   }
