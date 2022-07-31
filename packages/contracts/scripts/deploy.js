@@ -7,6 +7,7 @@ const {
 } = require("./utils")
 
 const { RPC_FULL_URL, ETHERSCAN_ADDRESS_URL } = require("../handleEnvVars")
+const exportTheAbiSync = require("./export/exportTheAbi")
 
 async function deploy({ MAINNET }) {
   console.log(`\n\n [1;33m -[0m To deploy to ${MAINNET ? "mainnet" : "testnet"}...\n\n`)
@@ -47,6 +48,11 @@ async function deploy({ MAINNET }) {
   console.log()
   console.log("accountBalanceAfter", mathRound(accountBalanceAfter))
   console.log("uploadContractFee", mathRound(uploadContractFee))
+  // ────────────────────────────────────────────────────────────────────────────────
+  console.log(`\n\n [1;33m -[0m Exporting the abi file to another projects...\n\n`)
+  exportTheAbiSync()
+  // ────────────────────────────────────────────────────────────────────────────────
+  console.log(`\n\n [1;33m -[0m All finished! 🎉\n\n`)
 }
 
 async function verify(contractAddress, args) {
