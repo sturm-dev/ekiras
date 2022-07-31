@@ -1,9 +1,10 @@
 const getTheAbiSync = require("./getTheAbi")
-const writeTheAbiSync = require("./writeTheAbi")
+const writeFileSync = require("../utils/writeFileSync")
 
 const exportTheAbi = () => {
   try {
     const abi = getTheAbiSync()
+    if (!abi) throw new Error("No abi found")
 
     // in packages/contracts
     // in packages/akash-node
@@ -15,9 +16,9 @@ const exportTheAbi = () => {
       "../../../../rn-app/src/db/abi.json",
       "../../../../subgraph/abis/JustFeedback.json",
     ]
-    dirs.forEach((dir) => writeTheAbiSync(abi, dir))
+    dirs.forEach((dir) => writeFileSync(dir, JSON.stringify(abi)))
   } catch (e) {
-    console.log(`e`, e)
+    console.log(`exportTheAbi error ->`, e)
   }
 }
 

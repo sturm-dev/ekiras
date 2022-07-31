@@ -6,7 +6,7 @@ dataSources:
     name: JustFeedback
     network: matic
     source:
-      address: "0x7F3f05Be46b43d159d05f04688150d9a98af304e"
+      address: "0xdbaaC70ED63fE464f3e3fD70A452cDA17C88b95f"
       abi: JustFeedback
       startBlock: 31073133
     mapping:

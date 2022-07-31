@@ -5,15 +5,18 @@ const getTheAbi = () => {
   try {
     const dir = path.resolve(
       __dirname,
-      "../../artifacts/contracts/JustFeedback.sol/JustFeedback.json"
+      "../../../artifacts/contracts/JustFeedback.sol/JustFeedback.json"
     )
-    const file = fs.readFileSync(dir, "utf8")
-    const json = JSON.parse(file)
-    const abi = json.abi
 
-    return abi
+    if (fs.existsSync(dir)) {
+      const file = fs.readFileSync(dir, "utf8")
+      const json = JSON.parse(file)
+      const abi = json.abi
+
+      return abi
+    } else throw new Error("File does not exist")
   } catch (e) {
-    console.log(`e`, e)
+    console.log(`getTheAbi error ->`, e)
   }
 }
 
