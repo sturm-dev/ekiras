@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {gql, useQuery} from '@apollo/client';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
@@ -16,6 +17,19 @@ import {PostPreview} from '_componentsForThisApp';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getPosts, getUserAddress, PostInterface} from '_db';
+
+const POSTS_QUERY = gql`
+  query Posts {
+    posts {
+      id
+      createdDate
+      author {
+        id
+      }
+      text
+    }
+  }
+`;
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -47,6 +61,15 @@ export const Screen_Home: React.FC<{
   const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
 
   const [myAddress, setMyAddress] = useState('');
+
+  const {data, loading: _loading} = useQuery(POSTS_QUERY);
+
+  useEffect(() => {
+    console.log(`_loading`, _loading);
+    if (data) {
+      console.log(`data`, JSON.stringify(data, null, 2));
+    }
+  }, [data, _loading]);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
