@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {gql, useQuery} from '@apollo/client';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
@@ -15,28 +14,7 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getUserAddress, PostInterface} from '_db';
-
-// TODO: useGetPosts with params & error handling
-// https://thegraph.com/docs/en/querying/querying-from-an-application/
-// TODO: get posts orderBy upVotes
-// TODO: get next 10 posts
-
-const POSTS_QUERY = gql`
-  query Posts {
-    posts(first: 10, orderBy: upVotesCount, orderDirection: desc) {
-      id
-      createdDate
-      author {
-        id
-        username
-      }
-      text
-      upVotesCount
-      downVotesCount
-    }
-  }
-`;
+import {getUserAddress, useGetPosts} from '_db';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -59,35 +37,10 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const [posts, setPosts] = useState<PostInterface[]>([]);
+  const {posts, loading, refetch} = useGetPosts();
   const [voteInProgress, setVoteInProgress] = useState(false);
 
   const [myAddress, setMyAddress] = useState('');
-
-  const {data, loading, refetch} = useQuery(POSTS_QUERY);
-
-  useEffect(() => {
-    if (data) {
-      const _posts: PostInterface[] = [];
-      data.posts.forEach((post: PostInterface) => {
-        const _post: PostInterface = {
-          id: post.id,
-          createdDate: post.createdDate,
-          author: {
-            id: post.author.id,
-            username: post.author.username,
-          },
-          text: post.text,
-          downVotesCount: post.downVotesCount,
-          upVotesCount: post.upVotesCount,
-        };
-
-        _posts.push(_post);
-      });
-
-      setPosts(_posts);
-    }
-  }, [data]);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -111,8 +64,6 @@ export const Screen_Home: React.FC<{
       navigation.navigate(params.redirectTo);
     }
   }, [params?.redirectTo, navigation]);
-
-  console.log('re-render home');
 
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();

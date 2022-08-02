@@ -2,6 +2,7 @@ import * as ethers from 'ethers';
 
 import {PostInterface} from '../DBInterfaces';
 
+// TODO: do with new format
 export const formatPost = (value: any): PostInterface => {
   return {
     id: ethers.BigNumber.from(value[0]._hex).toNumber(),
