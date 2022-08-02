@@ -1,14 +1,16 @@
-import React from 'react';
-import {AppRegistry} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect} from 'react';
+import {AppRegistry, ActivityIndicator, View} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-// import { persistCache } from 'apollo3-cache-persist'
+import {persistCache} from 'apollo3-cache-persist';
 
 import {App} from './src';
 import {name as appName} from './app.json';
+import {MyDarkTheme} from '_utils';
 
 const cache = new InMemoryCache();
 
-// Initialize Apollo Client
 const client = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/sturmenta/just-feedback',
   cache,
@@ -16,18 +18,28 @@ const client = new ApolloClient({
 });
 
 const _App = () => {
-  // const [loadingCache, setLoadingCache] = useState(true)
+  const [loadingCache, setLoadingCache] = useState(true);
 
-  // useEffect(() => {
-  //   persistCache({
-  //     cache,
-  //     storage: AsyncStorage,
-  //   }).then(() => setLoadingCache(false))
-  // }, [])
+  useEffect(() => {
+    persistCache({
+      cache,
+      storage: AsyncStorage,
+    }).then(() => setLoadingCache(false));
+  }, []);
 
-  // if (loadingCache) {
-  //   return <AppLoading />
-  // }
+  if (loadingCache) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: MyDarkTheme.colors.background,
+        }}>
+        <ActivityIndicator size="large" color={MyDarkTheme.colors.text} />
+      </View>
+    );
+  }
 
   return (
     <ApolloProvider client={client}>
