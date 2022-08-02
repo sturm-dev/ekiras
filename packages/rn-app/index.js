@@ -49,3 +49,6 @@ const _App = () => {
 };
 
 AppRegistry.registerComponent(appName, () => _App);
+
+// https://thegraph.com/hosted-service/subgraph/sturmenta/just-feedback?selected=playground - test queries
+// https://github.com/GraphQLGuide/guide-react-native/blob/a958f89618be7deed24de9fa990b62549d39bcf1/App.js#L28

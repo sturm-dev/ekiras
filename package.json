@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "ios": "yarn workspace @my-app/rn-app ios",
-    "deploy": "yarn workspace @my-app/contracts deploy"
+    "deploy": "yarn workspace @my-app/contracts deploy",
+    "ios": "yarn workspace @my-app/rn-app ios"
   },
   "workspaces": {
     "packages": [

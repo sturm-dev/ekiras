@@ -1,7 +1,10 @@
 export type PostInterface = {
   id: number;
   createdDate: number; // unix timestamp
-  author: string;
+  author: {
+    id: string;
+    username: string;
+  };
   text: string;
   upVotesCount: number;
   downVotesCount: number;

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   TouchableOpacity,
   View,
@@ -16,17 +15,25 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getPosts, getUserAddress, PostInterface} from '_db';
+import {getUserAddress, PostInterface} from '_db';
+
+// TODO: useGetPosts with params & error handling
+// https://thegraph.com/docs/en/querying/querying-from-an-application/
+// TODO: get posts orderBy upVotes
+// TODO: get next 10 posts
 
 const POSTS_QUERY = gql`
   query Posts {
-    posts {
+    posts(first: 10, orderBy: upVotesCount, orderDirection: desc) {
       id
       createdDate
       author {
         id
+        username
       }
       text
+      upVotesCount
+      downVotesCount
     }
   }
 `;
@@ -53,23 +60,34 @@ export const Screen_Home: React.FC<{
   const {params} = route;
 
   const [posts, setPosts] = useState<PostInterface[]>([]);
-  const [loading, setLoading] = useState(true);
   const [voteInProgress, setVoteInProgress] = useState(false);
-  const [refreshingPosts, setRefreshPosts] = useState(false);
-
-  const [amountOfPosts, setAmountOfPosts] = useState(10);
-  const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
 
   const [myAddress, setMyAddress] = useState('');
 
-  const {data, loading: _loading} = useQuery(POSTS_QUERY);
+  const {data, loading, refetch} = useQuery(POSTS_QUERY);
 
   useEffect(() => {
-    console.log(`_loading`, _loading);
     if (data) {
-      console.log(`data`, JSON.stringify(data, null, 2));
+      const _posts: PostInterface[] = [];
+      data.posts.forEach((post: PostInterface) => {
+        const _post: PostInterface = {
+          id: post.id,
+          createdDate: post.createdDate,
+          author: {
+            id: post.author.id,
+            username: post.author.username,
+          },
+          text: post.text,
+          downVotesCount: post.downVotesCount,
+          upVotesCount: post.upVotesCount,
+        };
+
+        _posts.push(_post);
+      });
+
+      setPosts(_posts);
     }
-  }, [data, _loading]);
+  }, [data]);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -85,10 +103,8 @@ export const Screen_Home: React.FC<{
   // do refresh when go back to this screen and updateTime is changed
   // and get when this screen is opened
   useEffect(() => {
-    setLoading(true);
-    setPosts([]);
-    onGetPosts();
-  }, [params?.updateTime]);
+    refetch();
+  }, [params?.updateTime, refetch]);
 
   useEffect(() => {
     if (params?.redirectTo) {
@@ -103,35 +119,12 @@ export const Screen_Home: React.FC<{
     if (!error) setMyAddress(userAddress);
   };
 
-  const onGetPosts = async (
-    amountOfPostsToQuery?: number,
-    isRefreshPosts?: boolean,
-  ) => {
-    if (isRefreshPosts) setRefreshPosts(true);
-    const {posts: _posts, error} = await getPosts(amountOfPostsToQuery);
-    if (isRefreshPosts) setRefreshPosts(false);
-    setLoading(false);
-    setGetMorePostsLoading(false);
-
-    if (error) Alert.alert('Error', error);
-    else setPosts(_posts);
-  };
-
-  const getMorePosts = async () => {
-    setGetMorePostsLoading(true);
-    onGetPosts(amountOfPosts + 10);
-    setAmountOfPosts(amountOfPosts + 10);
-  };
-
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10, flexDirection: 'row'}}>
             <TextByScale scale="h3">Just Feedback</TextByScale>
-            {refreshingPosts ? (
-              <ActivityIndicator size="small" style={{marginLeft: 5}} />
-            ) : null}
           </View>
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_CreatePost')}
@@ -155,7 +148,7 @@ export const Screen_Home: React.FC<{
               renderItem={({item}) => (
                 <PostPreview
                   post={item}
-                  refreshPosts={() => onGetPosts(amountOfPosts, true)}
+                  refreshPosts={() => refetch()}
                   myAddress={myAddress}
                   setVoteInProgress={setVoteInProgress}
                   voteInProgress={voteInProgress}
@@ -167,8 +160,8 @@ export const Screen_Home: React.FC<{
               ItemSeparatorComponent={() => <View style={{height: 20}} />}
               ListFooterComponent={
                 <Button
-                  onPress={getMorePosts}
-                  loading={getMorePostsLoading}
+                  onPress={() => console.warn('get more posts')}
+                  loading={false}
                   text="Get more posts"
                   style={{
                     marginVertical: 30,
