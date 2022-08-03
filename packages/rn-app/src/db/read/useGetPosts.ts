@@ -9,9 +9,16 @@ import {PostInterface} from '../DBInterfaces';
 // TODO: get posts orderBy upVotes
 // TODO: get next 10 posts
 
+// https://thegraph.com/docs/en/querying/graphql-api/#pagination
+// https://hasura.io/docs/latest/queries/postgres/query-filters/#greater-than-or-less-than-operators-_gt-_lt-_gte-_lte
 const POSTS_QUERY = gql`
-  query Posts {
-    posts(first: 10, orderBy: upVotesCount, orderDirection: desc) {
+  query Posts($first: Int!, $skip: Int) {
+    posts(
+      orderBy: upVotesCount
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
       id
       createdDate
       author {
@@ -25,11 +32,17 @@ const POSTS_QUERY = gql`
   }
 `;
 
-export const useGetPosts = (params = {}) => {
-  console.log(`params`, params);
-
+export const useGetPosts = ({
+  first,
+  skip = 0,
+}: {
+  first: number;
+  skip?: number;
+}) => {
   const [posts, setPosts] = useState<PostInterface[]>([]);
-  const {data, loading, refetch, error} = useQuery(POSTS_QUERY);
+  const {data, loading, refetch, error} = useQuery(POSTS_QUERY, {
+    variables: {first, skip},
+  });
 
   useEffect(() => {
     if (error) {

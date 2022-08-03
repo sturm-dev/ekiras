@@ -14,7 +14,9 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getUserAddress, useGetPosts} from '_db';
+import {getUserAddress, PostInterface, useGetPosts} from '_db';
+
+const PAGINATION_SIZE = 10;
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -37,9 +39,11 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {posts, loading, refetch} = useGetPosts();
-  const [voteInProgress, setVoteInProgress] = useState(false);
+  const [oldPosts, setOldPosts] = useState<PostInterface[]>([]);
+  const [skip, setSkip] = useState(0);
+  const {posts, loading, refetch} = useGetPosts({first: PAGINATION_SIZE, skip});
 
+  const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
 
   React.useEffect(() => {
@@ -48,6 +52,7 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
+    // TODO: transform to: useGetUserAddress
     getAndSetUserAddress();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,7 +61,7 @@ export const Screen_Home: React.FC<{
   // do refresh when go back to this screen and updateTime is changed
   // and get when this screen is opened
   useEffect(() => {
-    refetch();
+    if (params?.updateTime) refetch();
   }, [params?.updateTime, refetch]);
 
   useEffect(() => {
@@ -64,6 +69,13 @@ export const Screen_Home: React.FC<{
       navigation.navigate(params.redirectTo);
     }
   }, [params?.redirectTo, navigation]);
+
+  const onGetMorePosts = () => {
+    const allCurrentPosts = [...oldPosts, ...posts];
+    setOldPosts(allCurrentPosts);
+    setSkip(allCurrentPosts.length);
+    refetch();
+  };
 
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
@@ -93,36 +105,34 @@ export const Screen_Home: React.FC<{
             <ActivityIndicator size="large" color={colors.text} />
           </View>
         ) : (
-          <>
-            <FlatList
-              data={posts}
-              renderItem={({item}) => (
-                <PostPreview
-                  post={item}
-                  refreshPosts={() => refetch()}
-                  myAddress={myAddress}
-                  setVoteInProgress={setVoteInProgress}
-                  voteInProgress={voteInProgress}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 20}} />}
-              ListFooterComponent={
-                <Button
-                  onPress={() => console.warn('get more posts')}
-                  loading={false}
-                  text="Get more posts"
-                  style={{
-                    marginVertical: 30,
-                    width: '80%',
-                    alignSelf: 'center',
-                  }}
-                />
-              }
-            />
-          </>
+          <FlatList
+            data={[...oldPosts, ...posts]}
+            renderItem={({item}) => (
+              <PostPreview
+                post={item}
+                refreshPosts={refetch}
+                myAddress={myAddress}
+                setVoteInProgress={setVoteInProgress}
+                voteInProgress={voteInProgress}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
+            ItemSeparatorComponent={() => <View style={{height: 20}} />}
+            ListFooterComponent={
+              <Button
+                onPress={onGetMorePosts}
+                loading={loading}
+                text="Get more posts"
+                style={{
+                  marginVertical: 30,
+                  width: '80%',
+                  alignSelf: 'center',
+                }}
+              />
+            }
+          />
         )}
       </View>
     </ScreenSafeArea>
