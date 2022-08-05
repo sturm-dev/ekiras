@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect} from 'react';
 import {ActivityIndicator, Alert, FlatList, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -7,9 +7,11 @@ import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
-import {getMyPosts, PostInterface} from '_db';
+import {useGetPosts} from '_db';
 import {PostPreview} from '_componentsForThisApp';
 import {useNavigationReset} from '_hooks';
+
+import {PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_MyPosts__Params = {
   userAddress: string;
@@ -33,44 +35,31 @@ export const Screen_MyPosts: React.FC<{
 
   const {handleResetNavigation} = useNavigationReset();
 
-  const [loading, setLoading] = useState(true);
-  const [posts, setPosts] = useState<PostInterface[]>([]);
+  const {posts, loading, refetch, getMore, noMore} = useGetPosts({
+    paginationSize: PAGINATION_SIZE,
+    authorId: params.userAddress,
+  });
 
-  const [amountOfPosts, setAmountOfPosts] = useState(10);
-  const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
-
-  React.useEffect(() => {
+  useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
 
-    onGetMyPosts();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onGetMyPosts = async (amountOfPostsToQuery?: number) => {
-    setLoading(true);
-    const {posts: _posts, error} = await getMyPosts(amountOfPostsToQuery);
-    setLoading(false);
-    setGetMorePostsLoading(false);
-
-    if (error) Alert.alert('Error', error);
-    else setPosts(_posts);
-  };
-
-  const getMorePosts = async () => {
-    setGetMorePostsLoading(true);
-    onGetMyPosts(amountOfPosts + 10);
-    setAmountOfPosts(amountOfPosts + 10);
-  };
+  useEffect(() => {
+    if (!loading && noMore) {
+      Alert.alert('No new results');
+    }
+  }, [loading, noMore]);
 
   return (
     <ScreenSafeArea>
       <BackButton onPress={loading ? () => null : () => navigation.goBack()} />
       <View style={styles.container}>
-        {loading ? (
+        {!posts.length && loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.text} />
           </View>
@@ -90,7 +79,7 @@ export const Screen_MyPosts: React.FC<{
                 <PostPreview
                   post={item}
                   myAddress={params.userAddress}
-                  refreshPosts={() => onGetMyPosts(amountOfPosts)}
+                  refreshPosts={refetch}
                 />
               )}
               keyExtractor={item => item.id.toString()}
@@ -112,8 +101,8 @@ export const Screen_MyPosts: React.FC<{
                   />
                 ) : (
                   <Button
-                    onPress={getMorePosts}
-                    loading={getMorePostsLoading}
+                    onPress={getMore}
+                    loading={loading}
                     text="Get more posts"
                     style={styles.button}
                   />

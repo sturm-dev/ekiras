@@ -13,10 +13,10 @@ import {
   getPercentageInHex,
 } from '_utils';
 import {
+  compareTwoAddress,
   deletePost,
   getDownVote,
   getUpVote,
-  getUsername,
   PostInterface,
   vote,
 } from '_db';
@@ -43,9 +43,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
-  const [username, setUsername] = useState('');
-  const [loadingUsername, setLoadingUsername] = useState(true);
-
   const [loadingUpVote, setLoadingUpVote] = useState(false);
   const [upVote, setUpVote] = useState(false);
   const [loadingDownVote, setLoadingDownVote] = useState(false);
@@ -58,20 +55,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
-    getAndSetUsername();
-    getAndSetUpVote();
-    getAndSetDownVote();
+    getAndPaintUpVote();
+    getAndPaintDownVote();
   }, []);
 
-  const getAndSetUsername = async () => {
-    const {username: _username, error} = await getUsername(author);
-    setLoadingUsername(false);
-
-    if (error) Alert.alert('Error', error);
-    else setUsername(_username);
-  };
-
-  const getAndSetUpVote = async () => {
+  const getAndPaintUpVote = async () => {
     if (myAddress) {
       setLoadingUpVote(true);
       const {upVote: _upVote, error} = await getUpVote(id, myAddress);
@@ -82,7 +70,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     }
   };
 
-  const getAndSetDownVote = async () => {
+  const getAndPaintDownVote = async () => {
     if (myAddress) {
       setLoadingDownVote(true);
       const {downVote: _downVote, error} = await getDownVote(id, myAddress);
@@ -94,7 +82,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   };
 
   const onVote = async (type: 'up' | 'down') => {
-    if (myAddress === author) {
+    if (compareTwoAddress(myAddress, author.id)) {
       Alert.alert('Error', "You can't vote for your own post");
     } else if (voteInProgress) {
       Alert.alert('Error', 'Vote in progress');
@@ -114,8 +102,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         } else Alert.alert('Error', error);
       } else {
         refreshPosts && refreshPosts();
-        getAndSetUpVote();
-        getAndSetDownVote();
+        getAndPaintUpVote();
+        getAndPaintDownVote();
       }
     }
   };
@@ -143,20 +131,16 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       <View style={styles.header}>
         <View style={styles.userImage} />
         <View style={{flex: 1}}>
-          {loadingUsername ? (
-            <ActivityIndicator size="small" style={{alignSelf: 'flex-start'}} />
-          ) : (
-            <>
-              {username ? <TextByScale>{username}</TextByScale> : null}
-              <TextByScale
-                scale={username ? 'caption' : 'body1'}
-                color={username ? colors.text2 : colors.text}>
-                {shortAccountId(author)}
-              </TextByScale>
-            </>
-          )}
+          {author.username ? (
+            <TextByScale>{author.username}</TextByScale>
+          ) : null}
+          <TextByScale
+            scale={author.username ? 'caption' : 'body1'}
+            color={author.username ? colors.text2 : colors.text}>
+            {shortAccountId(author.id)}
+          </TextByScale>
         </View>
-        {myAddress === author ? (
+        {compareTwoAddress(myAddress, author.id) ? (
           <TouchableOpacity
             style={styles.threeDots}
             onPress={() => setShowModal(true)}>

@@ -15,7 +15,9 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getPosts, getUserAddress, PostInterface} from '_db';
+import {getUserAddress, useGetPosts} from '_db';
+
+import {PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -38,15 +40,13 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const [posts, setPosts] = useState<PostInterface[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {posts, loading, refetch, getMore, noMore} = useGetPosts({
+    paginationSize: PAGINATION_SIZE,
+  });
+
   const [voteInProgress, setVoteInProgress] = useState(false);
-  const [refreshingPosts, setRefreshPosts] = useState(false);
-
-  const [amountOfPosts, setAmountOfPosts] = useState(10);
-  const [getMorePostsLoading, setGetMorePostsLoading] = useState(false);
-
   const [myAddress, setMyAddress] = useState('');
+  const [oldUpdateTime, setOldUpdateTime] = useState(0);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -54,18 +54,19 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
+    // TODO: transform to: useGetUserAddress
     getAndSetUserAddress();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // do refresh when go back to this screen and updateTime is changed
-  // and get when this screen is opened
   useEffect(() => {
-    setLoading(true);
-    setPosts([]);
-    onGetPosts();
-  }, [params?.updateTime]);
+    if (params?.updateTime && params.updateTime !== oldUpdateTime) {
+      setOldUpdateTime(params?.updateTime);
+      refetch();
+    }
+  }, [params?.updateTime, refetch, oldUpdateTime]);
 
   useEffect(() => {
     if (params?.redirectTo) {
@@ -73,32 +74,16 @@ export const Screen_Home: React.FC<{
     }
   }, [params?.redirectTo, navigation]);
 
-  console.log('re-render home');
-
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
     if (!error) setMyAddress(userAddress);
   };
 
-  const onGetPosts = async (
-    amountOfPostsToQuery?: number,
-    isRefreshPosts?: boolean,
-  ) => {
-    if (isRefreshPosts) setRefreshPosts(true);
-    const {posts: _posts, error} = await getPosts(amountOfPostsToQuery);
-    if (isRefreshPosts) setRefreshPosts(false);
-    setLoading(false);
-    setGetMorePostsLoading(false);
-
-    if (error) Alert.alert('Error', error);
-    else setPosts(_posts);
-  };
-
-  const getMorePosts = async () => {
-    setGetMorePostsLoading(true);
-    onGetPosts(amountOfPosts + 10);
-    setAmountOfPosts(amountOfPosts + 10);
-  };
+  useEffect(() => {
+    if (!loading && noMore) {
+      Alert.alert('No new results');
+    }
+  }, [loading, noMore]);
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
@@ -106,9 +91,6 @@ export const Screen_Home: React.FC<{
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10, flexDirection: 'row'}}>
             <TextByScale scale="h3">Just Feedback</TextByScale>
-            {refreshingPosts ? (
-              <ActivityIndicator size="small" style={{marginLeft: 5}} />
-            ) : null}
           </View>
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_CreatePost')}
@@ -121,41 +103,39 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        {loading ? (
+        {!posts.length && loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.text} />
           </View>
         ) : (
-          <>
-            <FlatList
-              data={posts}
-              renderItem={({item}) => (
-                <PostPreview
-                  post={item}
-                  refreshPosts={() => onGetPosts(amountOfPosts, true)}
-                  myAddress={myAddress}
-                  setVoteInProgress={setVoteInProgress}
-                  voteInProgress={voteInProgress}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
-              ItemSeparatorComponent={() => <View style={{height: 20}} />}
-              ListFooterComponent={
-                <Button
-                  onPress={getMorePosts}
-                  loading={getMorePostsLoading}
-                  text="Get more posts"
-                  style={{
-                    marginVertical: 30,
-                    width: '80%',
-                    alignSelf: 'center',
-                  }}
-                />
-              }
-            />
-          </>
+          <FlatList
+            data={posts}
+            renderItem={({item}) => (
+              <PostPreview
+                post={item}
+                refreshPosts={refetch}
+                myAddress={myAddress}
+                setVoteInProgress={setVoteInProgress}
+                voteInProgress={voteInProgress}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}
+            ItemSeparatorComponent={() => <View style={{height: 20}} />}
+            ListFooterComponent={
+              <Button
+                onPress={getMore}
+                loading={loading}
+                text="Get more posts"
+                style={{
+                  marginVertical: 30,
+                  width: '80%',
+                  alignSelf: 'center',
+                }}
+              />
+            }
+          />
         )}
       </View>
     </ScreenSafeArea>

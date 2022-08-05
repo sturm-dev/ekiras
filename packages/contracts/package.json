@@ -19,6 +19,6 @@
     "deploy:testnet": "yarn clean-cache; yarn hardhat run scripts/deployTestnet.js --network polygonMumbai; yarn reminder",
     "deploy:mainnet": "yarn clean-cache; yarn hardhat run scripts/deployMainnet.js --network matic; yarn reminder",
     "clean-cache": "rm -rf artifacts; rm -rf cache;",
-    "reminder": "echo '\n\n📢 remember to update subgraph if contract events where changed\n\n'"
+    "reminder": "echo '\n\n🟠 remember to deploy new subgraph & update if contract events where changed\n\n'"
   }
 }
