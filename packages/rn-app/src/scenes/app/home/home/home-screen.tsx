@@ -13,10 +13,14 @@ import {Button} from '_molecules';
 import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {
+  addArrayOfObjectsToArrayIfIdNotExists,
+  MyThemeInterfaceColors,
+  themedStyleSheet,
+} from '_utils';
 import {getUserAddress, PostInterface, useGetPosts} from '_db';
 
-const PAGINATION_SIZE = 10;
+const PAGINATION_SIZE = 1;
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -46,6 +50,9 @@ export const Screen_Home: React.FC<{
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
 
+  const allCurrentPosts: PostInterface[] =
+    addArrayOfObjectsToArrayIfIdNotExists([...oldPosts], [...posts]);
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
@@ -71,7 +78,6 @@ export const Screen_Home: React.FC<{
   }, [params?.redirectTo, navigation]);
 
   const onGetMorePosts = () => {
-    const allCurrentPosts = [...oldPosts, ...posts];
     setOldPosts(allCurrentPosts);
     setSkip(allCurrentPosts.length);
     refetch();
@@ -81,6 +87,22 @@ export const Screen_Home: React.FC<{
     const {userAddress, error} = await getUserAddress();
     if (!error) setMyAddress(userAddress);
   };
+
+  console.log('');
+  console.log(
+    `oldPosts`,
+    oldPosts.map(e => e.id),
+  );
+
+  console.log(
+    `posts`,
+    posts.map(e => e.id),
+  );
+
+  console.log(
+    `allCurrentPosts`,
+    allCurrentPosts.map(e => e.id),
+  );
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
@@ -100,13 +122,13 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        {loading ? (
+        {!allCurrentPosts.length && loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.text} />
           </View>
         ) : (
           <FlatList
-            data={[...oldPosts, ...posts]}
+            data={allCurrentPosts}
             renderItem={({item}) => (
               <PostPreview
                 post={item}
