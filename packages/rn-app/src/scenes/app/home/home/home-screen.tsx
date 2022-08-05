@@ -46,6 +46,7 @@ export const Screen_Home: React.FC<{
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
+  const [oldUpdateTime, setOldUpdateTime] = useState(0);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -60,10 +61,12 @@ export const Screen_Home: React.FC<{
   }, []);
 
   // do refresh when go back to this screen and updateTime is changed
-  // and get when this screen is opened
   useEffect(() => {
-    if (params?.updateTime) refetch();
-  }, [params?.updateTime, refetch]);
+    if (params?.updateTime && params.updateTime !== oldUpdateTime) {
+      setOldUpdateTime(params?.updateTime);
+      refetch();
+    }
+  }, [params?.updateTime, refetch, oldUpdateTime]);
 
   useEffect(() => {
     if (params?.redirectTo) {

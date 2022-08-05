@@ -83,10 +83,15 @@ export const useGetPosts = ({
     refetch();
   };
 
+  const onRefetch = () => {
+    setGetMorePressed(false);
+    refetch();
+  };
+
   return {
     posts: allCurrentPosts,
     loading,
-    refetch,
+    refetch: onRefetch,
     getMore,
     error,
     noMore: getMorePressed && !loading && posts.length === 0,
