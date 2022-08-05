@@ -5,4 +5,4 @@ import {name as appName} from './app.json';
 
 AppRegistry.registerComponent(appName, () => App);
 
-// index logic on /src/index.ts
+// index logic on /src/index.tsx

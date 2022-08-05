@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   TouchableOpacity,
   View,
@@ -13,14 +14,10 @@ import {Button} from '_molecules';
 import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
-import {
-  addArrayOfObjectsToArrayIfIdNotExists,
-  MyThemeInterfaceColors,
-  themedStyleSheet,
-} from '_utils';
-import {getUserAddress, PostInterface, useGetPosts} from '_db';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {getUserAddress, useGetPosts} from '_db';
 
-const PAGINATION_SIZE = 1;
+import {PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -43,15 +40,12 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const [oldPosts, setOldPosts] = useState<PostInterface[]>([]);
-  const [skip, setSkip] = useState(0);
-  const {posts, loading, refetch} = useGetPosts({first: PAGINATION_SIZE, skip});
+  const {posts, loading, refetch, getMore, noMore} = useGetPosts({
+    paginationSize: PAGINATION_SIZE,
+  });
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
-
-  const allCurrentPosts: PostInterface[] =
-    addArrayOfObjectsToArrayIfIdNotExists([...oldPosts], [...posts]);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -77,32 +71,16 @@ export const Screen_Home: React.FC<{
     }
   }, [params?.redirectTo, navigation]);
 
-  const onGetMorePosts = () => {
-    setOldPosts(allCurrentPosts);
-    setSkip(allCurrentPosts.length);
-    refetch();
-  };
-
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
     if (!error) setMyAddress(userAddress);
   };
 
-  console.log('');
-  console.log(
-    `oldPosts`,
-    oldPosts.map(e => e.id),
-  );
-
-  console.log(
-    `posts`,
-    posts.map(e => e.id),
-  );
-
-  console.log(
-    `allCurrentPosts`,
-    allCurrentPosts.map(e => e.id),
-  );
+  useEffect(() => {
+    if (!loading && noMore) {
+      Alert.alert('No new results');
+    }
+  }, [loading, noMore]);
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
@@ -122,13 +100,13 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        {!allCurrentPosts.length && loading ? (
+        {!posts.length && loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.text} />
           </View>
         ) : (
           <FlatList
-            data={allCurrentPosts}
+            data={posts}
             renderItem={({item}) => (
               <PostPreview
                 post={item}
@@ -144,7 +122,7 @@ export const Screen_Home: React.FC<{
             ItemSeparatorComponent={() => <View style={{height: 20}} />}
             ListFooterComponent={
               <Button
-                onPress={onGetMorePosts}
+                onPress={getMore}
                 loading={loading}
                 text="Get more posts"
                 style={{

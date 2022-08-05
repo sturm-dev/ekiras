@@ -3,14 +3,12 @@ import {gql, useQuery} from '@apollo/client';
 import {Alert} from 'react-native';
 
 import {PostInterface} from '../DBInterfaces';
+import {addArrayOfObjectsToArrayIfIdNotExists} from '_utils';
 
 // https://thegraph.com/docs/en/querying/querying-from-an-application/
-// TODO: use params for custom getPosts query
-// TODO: get posts orderBy upVotes
-// TODO: get next 10 posts
-
 // https://thegraph.com/docs/en/querying/graphql-api/#pagination
 // https://hasura.io/docs/latest/queries/postgres/query-filters/#greater-than-or-less-than-operators-_gt-_lt-_gte-_lte
+
 const POSTS_QUERY = gql`
   query Posts($first: Int!, $skip: Int) {
     posts(
@@ -32,17 +30,13 @@ const POSTS_QUERY = gql`
   }
 `;
 
-export const useGetPosts = ({
-  first,
-  skip = 0,
-}: {
-  first: number;
-  skip?: number;
-}) => {
+export const useGetPosts = ({paginationSize}: {paginationSize: number}) => {
+  const [oldPosts, setOldPosts] = useState<PostInterface[]>([]);
   const [posts, setPosts] = useState<PostInterface[]>([]);
   const {data, loading, refetch, error} = useQuery(POSTS_QUERY, {
-    variables: {first, skip},
+    variables: {first: paginationSize, skip: oldPosts.length},
   });
+  const [getMorePressed, setGetMorePressed] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -71,5 +65,21 @@ export const useGetPosts = ({
     }
   }, [data, error]);
 
-  return {posts, loading, refetch, error};
+  const allCurrentPosts: PostInterface[] =
+    addArrayOfObjectsToArrayIfIdNotExists([...oldPosts], [...posts]);
+
+  const getMore = () => {
+    setGetMorePressed(true);
+    setOldPosts(allCurrentPosts);
+    refetch();
+  };
+
+  return {
+    posts: allCurrentPosts,
+    loading,
+    refetch,
+    getMore,
+    error,
+    noMore: getMorePressed && !loading && posts.length === 0,
+  };
 };
