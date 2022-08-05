@@ -1,42 +1,51 @@
 import {useEffect, useState} from 'react';
 import {gql, useQuery} from '@apollo/client';
 import {Alert} from 'react-native';
+import {jsonToGraphQLQuery} from 'json-to-graphql-query';
 
 import {PostInterface} from '../DBInterfaces';
 import {addArrayOfObjectsToArrayIfIdNotExists} from '_utils';
 
-// https://thegraph.com/docs/en/querying/querying-from-an-application/
-// https://thegraph.com/docs/en/querying/graphql-api/#pagination
-// https://hasura.io/docs/latest/queries/postgres/query-filters/#greater-than-or-less-than-operators-_gt-_lt-_gte-_lte
-
-const POSTS_QUERY = gql`
-  query Posts($first: Int!, $skip: Int) {
-    posts(
-      orderBy: upVotesCount
-      orderDirection: desc
-      first: $first
-      skip: $skip
-    ) {
-      id
-      createdDate
-      author {
-        id
-        username
-      }
-      text
-      upVotesCount
-      downVotesCount
-    }
-  }
-`;
-
-export const useGetPosts = ({paginationSize}: {paginationSize: number}) => {
+export const useGetPosts = ({
+  paginationSize,
+  authorId,
+}: {
+  paginationSize: number;
+  authorId?: string;
+}) => {
   const [oldPosts, setOldPosts] = useState<PostInterface[]>([]);
   const [posts, setPosts] = useState<PostInterface[]>([]);
-  const {data, loading, refetch, error} = useQuery(POSTS_QUERY, {
-    variables: {first: paginationSize, skip: oldPosts.length},
-  });
   const [getMorePressed, setGetMorePressed] = useState(false);
+
+  const {data, loading, refetch, error} = useQuery(
+    gql`
+      ${jsonToGraphQLQuery(
+        {
+          query: {
+            posts: {
+              __args: {
+                orderBy: 'upVotesCount',
+                orderDirection: 'desc',
+                skip: oldPosts.length,
+                first: paginationSize,
+                ...(authorId ? {where: {author: authorId.toLowerCase()}} : {}),
+              },
+              id: true,
+              createdDate: true,
+              author: {
+                id: true,
+                username: true,
+              },
+              text: true,
+              upVotesCount: true,
+              downVotesCount: true,
+            },
+          },
+        },
+        {pretty: true},
+      )}
+    `,
+  );
 
   useEffect(() => {
     if (error) {
@@ -83,3 +92,9 @@ export const useGetPosts = ({paginationSize}: {paginationSize: number}) => {
     noMore: getMorePressed && !loading && posts.length === 0,
   };
 };
+
+// use of jsonToGraphQLQuery for dynamic use of where clause inside graphql query
+
+// resources:
+// https://thegraph.com/docs/en/querying/graphql-api/#pagination
+// https://hasura.io/docs/latest/queries/postgres/query-filters/#greater-than-or-less-than-operators-_gt-_lt-_gte-_lte
