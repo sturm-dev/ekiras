@@ -9,7 +9,7 @@ import 'react-native-get-random-values';
 
 import {ContainerApp} from '_navigations';
 import {MyDarkTheme} from '_utils';
-import {useGetPolygonGasPrices} from '_db';
+import {GasPricesProvider} from '_db';
 
 const cache = new InMemoryCache();
 
@@ -22,20 +22,12 @@ const client = new ApolloClient({
 export const App = (): any => {
   const [loadingCache, setLoadingCache] = useState(true);
 
-  const [gasPrices] = useGetPolygonGasPrices({
-    url: 'https://polygonscan.com/gastracker',
-  });
-
   useEffect(() => {
     persistCache({
       cache,
       storage: AsyncStorage,
     }).then(() => setLoadingCache(false));
   }, []);
-
-  useEffect(() => {
-    console.log(`gasPrices`, gasPrices);
-  }, [gasPrices]);
 
   if (loadingCache) {
     return (
@@ -52,11 +44,13 @@ export const App = (): any => {
   }
 
   return (
-    <ApolloProvider client={client}>
-      <SafeAreaProvider>
-        <ContainerApp />
-      </SafeAreaProvider>
-    </ApolloProvider>
+    <GasPricesProvider>
+      <ApolloProvider client={client}>
+        <SafeAreaProvider>
+          <ContainerApp />
+        </SafeAreaProvider>
+      </ApolloProvider>
+    </GasPricesProvider>
   );
 };
 
