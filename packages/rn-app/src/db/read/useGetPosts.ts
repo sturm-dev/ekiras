@@ -24,7 +24,7 @@ export const useGetPosts = ({
           query: {
             posts: {
               __args: {
-                orderBy: 'upVotesCount',
+                orderBy: 'createdDate',
                 orderDirection: 'desc',
                 skip: oldPosts.length,
                 first: paginationSize,

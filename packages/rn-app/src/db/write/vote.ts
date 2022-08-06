@@ -9,8 +9,9 @@ export const vote = async (
   try {
     const contract = await contractWithSigner();
 
-    await contract.votePost(postId, voteIsTypeUp);
+    const tx = await contract.votePost(postId, voteIsTypeUp);
     await new Promise<void>(res => contract.on('VoteEvent', res));
+    await tx.wait(5);
 
     return {};
   } catch (error) {

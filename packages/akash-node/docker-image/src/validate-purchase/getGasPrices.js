@@ -6,6 +6,9 @@ const { gasPriceMul, printInGreen, fromBigNumberToGwei } = require("../utils");
 const getGasPrices = async (provider) => {
   const gasPriceBaseFromProvider = await provider.getGasPrice();
 
+  // TODO: use this endpoint with a password to not spend api calls
+  // API -> 5 calls/second limit
+  // Up to 100,000 API calls per day
   const gasOracle = await axios.get(
     `https://api.polygonscan.com/api?module=gastracker&action=gasoracle&apikey=${process.env.ETHERSCAN_API_KEY}`
   );

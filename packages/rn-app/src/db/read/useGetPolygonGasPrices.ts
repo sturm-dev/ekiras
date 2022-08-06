@@ -2,10 +2,11 @@ import {useCallback, useEffect, useState} from 'react';
 import cheerio from 'cheerio';
 
 export const useGetPolygonGasPrices = ({url}: {url: string}) => {
-  const [prices, setPrices] = useState<number[]>();
+  const [prices, setPrices] = useState<number[] | undefined>();
 
   const getPrices = useCallback(() => {
     fetch(url)
+      .catch(error => console.log(`getPrices scrapper error`, error))
       .then((response: any) => response.text())
       .then((data: any) => {
         let $ = cheerio.load(data);
@@ -17,17 +18,22 @@ export const useGetPolygonGasPrices = ({url}: {url: string}) => {
         const formatPrice = (priceInText: string) =>
           parseFloat(priceInText.replace(/[^0-9.]/g, ''));
 
-        setPrices([
-          formatPrice(standard),
-          formatPrice(fast),
-          formatPrice(rapid),
-        ]);
+        if (standard && fast && rapid) {
+          setPrices([
+            formatPrice(standard),
+            formatPrice(fast),
+            formatPrice(rapid),
+          ]);
+        } else setPrices(undefined);
       });
   }, [url]);
 
   useEffect(() => {
-    setInterval(getPrices, 3000);
+    getPrices();
+    // setInterval(getPrices, 3000);
   }, [getPrices]);
 
   return [prices];
 };
+
+// TODO: this logic not more working - web block after a while getting the prices

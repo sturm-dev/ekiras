@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -12,7 +12,7 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
-import {createPost} from '_db';
+import {createPost, GasPricesContext} from '_db';
 
 export type Screen_CreatePost__Params = undefined;
 
@@ -39,6 +39,8 @@ export const Screen_CreatePost: React.FC<{
 
   // ────────────────────────────────────────────────────────────────────────────────
 
+  const {gasPrices} = useContext(GasPricesContext);
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
@@ -49,7 +51,10 @@ export const Screen_CreatePost: React.FC<{
 
   const onCreatePost = async () => {
     setLoading(true);
-    const {error} = await createPost(text);
+    const {error} = await createPost(
+      text,
+      gasPrices ? gasPrices[2] : undefined,
+    );
     setLoading(false);
 
     if (error) {

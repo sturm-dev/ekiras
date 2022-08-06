@@ -8,8 +8,9 @@ export const updateUsername = async (
   try {
     const contract = await contractWithSigner();
 
-    await contract.updateMyUsername(newUsername);
+    const tx = await contract.updateMyUsername(newUsername);
     await new Promise<void>(res => contract.on('UpdateUsernameEvent', res));
+    await tx.wait(5);
 
     return {};
   } catch (error) {

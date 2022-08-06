@@ -8,8 +8,9 @@ export const deletePost = async (
   try {
     const contract = await contractWithSigner();
 
-    await contract.deleteOwnPost(postId);
+    const tx = await contract.deleteOwnPost(postId);
     await new Promise<void>(res => contract.on('DeletePostEvent', res));
+    await tx.wait(5);
 
     return {};
   } catch (error) {
