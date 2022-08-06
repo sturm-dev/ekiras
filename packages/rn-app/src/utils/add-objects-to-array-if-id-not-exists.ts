@@ -1,4 +1,4 @@
-export const addArrayOfObjectsToArrayIfIdNotExists = (
+export const addObjectsToArrayIfIdNotExists = (
   baseArray: any[],
   objects: any[],
 ): any[] => {

@@ -4,7 +4,7 @@ import {Alert} from 'react-native';
 import {jsonToGraphQLQuery} from 'json-to-graphql-query';
 
 import {PostInterface} from '../DBInterfaces';
-import {addArrayOfObjectsToArrayIfIdNotExists} from '_utils';
+import {addObjectsToArrayIfIdNotExists} from '_utils';
 
 export const useGetPosts = ({
   paginationSize,
@@ -74,8 +74,10 @@ export const useGetPosts = ({
     }
   }, [data, error]);
 
-  const allCurrentPosts: PostInterface[] =
-    addArrayOfObjectsToArrayIfIdNotExists([...oldPosts], [...posts]);
+  const allCurrentPosts: PostInterface[] = addObjectsToArrayIfIdNotExists(
+    [...oldPosts],
+    [...posts],
+  );
 
   const getMore = () => {
     setGetMorePressed(true);

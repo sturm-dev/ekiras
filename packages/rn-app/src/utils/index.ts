@@ -7,4 +7,4 @@ export * from './get-percentage-in-hex';
 export * from './platform';
 export * from './device';
 export * from './format-big-number';
-export * from './addArrayOfObjectsToArrayIfIdNotExists';
+export * from './add-objects-to-array-if-id-not-exists';
