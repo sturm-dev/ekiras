@@ -27,8 +27,6 @@ export const useGetPolygonGasPrices = ({url}: {url: string}) => {
     setInterval(getPrices, 5000);
   }, [getPrices]);
 
-  console.log(`prices`, prices);
-
   return [prices];
 };
 

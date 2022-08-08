@@ -140,13 +140,14 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
             {shortAccountId(author.id)}
           </TextByScale>
         </View>
-        {compareTwoAddress(myAddress, author.id) ? (
-          <TouchableOpacity
-            style={styles.threeDots}
-            onPress={() => setShowModal(true)}>
-            <CustomIcon name="dots-three-horizontal" type="entypo" size={15} />
-          </TouchableOpacity>
-        ) : null}
+        <View style={styles.dateContainer}>
+          <TextByScale
+            scale="caption"
+            color={colors.text2}
+            style={{backgroundColor: colors.background, paddingHorizontal: 2}}>
+            {dayjs(dayjs.unix(createdDate)).fromNow()}
+          </TextByScale>
+        </View>
       </View>
       <View style={styles.body}>
         <TextByScale>{text}</TextByScale>
@@ -188,14 +189,19 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
             </>
           )}
         </TouchableOpacity>
-      </View>
-      <View style={styles.dateContainer}>
-        <TextByScale
-          scale="body2"
-          color={colors.text2}
-          style={{backgroundColor: colors.background, paddingHorizontal: 2}}>
-          {dayjs(dayjs.unix(createdDate)).fromNow()}
-        </TextByScale>
+        <View style={styles.optionButtonContainer}>
+          {compareTwoAddress(myAddress, author.id) ? (
+            <TouchableOpacity
+              style={styles.threeDots}
+              onPress={() => setShowModal(true)}>
+              <CustomIcon
+                name="dots-three-horizontal"
+                type="entypo"
+                size={15}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
       {showModal ? (
         <Overlay
@@ -235,9 +241,6 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  threeDots: {
-    padding: 10,
-  },
   userImage: {
     width: 30,
     height: 30,
@@ -245,21 +248,26 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     backgroundColor: 'violet',
     marginRight: 10,
   },
+  dateContainer: {
+    marginRight: 5,
+  },
   body: {
     padding: 10,
+    marginVertical: 20,
   },
   footer: {
     flexDirection: 'row',
   },
   button: {
-    flex: 1,
+    flex: 0.25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.text + getPercentageInHex(30),
     margin: 5,
-    backgroundColor: '#ffffff10',
   },
   upVote: {
     backgroundColor: colors.success + getPercentageInHex(20),
@@ -267,10 +275,14 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   downVote: {
     backgroundColor: colors.error + getPercentageInHex(20),
   },
-  dateContainer: {
-    alignItems: 'flex-end',
-    paddingHorizontal: 5,
-    marginBottom: -18,
+  optionButtonContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  threeDots: {
+    flex: 1,
+    padding: 15,
+    justifyContent: 'center',
   },
   modal: {
     padding: 0,
