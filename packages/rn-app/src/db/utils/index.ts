@@ -9,4 +9,3 @@ export * from './formatPost';
 export * from './postOwnerIsNotEmptyAddress';
 export * from './handleEnvVars';
 export * from './compareTwoAddress';
-export * from './gasPricesContext';

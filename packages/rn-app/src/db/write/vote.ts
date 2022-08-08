@@ -5,11 +5,9 @@ import {handleError, contractWithSigner, PostInterface} from '_db';
 export const vote = async ({
   post,
   voteIsTypeUp,
-  gasPrice,
 }: {
   post: PostInterface;
   voteIsTypeUp: boolean;
-  gasPrice?: string;
 }): Promise<{
   error?: string;
 }> => {
@@ -46,7 +44,7 @@ export const vote = async ({
     const tx = await contract.votePost(
       post.id,
       voteIsTypeUp,
-      gasPrice
+      _gasPrice
         ? {gasPrice: ethers.utils.parseUnits(gasPriceMul1_1, 'gwei')}
         : {},
     );

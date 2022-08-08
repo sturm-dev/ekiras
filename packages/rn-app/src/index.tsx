@@ -10,7 +10,6 @@ import 'react-native-get-random-values';
 
 import {ContainerApp} from '_navigations';
 // import {MyDarkTheme} from '_utils';
-import {GasPricesProvider} from '_db';
 
 export const cache = new InMemoryCache();
 
@@ -45,13 +44,11 @@ export const App = (): any => {
   // }
 
   return (
-    <GasPricesProvider>
-      <ApolloProvider client={client}>
-        <SafeAreaProvider>
-          <ContainerApp />
-        </SafeAreaProvider>
-      </ApolloProvider>
-    </GasPricesProvider>
+    <ApolloProvider client={client}>
+      <SafeAreaProvider>
+        <ContainerApp />
+      </SafeAreaProvider>
+    </ApolloProvider>
   );
 };
 

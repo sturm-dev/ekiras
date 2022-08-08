@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {ActivityIndicator, Alert, TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
@@ -15,7 +15,6 @@ import {
 import {
   compareTwoAddress,
   deletePost,
-  GasPricesContext,
   getDownVote,
   getUpVote,
   PostInterface,
@@ -53,8 +52,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
   const [showModal, setShowModal] = useState(false);
   const [loadingModal, setLoadingModal] = useState(false);
-
-  const {gasPrices} = useContext(GasPricesContext);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -101,7 +98,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       const {error} = await vote({
         post,
         voteIsTypeUp: type === 'up',
-        gasPrice: gasPrices?.[2],
       });
       type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
       setVoteInProgress && setVoteInProgress(false);

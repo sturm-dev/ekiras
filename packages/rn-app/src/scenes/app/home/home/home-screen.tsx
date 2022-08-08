@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,7 +15,7 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {GasPricesContext, getUserAddress, useGetPosts} from '_db';
+import {getUserAddress, useGetPosts} from '_db';
 
 import {PAGINATION_SIZE} from 'src/config/constants';
 
@@ -49,8 +49,6 @@ export const Screen_Home: React.FC<{
   const [myAddress, setMyAddress] = useState('');
   const [oldUpdateTime, setOldUpdateTime] = useState(0);
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
-
-  const {gasPrices} = useContext(GasPricesContext);
 
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
@@ -97,25 +95,6 @@ export const Screen_Home: React.FC<{
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10}}>
             <TextByScale scale="h3">Just Feedback</TextByScale>
-            {gasPrices ? (
-              <TextByScale scale="caption" style={{marginTop: 5}}>
-                <>
-                  ⛽️
-                  {gasPrices?.map((e, i) => (
-                    <React.Fragment key={i}>
-                      {i !== 0 ? ' - ' : ' '}
-                      <TextByScale
-                        scale="caption"
-                        color={
-                          i === 0 ? '#1cffdd' : i === 1 ? '#7747d6' : '#d65559'
-                        }>
-                        {e}
-                      </TextByScale>
-                    </React.Fragment>
-                  ))}
-                </>
-              </TextByScale>
-            ) : null}
           </View>
           <TouchableOpacity
             onPress={() => navigation.navigate('Screen_CreatePost')}
