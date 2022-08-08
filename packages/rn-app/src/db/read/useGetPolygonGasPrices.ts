@@ -31,5 +31,4 @@ export const useGetPolygonGasPrices = ({url}: {url: string}) => {
   return [prices];
 };
 
-// TODO: remove cheerio
 // TODO: remove this
