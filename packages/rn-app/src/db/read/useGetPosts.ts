@@ -96,7 +96,7 @@ export const useGetPosts = ({
     refetch: onRefetch,
     getMore,
     error,
-    noMore: getMorePressed && !loading && posts.length === 0,
+    limitReached: getMorePressed && !loading && posts.length === 0,
   };
 };
 

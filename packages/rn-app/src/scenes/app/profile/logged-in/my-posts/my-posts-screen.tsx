@@ -35,7 +35,7 @@ export const Screen_MyPosts: React.FC<{
 
   const {handleResetNavigation} = useNavigationReset();
 
-  const {posts, loading, refetch, getMore, noMore} = useGetPosts({
+  const {posts, loading, refetch, getMore, limitReached} = useGetPosts({
     paginationSize: PAGINATION_SIZE,
     authorId: params.userAddress,
   });
@@ -50,10 +50,10 @@ export const Screen_MyPosts: React.FC<{
   }, []);
 
   useEffect(() => {
-    if (!loading && noMore) {
+    if (!loading && limitReached) {
       Alert.alert('No new results');
     }
-  }, [loading, noMore]);
+  }, [loading, limitReached]);
 
   return (
     <ScreenSafeArea>

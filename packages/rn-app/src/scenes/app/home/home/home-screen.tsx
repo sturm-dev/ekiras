@@ -40,7 +40,7 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {posts, loading, refetch, getMore, noMore} = useGetPosts({
+  const {posts, loading, refetch, getMore, limitReached} = useGetPosts({
     paginationSize: PAGINATION_SIZE,
   });
 
@@ -82,10 +82,10 @@ export const Screen_Home: React.FC<{
   };
 
   useEffect(() => {
-    if (!loading && noMore) {
+    if (!loading && limitReached) {
       Alert.alert('No new results');
     }
-  }, [loading, noMore]);
+  }, [loading, limitReached]);
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>

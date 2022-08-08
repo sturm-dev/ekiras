@@ -1,39 +1,35 @@
 import {useCallback, useEffect, useState} from 'react';
-import cheerio from 'cheerio';
 
 export const useGetPolygonGasPrices = ({url}: {url: string}) => {
-  const [prices, setPrices] = useState<number[] | undefined>();
+  const [prices, setPrices] = useState<string[] | undefined>();
 
   const getPrices = useCallback(() => {
     fetch(url)
-      .catch(error => console.log(`getPrices scrapper error`, error))
-      .then((response: any) => response.text())
-      .then((data: any) => {
-        let $ = cheerio.load(data);
+      .catch(error => console.log(`getPrices error`, error))
+      .then(response => response?.json())
+      .then(json => {
+        const formatter = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
-        const standard = $('#standardgas').text();
-        const fast = $('#fastgas').text();
-        const rapid = $('#rapidgas').text();
-
-        const formatPrice = (priceInText: string) =>
-          parseFloat(priceInText.replace(/[^0-9.]/g, ''));
-
-        if (standard && fast && rapid) {
+        if (json) {
           setPrices([
-            formatPrice(standard),
-            formatPrice(fast),
-            formatPrice(rapid),
+            formatter.format(json.safeLow.maxFee),
+            formatter.format(json.standard.maxFee),
+            formatter.format(json.fast.maxFee),
           ]);
-        } else setPrices(undefined);
+        }
       });
   }, [url]);
 
   useEffect(() => {
-    getPrices();
-    // setInterval(getPrices, 3000);
+    setInterval(getPrices, 5000);
   }, [getPrices]);
+
+  console.log(`prices`, prices);
 
   return [prices];
 };
 
-// TODO: this logic not more working - web block after a while getting the prices
+// TODO: remove cheerio
