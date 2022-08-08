@@ -47,6 +47,7 @@ export const Screen_Home: React.FC<{
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
   const [oldUpdateTime, setOldUpdateTime] = useState(0);
+  const [loadingUserAddress, setLoadingUserAddress] = useState(true);
 
   const {gasPrices} = useContext(GasPricesContext);
 
@@ -78,7 +79,9 @@ export const Screen_Home: React.FC<{
 
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
-    if (!error) setMyAddress(userAddress);
+    if (!error) await setMyAddress(userAddress);
+
+    setLoadingUserAddress(false);
   };
 
   useEffect(() => {
@@ -124,7 +127,7 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>
         </View>
-        {!posts.length && loading ? (
+        {(!posts.length && loading) || loadingUserAddress ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.text} />
           </View>

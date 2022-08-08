@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {ActivityIndicator, Alert, TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
@@ -15,6 +15,7 @@ import {
 import {
   compareTwoAddress,
   deletePost,
+  GasPricesContext,
   getDownVote,
   getUpVote,
   PostInterface,
@@ -50,6 +51,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
   const [showModal, setShowModal] = useState(false);
   const [loadingModal, setLoadingModal] = useState(false);
+
+  const {gasPrices} = useContext(GasPricesContext);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -90,7 +93,18 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       type === 'up' ? setLoadingUpVote(true) : setLoadingDownVote(true);
       setVoteInProgress && setVoteInProgress(true);
 
-      const {error} = await vote(id, type === 'up');
+      const {error} = await vote({
+        post: {
+          id,
+          downVotesCount,
+          upVotesCount,
+          author,
+          createdDate,
+          text,
+        },
+        voteIsTypeUp: type === 'up',
+        gasPrice: gasPrices?.[2],
+      });
       type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
       setVoteInProgress && setVoteInProgress(false);
 
@@ -101,7 +115,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           Alert.alert("You don't have enough gas");
         } else Alert.alert('Error', error);
       } else {
-        refreshPosts && refreshPosts();
         getAndPaintUpVote();
         getAndPaintDownVote();
       }
@@ -271,9 +284,11 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   },
   upVote: {
     backgroundColor: colors.success + getPercentageInHex(20),
+    borderColor: '#0000',
   },
   downVote: {
     backgroundColor: colors.error + getPercentageInHex(20),
+    borderColor: '#0000',
   },
   optionButtonContainer: {
     flex: 1,
