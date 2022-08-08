@@ -1,4 +1,4 @@
-import {contractWithSigner, handleError} from '_db';
+import {contractWithSigner, handleError, getGasPrice} from '_db';
 
 export const updateUsername = async (
   newUsername: string,
@@ -7,10 +7,15 @@ export const updateUsername = async (
 }> => {
   try {
     const contract = await contractWithSigner();
+    const gasPrice = await getGasPrice();
 
-    const tx = await contract.updateMyUsername(newUsername);
+    const tx = await contract.updateMyUsername(
+      newUsername,
+      gasPrice ? {gasPrice} : {},
+    );
+    console.log(`tx.hash`, tx.hash);
+
     await new Promise<void>(res => contract.on('UpdateUsernameEvent', res));
-    await tx.wait(5);
 
     return {};
   } catch (error) {

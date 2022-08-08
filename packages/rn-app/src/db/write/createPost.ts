@@ -1,24 +1,18 @@
-import * as ethers from 'ethers';
-import {contractWithSigner, handleError} from '_db';
+import {contractWithSigner, handleError, getGasPrice} from '_db';
 
 export const createPost = async (
   text: string,
-  gasPrice?: number,
 ): Promise<{
   error?: string;
 }> => {
   try {
     const contract = await contractWithSigner();
+    const gasPrice = await getGasPrice();
 
-    console.log(`gasPrice`, gasPrice);
+    const tx = await contract.createPost(text, gasPrice ? {gasPrice} : {});
+    console.log(`tx.hash`, tx.hash);
 
-    const tx = await contract.createPost(text, {
-      gasPrice: gasPrice
-        ? ethers.utils.parseUnits(`${gasPrice}`, 'gwei')
-        : undefined,
-    });
     await new Promise<void>(res => contract.on('CreatePostEvent', res));
-    await tx.wait(5);
 
     return {};
   } catch (error) {
