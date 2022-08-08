@@ -54,17 +54,17 @@ export const useGetPosts = ({
     } else if (data) {
       const _posts: PostInterface[] = [];
 
-      data.posts.forEach((post: PostInterface) => {
+      data.posts.forEach((post: any) => {
         const _post: PostInterface = {
-          id: post.id,
-          createdDate: post.createdDate,
+          id: parseInt(post.id, 10),
+          createdDate: parseInt(post.createdDate, 10),
           author: {
             id: post.author.id,
             username: post.author.username,
           },
           text: post.text,
-          downVotesCount: post.downVotesCount,
-          upVotesCount: post.upVotesCount,
+          downVotesCount: parseInt(post.downVotesCount, 10),
+          upVotesCount: parseInt(post.upVotesCount, 10),
         };
 
         _posts.push(_post);
@@ -90,6 +90,22 @@ export const useGetPosts = ({
     refetch();
   };
 
+  // make local change of votes until `the graph` has the data updated
+  const updatePost = (post: PostInterface) => {
+    const insideOldPosts = oldPosts.findIndex(_post => _post.id === post.id);
+    const insidePosts = posts.findIndex(_post => _post.id === post.id);
+
+    if (insideOldPosts !== -1) {
+      const arrayCopy = [...oldPosts];
+      arrayCopy[insideOldPosts] = post;
+      setOldPosts(arrayCopy);
+    } else if (insidePosts !== -1) {
+      const arrayCopy = [...posts];
+      arrayCopy[insidePosts] = post;
+      setPosts(arrayCopy);
+    }
+  };
+
   return {
     posts: allCurrentPosts,
     loading,
@@ -97,6 +113,7 @@ export const useGetPosts = ({
     getMore,
     error,
     limitReached: getMorePressed && !loading && posts.length === 0,
+    updatePost,
   };
 };
 

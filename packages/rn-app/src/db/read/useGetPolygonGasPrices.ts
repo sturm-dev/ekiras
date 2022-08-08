@@ -24,10 +24,12 @@ export const useGetPolygonGasPrices = ({url}: {url: string}) => {
   }, [url]);
 
   useEffect(() => {
-    setInterval(getPrices, 5000);
+    // setInterval(getPrices, 5000);
+    getPrices;
   }, [getPrices]);
 
   return [prices];
 };
 
 // TODO: remove cheerio
+// TODO: remove this

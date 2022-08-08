@@ -40,9 +40,10 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {posts, loading, refetch, getMore, limitReached} = useGetPosts({
-    paginationSize: PAGINATION_SIZE,
-  });
+  const {posts, loading, refetch, getMore, limitReached, updatePost} =
+    useGetPosts({
+      paginationSize: PAGINATION_SIZE,
+    });
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
@@ -77,18 +78,18 @@ export const Screen_Home: React.FC<{
     }
   }, [params?.redirectTo, navigation]);
 
+  useEffect(() => {
+    if (!loading && limitReached) {
+      Alert.alert('No new results');
+    }
+  }, [loading, limitReached]);
+
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
     if (!error) await setMyAddress(userAddress);
 
     setLoadingUserAddress(false);
   };
-
-  useEffect(() => {
-    if (!loading && limitReached) {
-      Alert.alert('No new results');
-    }
-  }, [loading, limitReached]);
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
@@ -141,6 +142,7 @@ export const Screen_Home: React.FC<{
                 myAddress={myAddress}
                 setVoteInProgress={setVoteInProgress}
                 voteInProgress={voteInProgress}
+                updatePost={updatePost}
               />
             )}
             keyExtractor={item => item.id.toString()}

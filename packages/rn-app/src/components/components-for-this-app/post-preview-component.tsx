@@ -32,14 +32,16 @@ interface PostPreviewProps {
   myAddress: string;
   setVoteInProgress?: (value: boolean) => void;
   voteInProgress?: boolean;
+  updatePost?: (post: PostInterface) => void;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
-  post: {id, author, createdDate, text, downVotesCount, upVotesCount},
+  post,
   refreshPosts,
   myAddress,
   setVoteInProgress,
   voteInProgress,
+  updatePost,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -65,7 +67,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const getAndPaintUpVote = async () => {
     if (myAddress) {
       setLoadingUpVote(true);
-      const {upVote: _upVote, error} = await getUpVote(id, myAddress);
+      const {upVote: _upVote, error} = await getUpVote(post.id, myAddress);
       setLoadingUpVote(false);
 
       if (error) Alert.alert('Error', error);
@@ -76,7 +78,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const getAndPaintDownVote = async () => {
     if (myAddress) {
       setLoadingDownVote(true);
-      const {downVote: _downVote, error} = await getDownVote(id, myAddress);
+      const {downVote: _downVote, error} = await getDownVote(
+        post.id,
+        myAddress,
+      );
       setLoadingDownVote(false);
 
       if (error) Alert.alert('Error', error);
@@ -85,7 +90,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   };
 
   const onVote = async (type: 'up' | 'down') => {
-    if (compareTwoAddress(myAddress, author.id)) {
+    if (compareTwoAddress(myAddress, post.author.id)) {
       Alert.alert('Error', "You can't vote for your own post");
     } else if (voteInProgress) {
       Alert.alert('Error', 'Vote in progress');
@@ -94,14 +99,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       setVoteInProgress && setVoteInProgress(true);
 
       const {error} = await vote({
-        post: {
-          id,
-          downVotesCount,
-          upVotesCount,
-          author,
-          createdDate,
-          text,
-        },
+        post,
         voteIsTypeUp: type === 'up',
         gasPrice: gasPrices?.[2],
       });
@@ -115,6 +113,20 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           Alert.alert("You don't have enough gas");
         } else Alert.alert('Error', error);
       } else {
+        const updatedPost = {
+          ...post,
+          ...(type === 'up'
+            ? {
+                upVotesCount: post.upVotesCount + 1,
+                downVotesCount: post.downVotesCount + (downVote ? -1 : 0),
+              }
+            : {
+                downVotesCount: post.downVotesCount + 1,
+                upVotesCount: post.upVotesCount + (upVote ? -1 : 0),
+              }),
+        };
+
+        updatePost && updatePost(updatedPost);
         getAndPaintUpVote();
         getAndPaintDownVote();
       }
@@ -123,7 +135,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
   const onDeletePost = async () => {
     setLoadingModal(true);
-    const {error} = await deletePost(id);
+    const {error} = await deletePost(post.id);
     setLoadingModal(false);
 
     if (error) {
@@ -144,13 +156,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       <View style={styles.header}>
         <View style={styles.userImage} />
         <View style={{flex: 1}}>
-          {author.username ? (
-            <TextByScale>{author.username}</TextByScale>
+          {post.author.username ? (
+            <TextByScale>{post.author.username}</TextByScale>
           ) : null}
           <TextByScale
-            scale={author.username ? 'caption' : 'body1'}
-            color={author.username ? colors.text2 : colors.text}>
-            {shortAccountId(author.id)}
+            scale={post.author.username ? 'caption' : 'body1'}
+            color={post.author.username ? colors.text2 : colors.text}>
+            {shortAccountId(post.author.id)}
           </TextByScale>
         </View>
         <View style={styles.dateContainer}>
@@ -158,12 +170,12 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
             scale="caption"
             color={colors.text2}
             style={{backgroundColor: colors.background, paddingHorizontal: 2}}>
-            {dayjs(dayjs.unix(createdDate)).fromNow()}
+            {dayjs(dayjs.unix(post.createdDate)).fromNow()}
           </TextByScale>
         </View>
       </View>
       <View style={styles.body}>
-        <TextByScale>{text}</TextByScale>
+        <TextByScale>{post.text}</TextByScale>
       </View>
       <View style={styles.footer}>
         <TouchableOpacity
@@ -179,7 +191,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
                 style={{marginLeft: 10}}
                 scale="caption"
                 color={colors.text2}>
-                {`${upVotesCount}`}
+                {`${post.upVotesCount}`}
               </TextByScale>
             </>
           )}
@@ -197,13 +209,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
                 style={{marginLeft: 10}}
                 scale="caption"
                 color={colors.text2}>
-                {`${downVotesCount}`}
+                {`${post.downVotesCount}`}
               </TextByScale>
             </>
           )}
         </TouchableOpacity>
         <View style={styles.optionButtonContainer}>
-          {compareTwoAddress(myAddress, author.id) ? (
+          {compareTwoAddress(myAddress, post.author.id) ? (
             <TouchableOpacity
               style={styles.threeDots}
               onPress={() => setShowModal(true)}>
