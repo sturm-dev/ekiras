@@ -153,9 +153,9 @@ const useStyles = themedStyleSheet(
       alignSelf: props.autoWidth ? 'auto' : 'center',
       backgroundColor: props.background || colors.button_bg,
       borderColor:
-        colors.primary +
-        getPercentageInHex(props.locked || props.disabled ? 30 : 80),
-      borderWidth: 1,
+        '#7f8993' +
+        getPercentageInHex(props.locked || props.disabled ? 30 : 100),
+      borderWidth: 2,
     },
     buttonText: {
       // fontFamily: DEFAULT_FONT,

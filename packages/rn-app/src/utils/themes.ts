@@ -60,12 +60,12 @@ export const MyDarkTheme: {
     // -----------------------------------
     primary: primaryColor,
     accent: '#1A4D2E',
-    background: '#000000',
+    background: '#0f1216',
     background2: '#FAF3E3',
     text: '#d9d9d9',
     text2: '#888888',
     // -----------------------------------
-    button_bg: '#000000',
+    button_bg: '#151a1f',
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',

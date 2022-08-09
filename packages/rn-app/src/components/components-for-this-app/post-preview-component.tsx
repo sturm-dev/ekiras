@@ -258,7 +258,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   mainContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.text2,
+    borderColor: '#2a3035',
     borderRadius: 10,
     padding: 10,
   },
@@ -291,7 +291,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.text + getPercentageInHex(30),
+    borderColor: '#2a3035',
     margin: 5,
   },
   upVote: {

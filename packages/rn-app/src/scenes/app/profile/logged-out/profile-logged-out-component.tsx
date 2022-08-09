@@ -53,7 +53,7 @@ export const ProfileLoggedOut: React.FC<
           size={50}
         />
         <TextByScale style={styles.text} scale="h5">
-          I already have a wallet created in crypto space
+          I already have a account created in crypto space
         </TextByScale>
       </TouchableOpacity>
       <TouchableOpacity
@@ -61,7 +61,7 @@ export const ProfileLoggedOut: React.FC<
         onPress={() => navigation.navigate('Screen_CreateWallet')}>
         <CustomIcon name="add" type="material" style={styles.icon} size={50} />
         <TextByScale style={styles.text} scale="h5">
-          Create a new wallet
+          Create a new account
         </TextByScale>
       </TouchableOpacity>
       {}
@@ -89,11 +89,10 @@ ProfileLoggedOut.defaultProps = {
   onPress: undefined,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   mainContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: colors.background,
   },
   card: {
     flex: 1,
