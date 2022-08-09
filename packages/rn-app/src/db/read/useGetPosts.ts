@@ -93,8 +93,23 @@ export const useGetPosts = ({
         _posts.push(_post);
       });
 
+      const someOldPostInNewPost = _posts.some((post: PostInterface) =>
+        oldPosts.some((oldPost: PostInterface) => oldPost.id === post.id),
+      );
+
       if (_posts.length) {
-        setOldPosts(mergePosts(oldPosts, _posts));
+        if (someOldPostInNewPost) {
+          const oldPostsWithoutNewPosts = [...oldPosts].filter(
+            oldPost =>
+              !_posts.some(
+                (newPost: PostInterface) => oldPost.id === newPost.id,
+              ),
+          );
+
+          setOldPosts(mergePosts(oldPostsWithoutNewPosts, _posts));
+        } else {
+          setOldPosts(mergePosts(oldPosts, _posts));
+        }
         setLocalPosts(mergePosts(oldPosts, _posts));
       }
       setPosts(_posts);

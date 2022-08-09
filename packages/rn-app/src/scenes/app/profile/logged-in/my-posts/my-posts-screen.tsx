@@ -35,16 +35,19 @@ export const Screen_MyPosts: React.FC<{
 
   const {handleResetNavigation} = useNavigationReset();
 
-  const {posts, loading, refetch, getMore, limitReached} = useGetPosts({
-    paginationSize: PAGINATION_SIZE,
-    authorId: params.userAddress,
-  });
+  const {getPosts, posts, loading, getMore, limitReached, editLocalPosts} =
+    useGetPosts({
+      paginationSize: PAGINATION_SIZE,
+      authorId: params.userAddress,
+    });
 
   useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    getPosts();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -79,7 +82,7 @@ export const Screen_MyPosts: React.FC<{
                 <PostPreview
                   post={item}
                   myAddress={params.userAddress}
-                  refreshPosts={refetch}
+                  removeLocalPost={editLocalPosts.removeLocalPost}
                 />
               )}
               keyExtractor={item => item.id.toString()}
