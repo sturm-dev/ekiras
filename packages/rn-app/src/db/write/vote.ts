@@ -1,4 +1,11 @@
-import {handleError, contractWithSigner, PostInterface, getGasPrice} from '_db';
+import {
+  handleError,
+  contractWithSigner,
+  PostInterface,
+  getGasPrice,
+  printTxHash,
+  formatHexBigNumber,
+} from '_db';
 
 export const vote = async ({
   post,
@@ -18,9 +25,15 @@ export const vote = async ({
       voteIsTypeUp,
       gasPrice ? {gasPrice} : {},
     );
-    console.log(`tx.hash`, tx.hash);
+    printTxHash(tx.hash);
 
-    await new Promise<void>(res => contract.on('VoteEvent', res));
+    await new Promise<void>(res => {
+      contract.on('VoteEvent', values => {
+        if (formatHexBigNumber(values.postId) === post.id) res();
+        // TODO: check with msg.sender instead
+        // TODO: add msg.sender to event
+      });
+    });
 
     return {};
   } catch (error) {
