@@ -9,7 +9,7 @@
     "pods": "yarn reminder && npx pod-install",
     "start": "react-native start",
     "reset-cache": "react-native start --reset-cache",
-    "typechain": "typechain --target ethers-v5 --out-dir src/db/generated './src/db/*.json'"
+    "typechain": "typechain --target ethers-v5 --out-dir types/ethers-contracts './src/db/*.json'"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
