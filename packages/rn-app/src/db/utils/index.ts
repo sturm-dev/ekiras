@@ -7,6 +7,6 @@ export * from './onLogout';
 export * from './contract';
 export * from './handleEnvVars';
 export * from './compareTwoAddress';
-export * from './getGasPrice';
+export * from './getFastestGasPrice';
 export * from './printTxHash';
 export * from './formatHexBigNumber';

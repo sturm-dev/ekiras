@@ -6,7 +6,9 @@ const formatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 });
 
-export const getGasPrice = async (): Promise<ethers.BigNumber | undefined> => {
+export const getFastestGasPrice = async (): Promise<
+  ethers.BigNumber | undefined
+> => {
   try {
     let gasPrice: any = '';
     let standard = '';

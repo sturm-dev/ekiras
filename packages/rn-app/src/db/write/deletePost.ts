@@ -1,4 +1,4 @@
-import {contractWithSigner, handleError, getGasPrice} from '_db';
+import {contractWithSigner, handleError, getFastestGasPrice} from '_db';
 
 export const deletePost = async (
   postId: number,
@@ -7,7 +7,7 @@ export const deletePost = async (
 }> => {
   try {
     const contract = await contractWithSigner();
-    const gasPrice = await getGasPrice();
+    const gasPrice = await getFastestGasPrice();
 
     const tx = await contract.deleteOwnPost(postId, gasPrice ? {gasPrice} : {});
     console.log(`tx.hash`, tx.hash);

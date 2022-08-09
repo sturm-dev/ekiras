@@ -1,4 +1,4 @@
-import {contractWithSigner, handleError, getGasPrice} from '_db';
+import {contractWithSigner, handleError, getFastestGasPrice} from '_db';
 
 export const updateUsername = async (
   newUsername: string,
@@ -7,7 +7,7 @@ export const updateUsername = async (
 }> => {
   try {
     const contract = await contractWithSigner();
-    const gasPrice = await getGasPrice();
+    const gasPrice = await getFastestGasPrice();
 
     const tx = await contract.updateMyUsername(
       newUsername,

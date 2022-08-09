@@ -2,7 +2,7 @@ import {
   handleError,
   contractWithSigner,
   PostInterface,
-  getGasPrice,
+  getFastestGasPrice,
   printTxHash,
   formatHexBigNumber,
 } from '_db';
@@ -18,7 +18,7 @@ export const vote = async ({
 }> => {
   try {
     const contract = await contractWithSigner();
-    const gasPrice = await getGasPrice();
+    const gasPrice = await getFastestGasPrice();
 
     const tx = await contract.votePost(
       post.id,
