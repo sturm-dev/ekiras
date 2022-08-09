@@ -1,20 +1,19 @@
 import * as ethers from 'ethers';
-
-import {Abi, Abi__factory} from 'types/ethers-contracts';
-
 import {provider} from '../provider';
 import {internalUse_getPrivateKey} from './internalUse_getPrivateKey';
+import abi from '../abi.json';
 import {CONTRACT_ADDRESS} from './handleEnvVars';
 
-let contractWithSignerCreated: Abi | undefined;
+let contractWithSignerCreated: ethers.Contract | undefined;
 
 export const resetContractWithSigner = () =>
   (contractWithSignerCreated = undefined);
 
 export const contractWithSigner = async () => {
   if (!contractWithSignerCreated) {
-    contractWithSignerCreated = Abi__factory.connect(
+    contractWithSignerCreated = new ethers.Contract(
       CONTRACT_ADDRESS,
+      abi,
       new ethers.Wallet(await internalUse_getPrivateKey(), provider),
     );
   }
@@ -22,7 +21,16 @@ export const contractWithSigner = async () => {
   return contractWithSignerCreated;
 };
 
-export const contractWithoutSigner = Abi__factory.connect(
+export const contractWithoutSigner = new ethers.Contract(
   CONTRACT_ADDRESS,
+  abi,
   provider,
 );
+
+// ─── WITH TYPECHAIN ─────────────────────────────────────────────────────────────────────────────
+
+// import {Abi, Abi__factory} from 'types/ethers-contracts';
+
+// replace `new ethers.Contract(` with `Abi__factory.connect(`
+// remove abi param
+// contract of type Abi
