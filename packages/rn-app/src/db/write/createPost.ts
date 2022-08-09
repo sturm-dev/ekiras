@@ -3,6 +3,7 @@ import {
   handleError,
   getFastestGasPrice,
   printTxHash,
+  formatHexBigNumber,
 } from '_db';
 
 export const createPost = async ({
@@ -12,6 +13,7 @@ export const createPost = async ({
   text: string;
   userAddress: string;
 }): Promise<{
+  newPostId: number;
   error?: string;
 }> => {
   try {
@@ -21,14 +23,14 @@ export const createPost = async ({
     const tx = await contract.createPost(text, gasPrice ? {gasPrice} : {});
     printTxHash(tx.hash);
 
-    await new Promise<void>(res => {
-      contract.on('CreatePostEvent', msgSender => {
-        if (msgSender === userAddress) res();
+    const newPostId = await new Promise<number>(res => {
+      contract.on('CreatePostEvent', (msgSender, postId) => {
+        if (msgSender === userAddress) res(formatHexBigNumber(postId));
       });
     });
 
-    return {};
+    return {newPostId};
   } catch (error) {
-    return handleError(error);
+    return {...handleError(error), newPostId: -1};
   }
 };

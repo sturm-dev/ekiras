@@ -2,6 +2,7 @@ import React from 'react';
 import {Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import dayjs from 'dayjs';
 
 import {
   BackButton,
@@ -12,7 +13,7 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
-import {createPost} from '_db';
+import {createPost, getUsername, PostInterface} from '_db';
 
 export type Screen_CreatePost__Params = {
   userAddress: string;
@@ -51,7 +52,10 @@ export const Screen_CreatePost: React.FC<{
 
   const onCreatePost = async () => {
     setLoading(true);
-    const {error} = await createPost({text, userAddress: params.userAddress});
+    const {error, newPostId} = await createPost({
+      text,
+      userAddress: params.userAddress,
+    });
     setLoading(false);
 
     if (error) {
@@ -61,13 +65,24 @@ export const Screen_CreatePost: React.FC<{
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
+      const {username} = await getUsername(params.userAddress);
+
+      const newPost: PostInterface = {
+        id: newPostId,
+        createdDate: dayjs().unix(),
+        text,
+        author: {
+          id: params.userAddress,
+          username,
+        },
+        downVotesCount: 0,
+        upVotesCount: 0,
+      };
+
       navigation.navigate('Screen_Home', {
         updateTime: new Date().getTime(),
+        createLocalPost: newPost,
       });
-      Alert.alert(
-        'Post created!',
-        'You have to wait a few seconds to be able to see your actual post',
-      );
     }
   };
 

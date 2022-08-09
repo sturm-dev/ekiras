@@ -90,7 +90,9 @@ export const useGetPosts = ({
     refetch();
   };
 
-  // make local change of votes until `the graph` has the data updated
+  // ────────────────────────────────────────────────────────────────────────────────
+  // make local changes until `the graph` has the data updated
+
   const updatePost = (post: PostInterface) => {
     const insideOldPosts = oldPosts.findIndex(_post => _post.id === post.id);
     const insidePosts = posts.findIndex(_post => _post.id === post.id);
@@ -106,6 +108,8 @@ export const useGetPosts = ({
     }
   };
 
+  const createPost = (post: PostInterface) => setOldPosts([...oldPosts, post]);
+
   return {
     posts: allCurrentPosts,
     loading,
@@ -113,7 +117,10 @@ export const useGetPosts = ({
     getMore,
     error,
     limitReached: getMorePressed && !loading && posts.length === 0,
-    updatePost,
+    editPosts: {
+      updatePost,
+      createPost,
+    },
   };
 };
 

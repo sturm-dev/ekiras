@@ -15,13 +15,14 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getUserAddress, useGetPosts} from '_db';
+import {getUserAddress, PostInterface, useGetPosts} from '_db';
 
 import {PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
   redirectTo?: keyof AppStackParamList;
+  createLocalPost?: PostInterface;
 };
 
 type Screen_Home__Prop = NativeStackNavigationProp<
@@ -40,7 +41,7 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {posts, loading, refetch, getMore, limitReached, updatePost} =
+  const {posts, loading, refetch, getMore, limitReached, editPosts} =
     useGetPosts({
       paginationSize: PAGINATION_SIZE,
     });
@@ -66,9 +67,19 @@ export const Screen_Home: React.FC<{
   useEffect(() => {
     if (params?.updateTime && params.updateTime !== oldUpdateTime) {
       setOldUpdateTime(params?.updateTime);
-      refetch();
+      setTimeout(() => refetch(), 1000 * 10);
+
+      // if redirect to this screen with new local post to create, then create it
+      params?.createLocalPost && editPosts.createPost(params.createLocalPost);
     }
-  }, [params?.updateTime, refetch, oldUpdateTime]);
+  }, [
+    params?.updateTime,
+    refetch,
+    params?.createLocalPost,
+    params,
+    oldUpdateTime,
+    editPosts,
+  ]);
 
   useEffect(() => {
     if (params?.redirectTo) {
@@ -98,7 +109,9 @@ export const Screen_Home: React.FC<{
           </View>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('Screen_CreatePost', {userAddress: myAddress})
+              navigation.navigate('Screen_CreatePost', {
+                userAddress: myAddress,
+              })
             }
             style={{padding: 10}}>
             <CustomIcon name="add" type="material" />
@@ -123,7 +136,7 @@ export const Screen_Home: React.FC<{
                 myAddress={myAddress}
                 setVoteInProgress={setVoteInProgress}
                 voteInProgress={voteInProgress}
-                updatePost={updatePost}
+                updatePost={editPosts.updatePost}
               />
             )}
             keyExtractor={item => item.id.toString()}
