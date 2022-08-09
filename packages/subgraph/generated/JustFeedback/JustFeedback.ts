@@ -41,16 +41,16 @@ export class CreatePostEvent__Params {
     this._event = event;
   }
 
-  get _id(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+  get _msgSender(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 
-  get _createdDate(): BigInt {
+  get _id(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get _author(): Address {
-    return this._event.parameters[2].value.toAddress();
+  get _createdDate(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 
   get _text(): string {
@@ -79,8 +79,12 @@ export class DeletePostEvent__Params {
     this._event = event;
   }
 
+  get _msgSender(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
   get _id(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -97,7 +101,7 @@ export class UpdateUsernameEvent__Params {
     this._event = event;
   }
 
-  get _userAddress(): Address {
+  get _msgSender(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 
@@ -119,16 +123,20 @@ export class VoteEvent__Params {
     this._event = event;
   }
 
-  get _postId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+  get _msgSender(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 
-  get _upVotesCount(): BigInt {
+  get _postId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get _downVotesCount(): BigInt {
+  get _upVotesCount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+
+  get _downVotesCount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 

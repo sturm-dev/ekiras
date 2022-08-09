@@ -1,4 +1,9 @@
-import {contractWithSigner, handleError, getFastestGasPrice} from '_db';
+import {
+  contractWithSigner,
+  handleError,
+  getFastestGasPrice,
+  printTxHash,
+} from '_db';
 
 export const createPost = async (
   text: string,
@@ -10,7 +15,7 @@ export const createPost = async (
     const gasPrice = await getFastestGasPrice();
 
     const tx = await contract.createPost(text, gasPrice ? {gasPrice} : {});
-    console.log(`tx.hash`, tx.hash);
+    printTxHash(tx.hash);
 
     await new Promise<void>(res => contract.on('CreatePostEvent', res));
 

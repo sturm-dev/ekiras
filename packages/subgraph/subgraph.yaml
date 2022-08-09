@@ -6,7 +6,7 @@ dataSources:
     name: JustFeedback
     network: matic
     source:
-      address: "0xdbaaC70ED63fE464f3e3fD70A452cDA17C88b95f"
+      address: "0xa59C68d8Ae524310CcE52e9Eff95e71a78995574"
       abi: JustFeedback
       startBlock: 31073133
     mapping:
@@ -19,11 +19,11 @@ dataSources:
         - name: JustFeedback
           file: ./abis/JustFeedback.json
       eventHandlers:
-        - event: CreatePostEvent(uint256,uint256,address,string,uint256,uint256)
+        - event: CreatePostEvent(address,uint256,uint256,string,uint256,uint256)
           handler: handleCreatePostEvent
-        - event: VoteEvent(uint256,uint256,uint256)
+        - event: VoteEvent(address,uint256,uint256,uint256)
           handler: handleVoteEvent
-        - event: DeletePostEvent(uint256)
+        - event: DeletePostEvent(address,uint256)
           handler: handleDeletePostEvent
         - event: UpdateUsernameEvent(address,string)
           handler: handleUpdateUsernameEvent

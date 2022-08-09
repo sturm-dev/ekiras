@@ -25,20 +25,22 @@ contract JustFeedback {
   mapping(uint256 => bool) public transactionIds;
 
   event CreatePostEvent(
+    address _msgSender,
     uint256 _id,
     uint256 _createdDate,
-    address _author,
     string _text,
     uint256 _upVotesCount,
     uint256 _downVotesCount
   );
-  event DeletePostEvent(uint256 _id);
+  event DeletePostEvent(address _msgSender, uint256 _id);
   event VoteEvent(
+    address _msgSender,
     uint256 _postId,
     uint256 _upVotesCount,
     uint256 _downVotesCount
   );
-  event UpdateUsernameEvent(address _userAddress, string _text);
+  event UpdateUsernameEvent(address _msgSender, string _text);
+
   event AddTransactionIdEvent(uint256 _transactionId);
 
   constructor() {
@@ -57,7 +59,7 @@ contract JustFeedback {
 
     addressToPostIds[msg.sender].push(postIndex);
 
-    emit CreatePostEvent(postIndex, block.timestamp, msg.sender, _text, 0, 0);
+    emit CreatePostEvent(msg.sender, postIndex, block.timestamp, _text, 0, 0);
 
     postIndex += 1;
   }
@@ -70,7 +72,7 @@ contract JustFeedback {
 
     delete posts[_postId];
 
-    emit DeletePostEvent(_postId);
+    emit DeletePostEvent(msg.sender, _postId);
   }
 
   function votePost(uint256 _postId, bool _voteIsTypeUp) public {
@@ -101,6 +103,7 @@ contract JustFeedback {
     }
 
     emit VoteEvent(
+      msg.sender,
       _postId,
       posts[_postId].upVotesCount,
       posts[_postId].downVotesCount

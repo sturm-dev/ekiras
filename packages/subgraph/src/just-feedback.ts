@@ -12,16 +12,16 @@ export function handleCreatePostEvent(event: CreatePostEvent): void {
 
   if (post == null) {
     post = new Post(event.params._id.toString());
+    post.author = event.params._msgSender.toHexString();
     post.createdDate = event.params._createdDate;
     post.text = event.params._text;
     post.upVotesCount = event.params._upVotesCount;
     post.downVotesCount = event.params._downVotesCount;
-    post.author = event.params._author.toHexString();
     post.save();
 
-    let user = User.load(event.params._author.toHexString());
+    let user = User.load(event.params._msgSender.toHexString());
     if (!user) {
-      user = new User(event.params._author.toHexString());
+      user = new User(event.params._msgSender.toHexString());
       user.save();
     }
   }
@@ -43,8 +43,8 @@ export function handleDeletePostEvent(event: DeletePostEvent): void {
 }
 
 export function handleUpdateUsernameEvent(event: UpdateUsernameEvent): void {
-  let user = User.load(event.params._userAddress.toHexString());
-  if (!user) user = new User(event.params._userAddress.toHexString());
+  let user = User.load(event.params._msgSender.toHexString());
+  if (!user) user = new User(event.params._msgSender.toHexString());
 
   user.username = event.params._text;
   user.save();

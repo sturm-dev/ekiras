@@ -1,4 +1,9 @@
-import {contractWithSigner, handleError, getFastestGasPrice} from '_db';
+import {
+  contractWithSigner,
+  handleError,
+  getFastestGasPrice,
+  printTxHash,
+} from '_db';
 
 export const deletePost = async (
   postId: number,
@@ -10,7 +15,7 @@ export const deletePost = async (
     const gasPrice = await getFastestGasPrice();
 
     const tx = await contract.deleteOwnPost(postId, gasPrice ? {gasPrice} : {});
-    console.log(`tx.hash`, tx.hash);
+    printTxHash(tx.hash);
 
     await new Promise<void>(res => contract.on('DeletePostEvent', res));
 

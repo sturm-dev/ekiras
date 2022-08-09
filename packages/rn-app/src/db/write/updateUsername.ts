@@ -1,4 +1,9 @@
-import {contractWithSigner, handleError, getFastestGasPrice} from '_db';
+import {
+  contractWithSigner,
+  handleError,
+  getFastestGasPrice,
+  printTxHash,
+} from '_db';
 
 export const updateUsername = async (
   newUsername: string,
@@ -13,7 +18,7 @@ export const updateUsername = async (
       newUsername,
       gasPrice ? {gasPrice} : {},
     );
-    console.log(`tx.hash`, tx.hash);
+    printTxHash(tx.hash);
 
     await new Promise<void>(res => contract.on('UpdateUsernameEvent', res));
 
