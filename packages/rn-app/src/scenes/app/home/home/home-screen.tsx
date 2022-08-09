@@ -41,10 +41,17 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {posts, loading, refetch, getMore, limitReached, editPosts} =
-    useGetPosts({
-      paginationSize: PAGINATION_SIZE,
-    });
+  const {
+    getPosts,
+    posts,
+    loading,
+    refetch,
+    getMore,
+    limitReached,
+    editLocalPosts,
+  } = useGetPosts({
+    paginationSize: PAGINATION_SIZE,
+  });
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
@@ -52,13 +59,15 @@ export const Screen_Home: React.FC<{
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
 
   React.useEffect(() => {
+    console.log('on mount home screen');
+
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
 
-    // TODO: transform to: useGetUserAddress
     getAndSetUserAddress();
+    getPosts();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -67,18 +76,21 @@ export const Screen_Home: React.FC<{
   useEffect(() => {
     if (params?.updateTime && params.updateTime !== oldUpdateTime) {
       setOldUpdateTime(params?.updateTime);
-      setTimeout(() => refetch(), 1000 * 10);
 
-      // if redirect to this screen with new local post to create, then create it
-      params?.createLocalPost && editPosts.createPost(params.createLocalPost);
+      if (params?.createLocalPost) {
+        // if redirect to this screen with new local post to create, then create it
+        editLocalPosts.createLocalPost(params.createLocalPost);
+      } else {
+        // only refetch posts
+        refetch();
+      }
     }
   }, [
     params?.updateTime,
-    refetch,
     params?.createLocalPost,
-    params,
+    refetch,
     oldUpdateTime,
-    editPosts,
+    editLocalPosts,
   ]);
 
   useEffect(() => {
@@ -132,11 +144,11 @@ export const Screen_Home: React.FC<{
             renderItem={({item}) => (
               <PostPreview
                 post={item}
-                refreshPosts={refetch}
                 myAddress={myAddress}
                 setVoteInProgress={setVoteInProgress}
                 voteInProgress={voteInProgress}
-                updatePost={editPosts.updatePost}
+                updateLocalPost={editLocalPosts.updateLocalPost}
+                removeLocalPost={editLocalPosts.removeLocalPost}
               />
             )}
             keyExtractor={item => item.id.toString()}

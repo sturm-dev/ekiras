@@ -1,10 +1,28 @@
 import {useEffect, useState} from 'react';
-import {gql, useQuery} from '@apollo/client';
+import {gql, useLazyQuery} from '@apollo/client';
 import {Alert} from 'react-native';
 import {jsonToGraphQLQuery} from 'json-to-graphql-query';
 
 import {PostInterface} from '../DBInterfaces';
 import {addObjectsToArrayIfIdNotExists} from '_utils';
+
+// const logThePosts = (text: string, _posts: PostInterface[]) => {
+//   const newPosts: any[] = [];
+//   _posts.forEach((post: PostInterface) => {
+//     newPosts.push({
+//       id: post.id,
+//       text: post.text,
+//     });
+//   });
+
+//   console.log(text, JSON.stringify(newPosts, null, 2));
+// };
+
+const mergePosts = (_old: PostInterface[], _new: PostInterface[]) =>
+  sortArrayByCreatedDate(addObjectsToArrayIfIdNotExists([..._old], [..._new]));
+
+const sortArrayByCreatedDate = (_array: PostInterface[]): PostInterface[] =>
+  _array.sort((a, b) => b.createdDate - a.createdDate);
 
 export const useGetPosts = ({
   paginationSize,
@@ -17,7 +35,10 @@ export const useGetPosts = ({
   const [posts, setPosts] = useState<PostInterface[]>([]);
   const [getMorePressed, setGetMorePressed] = useState(false);
 
-  const {data, loading, refetch, error} = useQuery(
+  const [onFetch, setOnFetch] = useState(false);
+  const [localPosts, setLocalPosts] = useState<PostInterface[]>([]);
+
+  const [getPosts, {data, loading, refetch, error}] = useLazyQuery(
     gql`
       ${jsonToGraphQLQuery(
         {
@@ -51,7 +72,9 @@ export const useGetPosts = ({
     if (error) {
       console.log(`error`, error);
       Alert.alert('Get posts error', error.message);
-    } else if (data) {
+    } else if (onFetch && data?.posts) {
+      setOnFetch(false);
+
       const _posts: PostInterface[] = [];
 
       data.posts.forEach((post: any) => {
@@ -70,56 +93,81 @@ export const useGetPosts = ({
         _posts.push(_post);
       });
 
+      if (_posts.length) {
+        setOldPosts(mergePosts(oldPosts, _posts));
+        setLocalPosts(mergePosts(oldPosts, _posts));
+      }
       setPosts(_posts);
     }
-  }, [data, error]);
+  }, [onFetch, data?.posts, error, oldPosts, refetch, posts]);
 
-  const allCurrentPosts: PostInterface[] = addObjectsToArrayIfIdNotExists(
-    [...oldPosts],
-    [...posts],
-  );
+  const onGetPosts = () => {
+    console.log('onGetPosts');
+    setOnFetch(true);
+    setGetMorePressed(false);
+
+    getPosts();
+  };
 
   const getMore = () => {
+    console.log('getMore');
+    setOnFetch(true);
     setGetMorePressed(true);
-    setOldPosts(allCurrentPosts);
+
     refetch();
   };
 
   const onRefetch = () => {
+    console.log('onRefetch');
+    setOnFetch(true);
     setGetMorePressed(false);
+
     refetch();
   };
 
   // ────────────────────────────────────────────────────────────────────────────────
   // make local changes until `the graph` has the data updated
 
-  const updatePost = (post: PostInterface) => {
-    const insideOldPosts = oldPosts.findIndex(_post => _post.id === post.id);
-    const insidePosts = posts.findIndex(_post => _post.id === post.id);
+  const updateLocalPost = (post: PostInterface) => {
+    console.log('updateLocalPost');
+    const postIndex = localPosts.findIndex(_post => _post.id === post.id);
 
-    if (insideOldPosts !== -1) {
-      const arrayCopy = [...oldPosts];
-      arrayCopy[insideOldPosts] = post;
-      setOldPosts(arrayCopy);
-    } else if (insidePosts !== -1) {
-      const arrayCopy = [...posts];
-      arrayCopy[insidePosts] = post;
-      setPosts(arrayCopy);
+    if (postIndex !== -1) {
+      const arrayCopy = [...localPosts];
+      arrayCopy[postIndex] = post;
+      setLocalPosts(arrayCopy);
     }
   };
 
-  const createPost = (post: PostInterface) => setOldPosts([...oldPosts, post]);
+  const createLocalPost = (post: PostInterface) => {
+    console.log('createLocalPost');
+    setLocalPosts(sortArrayByCreatedDate([...localPosts, post]));
+  };
+
+  const removeLocalPost = (post: PostInterface) => {
+    console.log('removeLocalPost');
+    const postIndex = localPosts.findIndex(_post => _post.id === post.id);
+
+    if (postIndex !== -1)
+      setLocalPosts(
+        sortArrayByCreatedDate(
+          [...localPosts].filter(obj => post.id !== obj.id),
+        ),
+      );
+  };
 
   return {
-    posts: allCurrentPosts,
-    loading,
+    getPosts: onGetPosts,
+    posts: localPosts,
+    loading: loading || onFetch,
     refetch: onRefetch,
     getMore,
     error,
     limitReached: getMorePressed && !loading && posts.length === 0,
-    editPosts: {
-      updatePost,
-      createPost,
+    editLocalPosts: {
+      updateLocalPost,
+      createLocalPost,
+      removeLocalPost,
     },
   };
 };

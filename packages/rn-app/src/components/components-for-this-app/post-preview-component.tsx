@@ -28,20 +28,20 @@ dayjs.extend(relativeTime);
 
 interface PostPreviewProps {
   post: PostInterface;
-  refreshPosts?: () => void;
   myAddress: string;
   setVoteInProgress?: (value: boolean) => void;
   voteInProgress?: boolean;
-  updatePost?: (post: PostInterface) => void;
+  updateLocalPost?: (post: PostInterface) => void;
+  removeLocalPost?: (post: PostInterface) => void;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({
   post,
-  refreshPosts,
   myAddress,
   setVoteInProgress,
   voteInProgress,
-  updatePost,
+  updateLocalPost,
+  removeLocalPost,
 }: PostPreviewProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -124,9 +124,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
               }),
         };
 
-        updatePost && updatePost(updatedPost);
         getAndPaintUpVote();
         getAndPaintDownVote();
+
+        updateLocalPost && updateLocalPost(updatedPost);
       }
     }
   };
@@ -141,12 +142,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      refreshPosts && refreshPosts();
       setShowModal(false);
-      Alert.alert(
-        'Post deleted!',
-        'You have to wait a few more seconds for "The Graph" to update the data and your post will no longer be viewed',
-      );
+
+      removeLocalPost && removeLocalPost(post);
     }
   };
 
