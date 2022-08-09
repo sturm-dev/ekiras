@@ -98,6 +98,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       const {error} = await vote({
         post,
         voteIsTypeUp: type === 'up',
+        userAddress: myAddress,
       });
       type === 'up' ? setLoadingUpVote(false) : setLoadingDownVote(false);
       setVoteInProgress && setVoteInProgress(false);
@@ -131,7 +132,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
 
   const onDeletePost = async () => {
     setLoadingModal(true);
-    const {error} = await deletePost(post.id);
+    const {error} = await deletePost({postId: post.id, userAddress: myAddress});
     setLoadingModal(false);
 
     if (error) {
@@ -141,6 +142,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
     } else {
       refreshPosts && refreshPosts();
       setShowModal(false);
+      Alert.alert(
+        'Post deleted!',
+        'You have to wait a few more seconds for "The Graph" to update the data and your post will no longer be viewed',
+      );
     }
   };
 

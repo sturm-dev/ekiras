@@ -97,7 +97,9 @@ export const Screen_Home: React.FC<{
             <TextByScale scale="h3">Just Feedback</TextByScale>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Screen_CreatePost')}
+            onPress={() =>
+              navigation.navigate('Screen_CreatePost', {userAddress: myAddress})
+            }
             style={{padding: 10}}>
             <CustomIcon name="add" type="material" />
           </TouchableOpacity>

@@ -5,9 +5,13 @@ import {
   printTxHash,
 } from '_db';
 
-export const createPost = async (
-  text: string,
-): Promise<{
+export const createPost = async ({
+  text,
+  userAddress,
+}: {
+  text: string;
+  userAddress: string;
+}): Promise<{
   error?: string;
 }> => {
   try {
@@ -17,7 +21,11 @@ export const createPost = async (
     const tx = await contract.createPost(text, gasPrice ? {gasPrice} : {});
     printTxHash(tx.hash);
 
-    await new Promise<void>(res => contract.on('CreatePostEvent', res));
+    await new Promise<void>(res => {
+      contract.on('CreatePostEvent', msgSender => {
+        if (msgSender === userAddress) res();
+      });
+    });
 
     return {};
   } catch (error) {

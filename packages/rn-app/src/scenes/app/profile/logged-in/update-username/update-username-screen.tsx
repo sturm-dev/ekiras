@@ -43,7 +43,10 @@ export const Screen_UpdateUsername: React.FC<{
 
   const onUpdateUsername = async () => {
     setLoading(true);
-    const {error} = await updateUsername(username);
+    const {error} = await updateUsername({
+      newUsername: username,
+      userAddress: params.userAddress,
+    });
     setLoading(false);
 
     if (error) {

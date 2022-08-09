@@ -5,9 +5,13 @@ import {
   printTxHash,
 } from '_db';
 
-export const updateUsername = async (
-  newUsername: string,
-): Promise<{
+export const updateUsername = async ({
+  newUsername,
+  userAddress,
+}: {
+  newUsername: string;
+  userAddress: string;
+}): Promise<{
   error?: string;
 }> => {
   try {
@@ -20,7 +24,11 @@ export const updateUsername = async (
     );
     printTxHash(tx.hash);
 
-    await new Promise<void>(res => contract.on('UpdateUsernameEvent', res));
+    await new Promise<void>(res => {
+      contract.on('UpdateUsernameEvent', msgSender => {
+        if (msgSender === userAddress) res();
+      });
+    });
 
     return {};
   } catch (error) {

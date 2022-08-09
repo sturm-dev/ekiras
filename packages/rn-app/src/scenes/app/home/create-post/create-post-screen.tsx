@@ -14,7 +14,9 @@ import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
 import {createPost} from '_db';
 
-export type Screen_CreatePost__Params = undefined;
+export type Screen_CreatePost__Params = {
+  userAddress: string;
+};
 
 type Screen_CreatePost__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -49,7 +51,7 @@ export const Screen_CreatePost: React.FC<{
 
   const onCreatePost = async () => {
     setLoading(true);
-    const {error} = await createPost(text);
+    const {error} = await createPost({text, userAddress: params.userAddress});
     setLoading(false);
 
     if (error) {
@@ -62,6 +64,10 @@ export const Screen_CreatePost: React.FC<{
       navigation.navigate('Screen_Home', {
         updateTime: new Date().getTime(),
       });
+      Alert.alert(
+        'Post created!',
+        'You have to wait a few seconds to be able to see your actual post',
+      );
     }
   };
 
