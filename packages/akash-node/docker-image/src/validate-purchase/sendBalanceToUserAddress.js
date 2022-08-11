@@ -1,11 +1,7 @@
 const ethers = require("ethers");
 
-const {
-  printSpacer,
-  printInGreen,
-  estimatedCostOfTx,
-  printInYellow,
-} = require("../utils");
+const { printSpacer, printInYellow } = require("../utils");
+const { estimateCostOfSendBalanceToUser } = require("./estimateTxCosts");
 
 // https://sharpsheets.io/blog/app-store-and-google-play-commissions-fees/
 // https://existek.com/blog/how-do-developers-bypass-app-store-fees/#apple_app_store_fees
@@ -22,27 +18,6 @@ const sturm_dev__feePercentage = 0.2; // approx -> 0.03034usd
 
 // total_tx_cost = app_store__fee + sturm_dev_fee = 0.18204usd
 
-const estimateCostOfSendBalanceToUser = async ({
-  wallet,
-  to,
-  gasPrice,
-  usdPrice,
-}) => {
-  const estimatedLimit = await wallet.estimateGas({
-    to,
-    value: ethers.utils.parseEther((0.85 * parseFloat(usdPrice)).toString()),
-    gasPrice,
-  });
-
-  const { estimatedUsdCost, estimatedMaticCost } = estimatedCostOfTx(
-    gasPrice,
-    estimatedLimit,
-    usdPrice
-  );
-
-  return { estimatedLimit, estimatedUsdCost, estimatedMaticCost };
-};
-
 // ────────────────────────────────────────────────────────────────────────────────
 
 // TODO: try to use contract instead of wallet
@@ -53,7 +28,8 @@ const sendBalanceToUserAddress = async (
   userPublicAddress,
   isSandbox
 ) => {
-  // - [ ] get the estimated cost of save tx id
+  // ────────────────────────────────────────────────────────────────────────────────
+  // TODO: not call estimate here -> call in index & pass result to this function
 
   const { estimatedLimit, estimatedUsdCost } =
     await estimateCostOfSendBalanceToUser({
@@ -101,14 +77,15 @@ const sendBalanceToUserAddress = async (
 // ────────────────────────────────────────────────────────────────────────────────
 
 const calculateTheBalanceToSend = (usdPrice, isSandbox) => {
-  // TODO: make cost of tx dynamic to %15 of the total cost
-  const totalOfUsdToBuyMatic =
-    1 - costOfInAppPurchase - costOfBuyMatic__sturm_dev;
-  const amountOfMaticToTransferToTheUser = isSandbox
-    ? "0.01"
-    : (totalOfUsdToBuyMatic * usdPrice).toString();
+  // const totalOfUsdToBuyMatic =
+  //   1 - app_store__fee - costOfBuyMatic__sturm_dev;
+  // const amountOfMaticToTransferToTheUser = isSandbox
+  //   ? "0.01"
+  //   : (totalOfUsdToBuyMatic * usdPrice).toString();
 
-  printInGreen(
+  const amountOfMaticToTransferToTheUser = "0.01";
+
+  printInYellow(
     `\namountOfMaticToTransferToTheUser - isSandbox: ${isSandbox}`,
     amountOfMaticToTransferToTheUser
   );
@@ -116,7 +93,4 @@ const calculateTheBalanceToSend = (usdPrice, isSandbox) => {
   return ethers.utils.parseEther(amountOfMaticToTransferToTheUser);
 };
 
-module.exports = {
-  sendBalanceToUserAddress,
-  estimateCostOfSendBalanceToUser,
-};
+module.exports = sendBalanceToUserAddress;

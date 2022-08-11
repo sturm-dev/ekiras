@@ -26,8 +26,8 @@ export const getFastestGasPrice = async (): Promise<
     gasPrice = formatter.format(parseFloat(fast) + gasTip);
 
     console.log(
-      `standard -> [1;36m ${standard}[0m`,
-      `fast -> [1;33m ${fast}[0m`,
+      `standard -> [1;36m ${standard}[0m  `,
+      `fast -> [1;33m ${fast}[0m  `,
       `with-tip -> [1;32m ${gasPrice}[0m`,
     );
 

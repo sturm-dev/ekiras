@@ -1,19 +1,5 @@
-const { getRandomInt, printInYellow, estimatedCostOfTx } = require("../utils");
-
-const estimateCostOfSaveTxId = async (contract, { gasPrice, usdPrice }) => {
-  const estimatedLimit = await contract.estimateGas.addTransactionId(
-    getRandomInt(100, 10000),
-    { gasPrice }
-  );
-
-  const { estimatedUsdCost, estimatedMaticCost } = estimatedCostOfTx(
-    gasPrice,
-    estimatedLimit,
-    usdPrice
-  );
-
-  return { estimatedUsdCost, estimatedLimit, estimatedMaticCost };
-};
+const { getRandomInt, printInYellow } = require("../utils");
+const { estimateCostOfSaveTxId } = require("./estimateTxCosts");
 
 const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   let transactionId = postResult.data.receipt.in_app[0].transaction_id;
@@ -22,6 +8,7 @@ const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   }
 
   // ────────────────────────────────────────────────────────────────────────────────
+  // TODO: not call estimate here -> call in index & pass result to this function
 
   const { estimatedUsdCost, estimatedLimit } = await estimateCostOfSaveTxId(
     contract,
@@ -52,7 +39,4 @@ const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   console.log(`\nAddTransactionIdEvent emitted`);
 };
 
-module.exports = {
-  saveTxId,
-  estimateCostOfSaveTxId,
-};
+module.exports = saveTxId;
