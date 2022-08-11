@@ -5,7 +5,8 @@ const {
   printSpacer,
   errors,
   getAccountBalance,
-  calculateTxFee,
+  calculateFinalTxFee,
+  printInRed,
 } = require("../utils.js");
 
 const saveTxId = require("./saveTxId");
@@ -34,6 +35,7 @@ const validatePurchase = async (postResult, req) => {
   let wallet;
   let balanceBefore;
   let amountOfMaticSentToTheUser = "0";
+  let usdPrice = "0";
 
   try {
     printSpacer("Start with purchase validation...");
@@ -52,7 +54,8 @@ const validatePurchase = async (postResult, req) => {
     const contract = await new ethers.Contract(CONTRACT_ADDRESS, abi, wallet);
 
     printSpacer("Getting gas prices from polygon oracle...");
-    const gasPrices = await getGasPrices(provider);
+    const gasPrices = await getGasPrices();
+    usdPrice = gasPrices.usdPrice;
 
     printSpacer("Adding transactionId to the smart contract...");
     await saveTxId(contract, gasPrices, postResult);
@@ -67,28 +70,51 @@ const validatePurchase = async (postResult, req) => {
 
     // ────────────────────────────────────────
 
-    const txFee = await calculateTxFee(balanceBefore, wallet.address, provider);
+    const txFee = await calculateFinalTxFee(
+      balanceBefore,
+      wallet.address,
+      provider,
+      usdPrice
+    );
 
     return { txFee, txHash, amountOfMaticSentToTheUser, message: "Success!" };
   } catch (e) {
-    console.log(`\n\n[1;33m -- INSIDE VALIDATE PURCHASE CATCH BLOCK --[0m\n\n`); // log in yellow
+    printInRed("", "-- INSIDE VALIDATE PURCHASE CATCH BLOCK --");
 
     let txFee;
 
     try {
-      txFee = await calculateTxFee(balanceBefore, wallet.address, provider);
+      txFee = await calculateFinalTxFee(
+        balanceBefore,
+        wallet.address,
+        provider,
+        usdPrice,
+        true
+      );
     } catch (e) {
-      console.log("calculateTxFee error ->", e);
+      console.log("calculateFinalTxFee error ->", e);
     }
 
     if (e.toString().includes(errors.ALREADY_SAVED_THIS_TRANSACTION_ID)) {
+      printInRed("", "ALREADY_SAVED_THIS_TRANSACTION_ID");
       return {
         txFee,
         amountOfMaticSentToTheUser,
         errorString: errors.ALREADY_SAVED_THIS_TRANSACTION_ID,
       };
+    } else if (e.toString().includes(`reason=`)) {
+      const errorString = e.toString().split(`reason="`)[1].split(`"`)[0];
+      printInRed("errorString reason=", errorString);
+      return {
+        txFee,
+        amountOfMaticSentToTheUser,
+        error: e,
+        errorString: errorString,
+      };
     } else {
-      console.log("error ->", e);
+      console.error(e);
+      console.log();
+      console.log(`e.toString()`, e.toString());
       return {
         txFee,
         amountOfMaticSentToTheUser,

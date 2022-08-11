@@ -1,29 +1,28 @@
 const axios = require("axios");
 const ethers = require("ethers");
 
-const { gasPriceMul, printInGreen, fromBigNumberToGwei } = require("../utils");
+const { fromBigNumberToGwei, formatToTwoDecimals } = require("../utils");
 
-const getGasPrices = async (provider) => {
-  const gasPriceBaseFromProvider = await provider.getGasPrice();
-
+const getGasPrices = async () => {
   // TODO: use this endpoint with a password to not spend api calls
-  // API -> 5 calls/second limit
+  // API -> 5 calls/second limit by polygon scan
   // Up to 100,000 API calls per day
   const gasOracle = await axios.get(
     `https://api.polygonscan.com/api?module=gastracker&action=gasoracle&apikey=${process.env.ETHERSCAN_API_KEY}`
   );
 
-  console.log(`gasOracle.data`, gasOracle.data);
-
-  const fastPrice = gasOracle.data.result.FastGasPrice;
+  const standard = gasOracle.data.result.ProposeGasPrice;
+  const fast = gasOracle.data.result.FastGasPrice;
   const usdPrice = gasOracle.data.result.UsdPrice;
-  const fastPriceFormatted = ethers.utils.parseUnits(`${fastPrice}`, "gwei");
+
+  const gasTip = (parseFloat(fast) - parseFloat(standard)) / 2;
+  const gasWithTip = formatToTwoDecimals(parseFloat(fast) + gasTip);
 
   const gasPrices = {
     usdPrice,
-    gasPriceBaseFromProvider: gasPriceBaseFromProvider,
-    fastPriceByPolygonOracle: fastPriceFormatted,
-    veryFastPrice: gasPriceMul(fastPriceFormatted, 1.3),
+    standardByOracle: standard,
+    fastByOracle: fast,
+    gasWithTip: ethers.utils.parseUnits(gasWithTip, "gwei"),
   };
 
   printGasPrices(gasPrices);
@@ -31,22 +30,22 @@ const getGasPrices = async (provider) => {
   return gasPrices;
 };
 
-const printGasPrices = ({
-  gasPriceBaseFromProvider,
-  fastPriceByPolygonOracle,
-  veryFastPrice,
-}) => {
+const printGasPrices = ({ standardByOracle, fastByOracle, gasWithTip }) => {
   console.log();
 
-  printInGreen(
-    "gas Price Base From Provider: ",
-    fromBigNumberToGwei(gasPriceBaseFromProvider)
-  );
-  printInGreen(
-    "fast price by polygon oracle: ",
-    fromBigNumberToGwei(fastPriceByPolygonOracle)
-  );
-  printInGreen("very Fast Price: ", fromBigNumberToGwei(veryFastPrice));
+  if (process.env.INSIDE_SERVER === "true") {
+    console.log(
+      `standard -> ${standardByOracle}`,
+      `fast -> ${fastByOracle}`,
+      `with-tip -> ${fromBigNumberToGwei(gasWithTip)}`
+    );
+  } else {
+    console.log(
+      `standard -> [1;36m ${standardByOracle}[0m  `,
+      `fast -> [1;33m ${fastByOracle}[0m  `,
+      `with-tip -> [1;32m ${fromBigNumberToGwei(gasWithTip)}[0m`
+    );
+  }
 
   console.log();
 };

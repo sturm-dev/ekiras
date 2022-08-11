@@ -24,7 +24,7 @@ const axios = require("axios");
 const bodyParser = require("body-parser");
 const app = require("express")();
 
-const { printSpacer } = require("./utils.js");
+const { printSpacer, printInRed } = require("./utils.js");
 const validatePurchase = require("./validate-purchase");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -85,9 +85,11 @@ app.post("/validate-purchase-ios", async (req, res) => {
 
     res.json(await validatePurchase(result, req));
   } catch (e) {
-    console.log(`\n\n[1;33m -- INSIDE INDEX CATCH BLOCK --[0m\n\n`); // log in yellow
+    printInRed("", "-- INSIDE INDEX CATCH BLOCK --");
 
-    console.log(`catch e`, e);
+    console.error(e);
+    console.log();
+    console.log(e.toString());
 
     res.json({ error: e, errorString: e.toString() });
   }

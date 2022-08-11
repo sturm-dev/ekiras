@@ -5,6 +5,8 @@ services:
   validate-purchase-ios:
     image: sturmenta/validate-purchase-ios:latest
     env:
+      - INSIDE_SERVER=true
+      #
       - MAINNET=<copy-from-.env>
       #
       - MAINNET__RPC_FULL_URL=<copy-from-.env>
@@ -19,6 +21,8 @@ services:
       - ETHERSCAN_API_KEY=<copy-from-.env>
       #
       - APP_STORE_SHARED_SECRET=<copy-from-.env>
+      #
+      - TX_PRICE_LIMIT=0.05
     expose:
       - port: 3000
         as: 80

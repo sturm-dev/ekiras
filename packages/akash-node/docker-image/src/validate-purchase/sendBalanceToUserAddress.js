@@ -3,7 +3,7 @@ const ethers = require("ethers");
 const { printSpacer, printInGreen } = require("../utils");
 
 const calculateTheBalanceToSend = (usdPrice, isSandbox) => {
-  // TODO: save on .env
+  // TODO: make cost of tx dynamic to %15 of the total cost
   const costOfInAppPurchase = 0.15;
   const costOfBuyMatic__sturm_dev = 0.15; // maintain server costs - risk of loss
   const totalOfUsdToBuyMatic =
@@ -22,7 +22,7 @@ const calculateTheBalanceToSend = (usdPrice, isSandbox) => {
 
 const sendBalanceToUserAddress = async (
   wallet,
-  { usdPrice, veryFastPrice },
+  { usdPrice, gasWithTip },
   userPublicAddress,
   isSandbox
 ) => {
@@ -31,14 +31,14 @@ const sendBalanceToUserAddress = async (
   const gasLimit = await wallet.estimateGas({
     to: userPublicAddress,
     value: valueToSend,
-    gasPrice: veryFastPrice,
+    gasPrice: gasWithTip,
   });
 
   printSpacer("Mining transaction...");
   const tx = await wallet.sendTransaction({
     to: userPublicAddress,
     value: valueToSend,
-    gasPrice: veryFastPrice,
+    gasPrice: gasWithTip,
     gasLimit,
   });
 
