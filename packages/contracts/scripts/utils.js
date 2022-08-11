@@ -7,10 +7,10 @@ const fromPrivateKeyToAddress = (privateKey) => {
 
 const getAccountBalance = async (address, rpc_url) => {
   const provider = new ethers.providers.JsonRpcProvider(rpc_url)
-  return formatBalance((await provider.getBalance(address))._hex)
+  return formatBalanceInHex((await provider.getBalance(address))._hex)
 }
 
-const formatBalance = (balanceInHex) => {
+const formatBalanceInHex = (balanceInHex) => {
   if (!balanceInHex) return undefined
 
   const balance = ethers.BigNumber.from(balanceInHex)
@@ -20,9 +20,12 @@ const formatBalance = (balanceInHex) => {
 
 const mathRound = (amountOfBalance) => Math.round(amountOfBalance * 1e4) / 1e4
 
+const formatBalance = () => mathRound(ethers.utils.formatEther(balance))
+
 module.exports = {
   getAccountBalance,
-  formatBalance,
+  formatBalanceInHex,
   fromPrivateKeyToAddress,
   mathRound,
+  formatBalance,
 }

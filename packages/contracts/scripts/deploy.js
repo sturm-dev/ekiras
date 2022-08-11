@@ -17,6 +17,7 @@ async function deploy({ MAINNET }) {
 
   const address = fromPrivateKeyToAddress(network.config.accounts[0])
 
+  // TODO: try to get balance like this https://hardhat.org/tutorial/deploying-to-a-live-network#7.-deploying-to-a-live-network
   const accountBalanceBefore = await getAccountBalance(
     address,
     RPC_FULL_URL(MAINNET)

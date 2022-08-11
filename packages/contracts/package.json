@@ -18,6 +18,7 @@
     "deploy": "yarn deploy:mainnet",
     "deploy:testnet": "yarn clean-cache; yarn hardhat run scripts/deployTestnet.js --network polygonMumbai; yarn reminder",
     "deploy:mainnet": "yarn clean-cache; yarn hardhat run scripts/deployMainnet.js --network matic; yarn reminder",
+    "deploy:dynamic-data": "yarn clean-cache; yarn hardhat run scripts/deployDynamicData.js --network matic;",
     "clean-cache": "rm -rf artifacts; rm -rf cache;",
     "reminder": "echo '\n\n🟠 remember to deploy new subgraph & update subgraph.yaml if contract events where changed, also remember reset cache on rn-app\n\n'"
   }

@@ -24,7 +24,10 @@ module.exports = {
   networks: {
     matic: {
       url: process.env.MAINNET__RPC_FULL_URL,
-      accounts: [process.env.MAINNET__PRIVATE_KEY],
+      accounts: [
+        // process.env.DYNAMIC_DATA_CONTRACT_PRIVATE_KEY,
+        process.env.MAINNET__PRIVATE_KEY,
+      ],
     },
     polygonMumbai: {
       url: process.env.TESTNET__RPC_FULL_URL,
