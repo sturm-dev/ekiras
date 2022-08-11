@@ -26,9 +26,12 @@ const app = require("express")();
 
 const { printSpacer, printInRed } = require("./utils.js");
 const validatePurchase = require("./validate-purchase");
+const estimateTxCosts = require("./estimate-tx-costs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 const postToItunesProd = (dataToSend) =>
   new Promise(async (res, rej) => {
@@ -64,6 +67,8 @@ const postToItunesSandbox = (dataToSend) =>
     }
   });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 app.post("/validate-purchase-ios", async (req, res) => {
   printSpacer("Starting...");
 
@@ -85,7 +90,7 @@ app.post("/validate-purchase-ios", async (req, res) => {
 
     res.json(await validatePurchase(result, req));
   } catch (e) {
-    printInRed("", "-- INSIDE INDEX CATCH BLOCK --");
+    printInRed("", "-- INSIDE INDEX 'validate-purchase-ios' CATCH BLOCK --");
 
     console.error(e);
     console.log();
@@ -94,6 +99,26 @@ app.post("/validate-purchase-ios", async (req, res) => {
     res.json({ error: e, errorString: e.toString() });
   }
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+app.get("/estimate-tx-costs", async (req, res) => {
+  printSpacer("Starting...");
+
+  try {
+    res.json(await estimateTxCosts());
+  } catch (e) {
+    printInRed("", "-- INSIDE INDEX 'estimate-tx-costs' CATCH BLOCK --");
+
+    console.error(e);
+    console.log();
+    console.log(e.toString());
+
+    res.json({ error: e, errorString: e.toString() });
+  }
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 app.listen(process.env.port || 3000, () => {
   console.log(`Server running on port ${process.env.port || 3000}`);

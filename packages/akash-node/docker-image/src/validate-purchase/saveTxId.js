@@ -1,5 +1,7 @@
 const { getRandomInt, printInYellow } = require("../utils");
-const { estimateCostOfSaveTxId } = require("./estimateTxCosts");
+const {
+  estimateCostOfSaveTxId,
+} = require("../estimate-tx-costs/estimateTxCosts");
 
 const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   let transactionId = postResult.data.receipt.in_app[0].transaction_id;

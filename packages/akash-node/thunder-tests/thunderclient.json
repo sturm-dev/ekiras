@@ -55,5 +55,19 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "0256a298-f8a6-4f69-ae60-a55d306c9c9f",
+    "colId": "5376b26e-389f-44ce-b436-7c356517ff2c",
+    "containerId": "",
+    "name": "estimate-tx-costs",
+    "url": "localhost:3000/estimate-tx-costs",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-08-11T20:50:43.709Z",
+    "modified": "2022-08-11T20:54:33.464Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

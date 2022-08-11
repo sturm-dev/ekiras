@@ -107,7 +107,6 @@ const validatePurchase = async (postResult, req) => {
       printInRed("errorString reason=", errorString);
       return {
         txFee,
-        amountOfMaticSentToTheUser,
         error: e,
         errorString: errorString,
       };
@@ -117,7 +116,6 @@ const validatePurchase = async (postResult, req) => {
       console.log(`e.toString()`, e.toString());
       return {
         txFee,
-        amountOfMaticSentToTheUser,
         error: e,
         errorString: e.toString(),
       };

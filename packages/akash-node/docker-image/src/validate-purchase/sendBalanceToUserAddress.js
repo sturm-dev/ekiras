@@ -1,7 +1,9 @@
 const ethers = require("ethers");
 
 const { printSpacer, printInYellow } = require("../utils");
-const { estimateCostOfSendBalanceToUser } = require("./estimateTxCosts");
+const {
+  estimateCostOfSendBalanceToUser,
+} = require("../estimate-tx-costs/estimateTxCosts");
 
 // https://sharpsheets.io/blog/app-store-and-google-play-commissions-fees/
 // https://existek.com/blog/how-do-developers-bypass-app-store-fees/#apple_app_store_fees
