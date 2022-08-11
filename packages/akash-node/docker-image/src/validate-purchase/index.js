@@ -9,9 +9,9 @@ const {
   printInRed,
 } = require("../utils.js");
 
-const saveTxId = require("./saveTxId");
+const { saveTxId } = require("./saveTxId");
 const getGasPrices = require("./getGasPrices");
-const sendBalanceToUserAddress = require("./sendBalanceToUserAddress");
+const { sendBalanceToUserAddress } = require("./sendBalanceToUserAddress");
 
 // ────────────────────────────────────────────────────────────────────────────────
 

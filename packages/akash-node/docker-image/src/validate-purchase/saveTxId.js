@@ -1,5 +1,20 @@
 const { getRandomInt, printInYellow, estimatedCostOfTx } = require("../utils");
 
+const estimateCostOfSaveTxId = async (contract, { gasPrice, usdPrice }) => {
+  const estimatedLimit = await contract.estimateGas.addTransactionId(
+    getRandomInt(100, 10000),
+    { gasPrice }
+  );
+
+  const { estimatedUsdCost, estimatedMaticCost } = estimatedCostOfTx(
+    gasPrice,
+    estimatedLimit,
+    usdPrice
+  );
+
+  return { estimatedUsdCost, estimatedLimit, estimatedMaticCost };
+};
+
 const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   let transactionId = postResult.data.receipt.in_app[0].transaction_id;
   if (process.env.INSIDE_SERVER !== "true") {
@@ -8,23 +23,18 @@ const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
 
   // ────────────────────────────────────────────────────────────────────────────────
 
-  const estimatedLimit = await contract.estimateGas.addTransactionId(
-    transactionId,
-    { gasPrice: gasWithTip }
+  const { estimatedUsdCost, estimatedLimit } = await estimateCostOfSaveTxId(
+    contract,
+    { gasPrice: gasWithTip, usdPrice }
   );
 
-  const { estimatedUsdCost } = estimatedCostOfTx(
-    gasWithTip,
-    estimatedLimit,
-    usdPrice
-  );
+  if (parseFloat(estimatedUsdCost) >= parseFloat(process.env.TX_PRICE_LIMIT))
+    throw Error(`TX cost is greater than ${process.env.TX_PRICE_LIMIT}`);
+
   printInYellow(
     "⛽️ Estimated cost of save TX_id (💵 USD): ",
     estimatedUsdCost
   );
-
-  if (parseFloat(estimatedUsdCost) >= parseFloat(process.env.TX_PRICE_LIMIT))
-    throw Error("TX cost is too high");
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -32,7 +42,7 @@ const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
     gasPrice: gasWithTip,
     gasLimit: estimatedLimit,
   });
-  console.log("\ntransactionId added", transactionId, tx);
+  console.log("\ntx: save tx_id", transactionId, tx);
 
   await new Promise((res) => {
     contract.on("AddTransactionIdEvent", (txId) => {
@@ -42,4 +52,7 @@ const saveTxId = async (contract, { gasWithTip, usdPrice }, postResult) => {
   console.log(`\nAddTransactionIdEvent emitted`);
 };
 
-module.exports = saveTxId;
+module.exports = {
+  saveTxId,
+  estimateCostOfSaveTxId,
+};
