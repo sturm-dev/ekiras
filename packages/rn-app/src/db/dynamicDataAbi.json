@@ -1,0 +1,24 @@
+[
+  {"inputs": [], "stateMutability": "nonpayable", "type": "constructor"},
+  {
+    "inputs": [],
+    "name": "akashNodeUrl",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "manager",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "string", "name": "_newUrl", "type": "string"}],
+    "name": "updateAkashNodeUrl",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

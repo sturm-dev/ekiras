@@ -1,4 +1,7 @@
-import {AKASH_NODE_ENDPOINT} from 'react-native-dotenv';
+import * as ethers from 'ethers';
+import {DYNAMIC_DATA_CONTRACT_ADDRESS} from 'react-native-dotenv';
+
+import {dynamicDataAbi, provider} from '_db';
 
 export const validatePurchaseIos = async ({
   receipt,
@@ -8,7 +11,13 @@ export const validatePurchaseIos = async ({
   userAddress: string;
 }): Promise<{status: 'ok' | 'error'}> => {
   try {
-    const response = await fetch(AKASH_NODE_ENDPOINT, {
+    const akashNodeEndpoint = await new ethers.Contract(
+      DYNAMIC_DATA_CONTRACT_ADDRESS,
+      dynamicDataAbi,
+      provider,
+    ).akashNodeUrl();
+
+    const response = await fetch(akashNodeEndpoint, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

@@ -20,7 +20,7 @@ declare module 'react-native-dotenv' {
   export const IN_APP_PURCHASES_TEST_MODE: 'true' | 'false';
   export const APP_STORE_SHARED_SECRET: string;
   //
-  export const AKASH_NODE_ENDPOINT: string;
+  export const DYNAMIC_DATA_CONTRACT_ADDRESS: string;
   //
   export const POLYGON_GAS_PRICE_ORACLE_URL: string;
   export const POLYGON_EXPLORE_TX_URL: string;
