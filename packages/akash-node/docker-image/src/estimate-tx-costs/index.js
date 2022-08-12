@@ -1,7 +1,12 @@
 const ethers = require("ethers");
 
 const abi = require("../abi.json");
-const { printSpacer, printInRed } = require("../utils.js");
+const {
+  printSpacer,
+  printInRed,
+  formatToDecimals,
+  fromBigNumberToGwei,
+} = require("../utils.js");
 const getGasPrices = require("../validate-purchase/getGasPrices");
 const {
   estimateCostOfSaveTxId,
@@ -38,16 +43,14 @@ const estimateTxCosts = async () => {
     const contract = await new ethers.Contract(CONTRACT_ADDRESS, abi, wallet);
 
     printSpacer("Getting gas prices from polygon oracle...");
-    const { gasWithTip, usdPrice } = await getGasPrices();
+    const { gasWithTip, usdPrice, standardByOracle, fastByOracle } =
+      await getGasPrices();
 
     // ─────────────────────────────────────────────────────────────────
     const { estimatedUsdCost: _saveTxIdCost } = await estimateCostOfSaveTxId(
       contract,
       { gasPrice: gasWithTip, usdPrice }
     );
-
-    console.log(`_saveTxIdCost`, _saveTxIdCost);
-
     // ─────────────────────────────────────────────────────────────────
     const { estimatedUsdCost: _sendBalanceToUserCost } =
       await estimateCostOfSendBalanceToUser({
@@ -56,17 +59,43 @@ const estimateTxCosts = async () => {
         gasPrice: gasWithTip,
         usdPrice,
       });
-
-    console.log(`_sendBalanceToUserCost`, _sendBalanceToUserCost);
-
+    // ─────────────────────────────────────────────────────────────────
+    let appleFee =
+      parseFloat(process.env.APPLE_IN_APP_PURCHASE_FEE) *
+      parseFloat(process.env.IN_APP_PURCHASE_PRICE);
+    // ─────────────────────────────────────────────────────────────────
+    const baseFee =
+      parseFloat(appleFee) +
+      parseFloat(_saveTxIdCost) +
+      parseFloat(_sendBalanceToUserCost);
+    // ─────────────────────────────────────────────────────────────────
+    const serverFee = baseFee * parseFloat(process.env.SERVER_FEE);
+    // ─────────────────────────────────────────────────────────────────
+    const totalCostOfTx = baseFee + serverFee;
+    // ─────────────────────────────────────────────────────────────────
+    const estimatedMaticToSend =
+      (parseFloat(process.env.IN_APP_PURCHASE_PRICE) - totalCostOfTx) *
+      parseFloat(usdPrice);
     // ─────────────────────────────────────────────────────────────────
 
+    printSpacer("Success! 🎉");
+
+    // ────────────────────────────────────────
     return {
-      estimatedCosts: {
+      gasPrices: {
+        standard: standardByOracle,
+        fast: fastByOracle,
+        fastWithTip: fromBigNumberToGwei(gasWithTip),
+      },
+      estimatedCostsInUsd: {
+        matic: usdPrice,
         saveTxId: _saveTxIdCost,
         sendBalanceToUser: _sendBalanceToUserCost,
+        appleFee: formatToDecimals(appleFee, 8),
+        serverFee: formatToDecimals(serverFee, 8),
+        totalCostOfTx: formatToDecimals(totalCostOfTx, 8),
       },
-      message: "Success!",
+      estimatedMaticToSend: formatToDecimals(estimatedMaticToSend, 8),
     };
   } catch (e) {
     printInRed("", "-- INSIDE ESTIMATE TX COSTS CATCH BLOCK --");

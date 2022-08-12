@@ -1,10 +1,10 @@
 const axios = require("axios");
 const ethers = require("ethers");
 
-const { fromBigNumberToGwei, formatToTwoDecimals } = require("../utils");
+const { fromBigNumberToGwei, formatToDecimals } = require("../utils");
 
 const getGasPrices = async () => {
-  // TODO: use this endpoint with a password to not spend api calls
+  // TODO: use this endpoint with a password match in .env to not spend api calls
   // API -> 5 calls/second limit by polygon scan
   // Up to 100,000 API calls per day
   const gasOracle = await axios.get(
@@ -16,7 +16,7 @@ const getGasPrices = async () => {
   const usdPrice = gasOracle.data.result.UsdPrice;
 
   const gasTip = (parseFloat(fast) - parseFloat(standard)) / 2;
-  const gasWithTip = formatToTwoDecimals(parseFloat(fast) + gasTip);
+  const gasWithTip = formatToDecimals(parseFloat(fast) + gasTip, 2);
 
   const gasPrices = {
     usdPrice,

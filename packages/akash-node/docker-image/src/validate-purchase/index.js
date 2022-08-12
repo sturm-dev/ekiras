@@ -77,7 +77,7 @@ const validatePurchase = async (postResult, req) => {
       usdPrice
     );
 
-    return { txFee, txHash, amountOfMaticSentToTheUser, message: "Success!" };
+    return { txFee, txHash, amountOfMaticSentToTheUser };
   } catch (e) {
     printInRed("", "-- INSIDE VALIDATE PURCHASE CATCH BLOCK --");
 

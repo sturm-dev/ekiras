@@ -84,17 +84,10 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 };
 
-const formatToTwoDecimals = (number) => {
+const formatToDecimals = (number, decimals = 4) => {
   return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(parseFloat(number));
-};
-
-const formatToFourDecimals = (number) => {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   }).format(parseFloat(number));
 };
 
@@ -107,9 +100,10 @@ const estimatedCostOfTx = (gasPrice, gasLimit, usdPrice) => {
   _gasPrice = ethers.utils.formatUnits(_gasPrice, "gwei");
   _gasPrice = parseFloat(_gasPrice);
 
-  const estimatedMaticCost = formatToFourDecimals(_gasLimit * _gasPrice);
-  const estimatedUsdCost = formatToFourDecimals(
-    estimatedMaticCost * parseFloat(usdPrice)
+  const estimatedMaticCost = formatToDecimals(_gasLimit * _gasPrice, 8);
+  const estimatedUsdCost = formatToDecimals(
+    estimatedMaticCost * parseFloat(usdPrice),
+    8
   );
 
   return {
@@ -131,7 +125,6 @@ module.exports = {
   fromBigNumberToEther,
   calculateFinalTxFee,
   getRandomInt,
-  formatToTwoDecimals,
-  formatToFourDecimals,
+  formatToDecimals,
   estimatedCostOfTx,
 };

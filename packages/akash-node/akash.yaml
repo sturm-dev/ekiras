@@ -6,9 +6,7 @@ services:
     image: sturmenta/validate-purchase-ios:latest
     env:
       - INSIDE_SERVER=true
-      #
-      - MAINNET=<copy-from-.env>
-      #
+      #----------------------------------------
       - MAINNET__RPC_FULL_URL=<copy-from-.env>
       - TESTNET__RPC_FULL_URL=<copy-from-.env>
       #
@@ -22,7 +20,15 @@ services:
       #
       - APP_STORE_SHARED_SECRET=<copy-from-.env>
       #
+      #
+      # APP CONSTANTS ↓
+      #
+      - MAINNET=true
       - TX_PRICE_LIMIT=0.05
+      - APPLE_IN_APP_PURCHASE_FEE=0.15
+      - IN_APP_PURCHASE_PRICE=0.99
+      - SERVER_FEE=0.30
+      #
     expose:
       - port: 3000
         as: 80
