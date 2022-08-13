@@ -12,6 +12,11 @@ const {
 const saveTxId = require("./saveTxId");
 const getGasPrices = require("./getGasPrices");
 const sendBalanceToUserAddress = require("./sendBalanceToUserAddress");
+const {
+  estimateCostOfSaveTxId,
+  estimateCostOfSendBalanceToUser,
+  estimateTotalCostOfTx,
+} = require("../estimate-tx-costs/estimateTxCosts");
 
 // ────────────────────────────────────────────────────────────────────────────────
 
@@ -36,6 +41,7 @@ const validatePurchase = async (postResult, req) => {
   let balanceBefore;
   let amountOfMaticSentToTheUser = "0";
   let usdPrice = "0";
+  let estimatedTotalTxFeeInMatic = 0;
 
   try {
     printSpacer("Start with purchase validation...");
@@ -57,12 +63,47 @@ const validatePurchase = async (postResult, req) => {
     const gasPrices = await getGasPrices();
     usdPrice = gasPrices.usdPrice;
 
+    printSpacer(
+      "Estimating the cost to add transactionId to the smart contract..."
+    );
+    const estimatedData_addTxId = await estimateCostOfSaveTxId(contract, {
+      gasPrice: gasPrices.gasWithTip,
+      usdPrice,
+    });
+    estimatedTotalTxFeeInMatic += parseFloat(
+      estimatedData_addTxId.estimatedMaticCost
+    );
+
     printSpacer("Adding transactionId to the smart contract...");
-    await saveTxId(contract, gasPrices, postResult);
+    await saveTxId(contract, gasPrices, postResult, estimatedData_addTxId);
+
+    printSpacer("Estimating the cost to send the balance to user...");
+    const estimatedData_sendBalance = await estimateCostOfSendBalanceToUser({
+      wallet,
+      to: userAddress,
+      gasPrice: gasPrices.gasWithTip,
+      usdPrice,
+    });
+    estimatedTotalTxFeeInMatic += parseFloat(
+      estimatedData_sendBalance.estimatedMaticCost
+    );
+
+    const { estimatedMaticToSend } = estimateTotalCostOfTx({
+      _saveTxIdCost: estimatedData_addTxId.estimatedUsdCost,
+      _sendBalanceToUserCost: estimatedData_sendBalance.estimatedUsdCost,
+      usdPrice,
+    });
 
     printSpacer("Send balance to user...");
     const { amountOfMaticSentToTheUser: _amountOfMaticSentToTheUser, txHash } =
-      await sendBalanceToUserAddress(wallet, gasPrices, userAddress, isSandbox);
+      await sendBalanceToUserAddress(
+        wallet,
+        gasPrices,
+        userAddress,
+        isSandbox,
+        estimatedData_sendBalance,
+        estimatedMaticToSend
+      );
     amountOfMaticSentToTheUser = _amountOfMaticSentToTheUser;
     // ────────────────────────────────────────────────────────────
 
@@ -70,27 +111,32 @@ const validatePurchase = async (postResult, req) => {
 
     // ────────────────────────────────────────
 
-    const txFee = await calculateFinalTxFee(
+    const { txFee, feeEstimationHitRate } = await calculateFinalTxFee(
       balanceBefore,
       wallet.address,
       provider,
-      usdPrice
+      usdPrice,
+      estimatedTotalTxFeeInMatic,
+      amountOfMaticSentToTheUser
     );
 
-    return { txFee, txHash, amountOfMaticSentToTheUser };
+    return { feeEstimationHitRate, txFee, txHash, amountOfMaticSentToTheUser };
   } catch (e) {
     printInRed("", "-- INSIDE VALIDATE PURCHASE CATCH BLOCK --");
 
     let txFee;
 
     try {
-      txFee = await calculateFinalTxFee(
+      const { txFee: _txFee } = await calculateFinalTxFee(
         balanceBefore,
         wallet.address,
         provider,
         usdPrice,
-        true
+        estimatedTotalTxFeeInMatic,
+        amountOfMaticSentToTheUser,
+        true // inside of catch block
       );
+      txFee = _txFee;
     } catch (e) {
       console.log("calculateFinalTxFee error ->", e);
     }
@@ -113,7 +159,7 @@ const validatePurchase = async (postResult, req) => {
     } else {
       console.error(e);
       console.log();
-      console.log(`e.toString()`, e.toString());
+      console.log(`error in string:`, e.toString());
       return {
         txFee,
         error: e,

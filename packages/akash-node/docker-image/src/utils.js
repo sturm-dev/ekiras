@@ -50,32 +50,70 @@ const calculateFinalTxFee = async (
   address,
   provider,
   usdPrice,
+  estimatedTotalTxFeeInMatic,
+  amountOfMaticToSend,
   catchBlock
 ) => {
-  const accountBalanceAfter = await getAccountBalance(address, provider);
-  const txFee = accountBalanceBefore - accountBalanceAfter;
-
-  const textCatchInYellow =
-    process.env.INSIDE_SERVER === "true"
-      ? "- CATCH BLOCK -> "
-      : "- [1;33m CATCH BLOCK[0m -> ";
-
-  console.log();
-  printInGreen(
-    `${catchBlock ? textCatchInYellow : ""}` + "⛽️ Tx fee: ",
-    txFee
+  const _estimatedTotalTxFeeInMatic = formatToDecimals(
+    estimatedTotalTxFeeInMatic + parseFloat(amountOfMaticToSend),
+    8
   );
-  console.log();
+  console.log(`_estimatedTotalTxFeeInMatic`, _estimatedTotalTxFeeInMatic);
 
-  if (usdPrice) {
-    printInGreen(
-      `${catchBlock ? textCatchInYellow : ""}` + "💵 Tx fee in usd: ",
-      parseFloat(txFee) * parseFloat(usdPrice)
+  const accountBalanceAfter = await getAccountBalance(address, provider);
+  const txFee = formatToDecimals(accountBalanceBefore - accountBalanceAfter, 8);
+  let feeEstimationHitRate = "";
+
+  console.log(`amountOfMaticToSend`, amountOfMaticToSend);
+
+  console.log();
+  if (process.env.INSIDE_SERVER !== "true") {
+    const catchBlockText = catchBlock ? "- [1;33m CATCH BLOCK[0m -> " : "";
+
+    feeEstimationHitRate = formatToDecimals(
+      (txFee / parseFloat(_estimatedTotalTxFeeInMatic)) * 100,
+      2
+    );
+    const coloredHitRate =
+      feeEstimationHitRate <= 100 ? 2 : feeEstimationHitRate < 130 ? 3 : 1; // green - yellow - red
+
+    // TODO: add function textInRedForConsole, in green, etc
+    console.log(
+      catchBlockText + "⛽️ Tx: ",
+      `[1;36m estimated: ${_estimatedTotalTxFeeInMatic}[0m`,
+      "/",
+      `[1;33m actual: ${txFee}[0m `,
+      `= [1;3${coloredHitRate}m % ${feeEstimationHitRate}[0m`
     );
     console.log();
+    if (usdPrice) {
+      printInGreen(
+        catchBlockText + "💵 Tx fee in usd: ",
+        parseFloat(txFee) * parseFloat(usdPrice)
+      );
+      console.log();
+    }
+  } else {
+    // TODO: same than above but without colored text
+    // TODO: make atomic function color text & inside ask for insideServer
+    // const catchBlockText = "- CATCH BLOCK -> ";
+    // printInGreen(catchBlock ? catchBlockText : "" + "⛽️ Tx fee: ", txFee);
+    // console.log(
+    //   `standard -> ${standardByOracle}`,
+    //   `fast -> ${fastByOracle}`,
+    //   `with-tip -> ${fromBigNumberToGwei(gasWithTip)}`
+    // );
+    // console.log();
+    // if (usdPrice) {
+    //   printInGreen(
+    //     `${catchBlock ? textCatchInYellow : ""}` + "💵 Tx fee in usd: ",
+    //     parseFloat(txFee) * parseFloat(usdPrice)
+    //   );
+    //   console.log();
+    // }
   }
 
-  return txFee;
+  return { txFee, feeEstimationHitRate };
 };
 
 const getRandomInt = (min, max) => {

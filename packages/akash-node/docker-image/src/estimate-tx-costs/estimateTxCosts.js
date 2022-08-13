@@ -34,10 +34,42 @@ const estimateCostOfSendBalanceToUser = async ({
     usdPrice
   );
 
-  return { estimatedLimit, estimatedUsdCost, estimatedMaticCost };
+  return { estimatedUsdCost, estimatedLimit, estimatedMaticCost };
+};
+
+// TODO: check what is usd and what is matic
+const estimateTotalCostOfTx = ({
+  _saveTxIdCost,
+  _sendBalanceToUserCost,
+  usdPrice,
+}) => {
+  // ─────────────────────────────────────────────────────────────────
+  const appleFee =
+    parseFloat(process.env.APPLE_IN_APP_PURCHASE_FEE) *
+    parseFloat(process.env.IN_APP_PURCHASE_PRICE);
+  // ─────────────────────────────────────────────────────────────────
+  const baseFee =
+    parseFloat(appleFee) +
+    parseFloat(_saveTxIdCost) +
+    parseFloat(_sendBalanceToUserCost);
+  // ─────────────────────────────────────────────────────────────────
+  const serverFee = baseFee * parseFloat(process.env.SERVER_FEE);
+  // ─────────────────────────────────────────────────────────────────
+  const totalCostOfTx = baseFee + serverFee;
+  // ─────────────────────────────────────────────────────────────────
+  const estimatedMaticToSend =
+    (parseFloat(process.env.IN_APP_PURCHASE_PRICE) - totalCostOfTx) *
+    parseFloat(usdPrice);
+  // ─────────────────────────────────────────────────────────────────
+
+  return { appleFee, serverFee, totalCostOfTx, estimatedMaticToSend };
 };
 
 module.exports = {
   estimateCostOfSaveTxId,
   estimateCostOfSendBalanceToUser,
+  estimateTotalCostOfTx,
 };
+
+// https://sharpsheets.io/blog/app-store-and-google-play-commissions-fees/
+// https://existek.com/blog/how-do-developers-bypass-app-store-fees/#apple_app_store_fees

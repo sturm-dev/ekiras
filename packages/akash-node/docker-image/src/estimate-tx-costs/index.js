@@ -11,6 +11,7 @@ const getGasPrices = require("../validate-purchase/getGasPrices");
 const {
   estimateCostOfSaveTxId,
   estimateCostOfSendBalanceToUser,
+  estimateTotalCostOfTx,
 } = require("./estimateTxCosts");
 
 // ────────────────────────────────────────────────────────────────────────────────
@@ -60,22 +61,12 @@ const estimateTxCosts = async () => {
         usdPrice,
       });
     // ─────────────────────────────────────────────────────────────────
-    let appleFee =
-      parseFloat(process.env.APPLE_IN_APP_PURCHASE_FEE) *
-      parseFloat(process.env.IN_APP_PURCHASE_PRICE);
-    // ─────────────────────────────────────────────────────────────────
-    const baseFee =
-      parseFloat(appleFee) +
-      parseFloat(_saveTxIdCost) +
-      parseFloat(_sendBalanceToUserCost);
-    // ─────────────────────────────────────────────────────────────────
-    const serverFee = baseFee * parseFloat(process.env.SERVER_FEE);
-    // ─────────────────────────────────────────────────────────────────
-    const totalCostOfTx = baseFee + serverFee;
-    // ─────────────────────────────────────────────────────────────────
-    const estimatedMaticToSend =
-      (parseFloat(process.env.IN_APP_PURCHASE_PRICE) - totalCostOfTx) *
-      parseFloat(usdPrice);
+    const { appleFee, serverFee, totalCostOfTx, estimatedMaticToSend } =
+      estimateTotalCostOfTx({
+        _saveTxIdCost,
+        _sendBalanceToUserCost,
+        usdPrice,
+      });
     // ─────────────────────────────────────────────────────────────────
 
     printSpacer("Success! 🎉");
@@ -88,7 +79,7 @@ const estimateTxCosts = async () => {
         fastWithTip: fromBigNumberToGwei(gasWithTip),
       },
       estimatedCostsInUsd: {
-        matic: usdPrice,
+        matic: formatToDecimals(usdPrice, 8),
         saveTxId: _saveTxIdCost,
         sendBalanceToUser: _sendBalanceToUserCost,
         appleFee: formatToDecimals(appleFee, 8),
@@ -110,7 +101,7 @@ const estimateTxCosts = async () => {
     } else {
       console.error(e);
       console.log();
-      console.log(`e.toString()`, e.toString());
+      console.log(`error in string:`, e.toString());
       return {
         error: e,
         errorString: e.toString(),
