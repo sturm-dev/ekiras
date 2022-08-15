@@ -5,8 +5,9 @@ const {
   printSpacer,
   errors,
   getAccountBalance,
-  calculateFinalTxFee,
   printInRed,
+  fromBigNumberToGwei,
+  formatToDecimals,
 } = require("../utils.js");
 
 const saveTxId = require("./saveTxId");
@@ -17,6 +18,7 @@ const {
   estimateCostOfSendBalanceToUser,
   estimateTotalCostOfTx,
 } = require("../estimate-tx-costs/estimateTxCosts");
+const calculateFinalTxFee = require("./calculateFinalTxFee");
 
 // ────────────────────────────────────────────────────────────────────────────────
 
@@ -63,19 +65,12 @@ const validatePurchase = async (postResult, req) => {
     const gasPrices = await getGasPrices();
     usdPrice = gasPrices.usdPrice;
 
-    printSpacer(
-      "Estimating the cost to add transactionId to the smart contract..."
+    printSpacer("Checking if the txId is not already saved...");
+    let estimatedData_addTxId = await estimateCostOfSaveTxId(
+      contract,
+      { gasPrice: gasPrices.gasWithTip },
+      postResult
     );
-    const estimatedData_addTxId = await estimateCostOfSaveTxId(contract, {
-      gasPrice: gasPrices.gasWithTip,
-      usdPrice,
-    });
-    estimatedTotalTxFeeInMatic += parseFloat(
-      estimatedData_addTxId.estimatedMaticCost
-    );
-
-    printSpacer("Adding transactionId to the smart contract...");
-    await saveTxId(contract, gasPrices, postResult, estimatedData_addTxId);
 
     printSpacer("Estimating the cost to send the balance to user...");
     const estimatedData_sendBalance = await estimateCostOfSendBalanceToUser({
@@ -85,14 +80,15 @@ const validatePurchase = async (postResult, req) => {
       usdPrice,
     });
     estimatedTotalTxFeeInMatic += parseFloat(
-      estimatedData_sendBalance.estimatedMaticCost
+      estimatedData_sendBalance.estimatedCost
     );
 
-    const { estimatedMaticToSend } = estimateTotalCostOfTx({
-      _saveTxIdCost: estimatedData_addTxId.estimatedUsdCost,
-      _sendBalanceToUserCost: estimatedData_sendBalance.estimatedUsdCost,
-      usdPrice,
-    });
+    const { estimatedMaticToSend, appleFee, serverFee, totalCostOfTx } =
+      estimateTotalCostOfTx({
+        _saveTxIdCost: estimatedData_addTxId.estimatedCost,
+        _sendBalanceToUserCost: estimatedData_sendBalance.estimatedCost,
+        usdPrice,
+      });
 
     printSpacer("Send balance to user...");
     const { amountOfMaticSentToTheUser: _amountOfMaticSentToTheUser, txHash } =
@@ -105,22 +101,61 @@ const validatePurchase = async (postResult, req) => {
         estimatedMaticToSend
       );
     amountOfMaticSentToTheUser = _amountOfMaticSentToTheUser;
+
+    // send balance to the user success -> add txId to the smart contract
+
+    printSpacer(
+      "Estimating the cost to add transactionId to the smart contract..."
+    );
+    estimatedData_addTxId = await estimateCostOfSaveTxId(
+      contract,
+      { gasPrice: gasPrices.gasWithTip },
+      postResult
+    );
+    estimatedTotalTxFeeInMatic += parseFloat(
+      estimatedData_addTxId.estimatedCost
+    );
+
+    printSpacer("Adding transactionId to the smart contract...");
+    await saveTxId(contract, gasPrices, postResult, estimatedData_addTxId);
     // ────────────────────────────────────────────────────────────
 
     printSpacer("Success! 🎉");
 
     // ────────────────────────────────────────
 
-    const { txFee, feeEstimationHitRate } = await calculateFinalTxFee(
-      balanceBefore,
-      wallet.address,
-      provider,
-      usdPrice,
-      estimatedTotalTxFeeInMatic,
-      amountOfMaticSentToTheUser
-    );
+    const { txRealFee, txOnlyNetworkFee, feeEstimationHitRate } =
+      await calculateFinalTxFee(
+        balanceBefore,
+        wallet.address,
+        provider,
+        usdPrice,
+        estimatedTotalTxFeeInMatic,
+        amountOfMaticSentToTheUser
+      );
 
-    return { feeEstimationHitRate, txFee, txHash, amountOfMaticSentToTheUser };
+    return {
+      feeEstimationHitRate,
+      actualMaticFee: {
+        onlyNetwork: txOnlyNetworkFee,
+        total: txRealFee,
+      },
+      txHash,
+      amountOfMaticSentToTheUser,
+      estimatedCostsInMatic: {
+        saveTxId: estimatedData_addTxId.estimatedCost,
+        sendBalanceToUser: estimatedData_sendBalance.estimatedCost,
+        appleFee: formatToDecimals(appleFee, 8),
+        serverFee: formatToDecimals(serverFee, 8),
+        totalCostOfTx: formatToDecimals(totalCostOfTx, 8),
+      },
+      gasPrices: {
+        standard: gasPrices.standardByOracle,
+        fast: gasPrices.fastByOracle,
+        fastWithTip: fromBigNumberToGwei(gasPrices.gasWithTip),
+      },
+      usdPrice,
+    };
   } catch (e) {
     printInRed("", "-- INSIDE VALIDATE PURCHASE CATCH BLOCK --");
 

@@ -1,7 +1,14 @@
 const axios = require("axios");
 const ethers = require("ethers");
 
-const { fromBigNumberToGwei, formatToDecimals } = require("../utils");
+const {
+  fromBigNumberToGwei,
+  formatToDecimals,
+  textInCyanForConsole,
+  textInYellowForConsole,
+  textInGreenForConsole,
+  textInBlueForConsole,
+} = require("../utils");
 
 const getGasPrices = async () => {
   // TODO: use this endpoint with a password match in .env to not spend api calls
@@ -15,7 +22,7 @@ const getGasPrices = async () => {
   const fast = gasOracle.data.result.FastGasPrice;
   const usdPrice = gasOracle.data.result.UsdPrice;
 
-  const gasTip = (parseFloat(fast) - parseFloat(standard)) / 2;
+  const gasTip = parseFloat(fast) - parseFloat(standard);
   const gasWithTip = formatToDecimals(parseFloat(fast) + gasTip, 2);
 
   const gasPrices = {
@@ -30,23 +37,19 @@ const getGasPrices = async () => {
   return gasPrices;
 };
 
-const printGasPrices = ({ standardByOracle, fastByOracle, gasWithTip }) => {
+const printGasPrices = ({
+  standardByOracle,
+  fastByOracle,
+  gasWithTip,
+  usdPrice,
+}) => {
   console.log();
-
-  if (process.env.INSIDE_SERVER === "true") {
-    console.log(
-      `standard -> ${standardByOracle}`,
-      `fast -> ${fastByOracle}`,
-      `with-tip -> ${fromBigNumberToGwei(gasWithTip)}`
-    );
-  } else {
-    console.log(
-      `standard -> [1;36m ${standardByOracle}[0m  `,
-      `fast -> [1;33m ${fastByOracle}[0m  `,
-      `with-tip -> [1;32m ${fromBigNumberToGwei(gasWithTip)}[0m`
-    );
-  }
-
+  console.log(
+    textInBlueForConsole("standard ->", standardByOracle),
+    textInYellowForConsole("\tfast ->", fastByOracle),
+    textInCyanForConsole("\twith-tip ->", fromBigNumberToGwei(gasWithTip)),
+    textInGreenForConsole("\tusdPrice ->", usdPrice)
+  );
   console.log();
 };
 

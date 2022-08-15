@@ -1,19 +1,18 @@
 const ethers = require("ethers");
 const { getRandomInt, estimatedCostOfTx } = require("../utils");
 
-const estimateCostOfSaveTxId = async (contract, { gasPrice, usdPrice }) => {
-  const estimatedLimit = await contract.estimateGas.addTransactionId(
-    getRandomInt(100, 10000),
-    { gasPrice }
-  );
+const estimateCostOfSaveTxId = async (contract, { gasPrice }, postResult) => {
+  let txId = postResult && postResult.data.receipt.in_app[0].transaction_id;
+  if (process.env.INSIDE_SERVER !== "true") {
+    txId = getRandomInt(100, 10000); // fake data for testing
+  }
 
-  const { estimatedUsdCost, estimatedMaticCost } = estimatedCostOfTx(
+  const estimatedLimit = await contract.estimateGas.addTransactionId(txId, {
     gasPrice,
-    estimatedLimit,
-    usdPrice
-  );
+  });
 
-  return { estimatedUsdCost, estimatedLimit, estimatedMaticCost };
+  const estimatedCost = estimatedCostOfTx(gasPrice, estimatedLimit);
+  return { estimatedLimit, estimatedCost };
 };
 
 const estimateCostOfSendBalanceToUser = async ({
@@ -22,22 +21,17 @@ const estimateCostOfSendBalanceToUser = async ({
   gasPrice,
   usdPrice,
 }) => {
+  const fakeAmountOfMaticToSend = 0.84 * parseFloat(usdPrice); // 0.99 - 0.15 (apple fee)
   const estimatedLimit = await wallet.estimateGas({
     to,
-    value: ethers.utils.parseEther((0.85 * parseFloat(usdPrice)).toString()),
+    value: ethers.utils.parseEther(fakeAmountOfMaticToSend.toString()),
     gasPrice,
   });
 
-  const { estimatedUsdCost, estimatedMaticCost } = estimatedCostOfTx(
-    gasPrice,
-    estimatedLimit,
-    usdPrice
-  );
-
-  return { estimatedUsdCost, estimatedLimit, estimatedMaticCost };
+  const estimatedCost = estimatedCostOfTx(gasPrice, estimatedLimit);
+  return { estimatedLimit, estimatedCost };
 };
 
-// TODO: check what is usd and what is matic
 const estimateTotalCostOfTx = ({
   _saveTxIdCost,
   _sendBalanceToUserCost,
@@ -46,7 +40,8 @@ const estimateTotalCostOfTx = ({
   // ─────────────────────────────────────────────────────────────────
   const appleFee =
     parseFloat(process.env.APPLE_IN_APP_PURCHASE_FEE) *
-    parseFloat(process.env.IN_APP_PURCHASE_PRICE);
+    parseFloat(process.env.IN_APP_PURCHASE_PRICE) *
+    parseFloat(usdPrice); // convert usd fee to matic
   // ─────────────────────────────────────────────────────────────────
   const baseFee =
     parseFloat(appleFee) +
@@ -58,8 +53,8 @@ const estimateTotalCostOfTx = ({
   const totalCostOfTx = baseFee + serverFee;
   // ─────────────────────────────────────────────────────────────────
   const estimatedMaticToSend =
-    (parseFloat(process.env.IN_APP_PURCHASE_PRICE) - totalCostOfTx) *
-    parseFloat(usdPrice);
+    parseFloat(process.env.IN_APP_PURCHASE_PRICE) * parseFloat(usdPrice) -
+    totalCostOfTx;
   // ─────────────────────────────────────────────────────────────────
 
   return { appleFee, serverFee, totalCostOfTx, estimatedMaticToSend };

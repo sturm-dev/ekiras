@@ -48,12 +48,12 @@ const estimateTxCosts = async () => {
       await getGasPrices();
 
     // ─────────────────────────────────────────────────────────────────
-    const { estimatedUsdCost: _saveTxIdCost } = await estimateCostOfSaveTxId(
+    const { estimatedCost: _saveTxIdCost } = await estimateCostOfSaveTxId(
       contract,
-      { gasPrice: gasWithTip, usdPrice }
+      { gasPrice: gasWithTip }
     );
     // ─────────────────────────────────────────────────────────────────
-    const { estimatedUsdCost: _sendBalanceToUserCost } =
+    const { estimatedCost: _sendBalanceToUserCost } =
       await estimateCostOfSendBalanceToUser({
         wallet,
         to: publicAddressExample,
@@ -73,13 +73,13 @@ const estimateTxCosts = async () => {
 
     // ────────────────────────────────────────
     return {
+      usdPrice,
       gasPrices: {
         standard: standardByOracle,
         fast: fastByOracle,
         fastWithTip: fromBigNumberToGwei(gasWithTip),
       },
-      estimatedCostsInUsd: {
-        matic: formatToDecimals(usdPrice, 8),
+      estimatedCostsInMatic: {
         saveTxId: _saveTxIdCost,
         sendBalanceToUser: _sendBalanceToUserCost,
         appleFee: formatToDecimals(appleFee, 8),

@@ -1,6 +1,12 @@
 const ethers = require("ethers");
 
-const { printSpacer, printInYellow, formatToDecimals } = require("../utils");
+const {
+  printSpacer,
+  printInYellow,
+  formatToDecimals,
+  textInBlueForConsole,
+  textInGreenForConsole,
+} = require("../utils");
 
 // ────────────────────────────────────────────────────────────────────────────────
 
@@ -8,24 +14,25 @@ const { printSpacer, printInYellow, formatToDecimals } = require("../utils");
 
 const sendBalanceToUserAddress = async (
   wallet,
-  { gasWithTip },
+  { gasWithTip, usdPrice },
   userPublicAddress,
   isSandbox,
-  { estimatedLimit, estimatedUsdCost, estimatedMaticCost },
+  { estimatedLimit, estimatedCost },
   estimatedMaticToSend
 ) => {
   // ────────────────────────────────────────────────────────────────────────────────
+  const estimatedUsdCost = formatToDecimals(
+    parseFloat(estimatedCost) * parseFloat(usdPrice),
+    8
+  );
 
   if (parseFloat(estimatedUsdCost) >= parseFloat(process.env.TX_PRICE_LIMIT))
     throw Error(`TX cost is greater than ${process.env.TX_PRICE_LIMIT}`);
 
-  printInYellow(
-    "⛽️ Estimated cost of send balance to user (🪙 MATIC): ",
-    estimatedMaticCost
-  );
-  printInYellow(
-    "⛽️ Estimated cost of send balance to user (💵 USD): ",
-    estimatedUsdCost
+  console.log(
+    "⛽️ Estimated cost of send balance to user:",
+    textInBlueForConsole("\n\t\t\t\t\t\t(🪙 MATIC):\t", estimatedCost),
+    textInGreenForConsole("\n\t\t\t\t\t\t(💵 USD):\t", estimatedUsdCost)
   );
 
   // ────────────────────────────────────────────────────────────────────────────────
