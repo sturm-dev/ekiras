@@ -15,6 +15,7 @@ import {Button, Overlay} from '_molecules';
 import {DEVICE_WIDTH, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {validatePurchaseIos} from './validatePurchaseIos';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const consumableID = '0.99_USD';
 
@@ -54,19 +55,31 @@ export const Screen_MyBalance: React.FC<{
     ) => {
       setPurchaseLoading(false);
       setReceiveCryptoLoading(true);
+
+      console.log(`params.userAddress`, params.userAddress);
+      console.log(`receipt`, !!receipt);
+
       try {
         const result = await validatePurchaseIos({
           userAddress: params.userAddress,
           receipt,
         });
 
+        console.log(`result`, result);
+
         if (result.status === 'ok') {
           IAP.finishTransaction(purchase);
           // TODO: integrate animations and show animation of success when purchase is finished
-        } else if (result.status === 'error') {
+        } else {
           setPurchaseModalLoadingVisible(false);
-          console.error('FAILURE! 💩');
+          Alert.alert('Error', 'Purchase failed');
           // TODO: show toast with error
+
+          if (result.status === 'error') {
+            console.error('FAILURE! 💩');
+          } else {
+            throw new Error(`Unknown status: ${result.status}`);
+          }
         }
       } catch (e) {
         console.log('validatePurchaseInServer error', e);
@@ -151,13 +164,24 @@ export const Screen_MyBalance: React.FC<{
       <View style={styles.container}>
         {!products || !products.length ? <ActivityIndicator /> : null}
         {products.map(product => (
-          <Button
-            key={product.productId}
-            text={`Buy some ${TOKEN_NAME} for ${product.price} ${product.currency}`}
-            onPress={onRequestPurchase}
-            numberOfLines={2}
-            style={{height: 80}}
-          />
+          <>
+            {/* TODO: create condition to show this if dev */}
+            <Button
+              text="Copy test user pass (only work in iPhone connected with xcode)"
+              onPress={() => {
+                Clipboard.setString('lqkAND4S9K');
+                Alert.alert('Pass copied to clipboard!');
+              }}
+              numberOfLines={2}
+            />
+            <Button
+              key={product.productId}
+              text={`Buy some ${TOKEN_NAME} for ${product.price} ${product.currency}`}
+              onPress={onRequestPurchase}
+              numberOfLines={2}
+              style={{height: 80}}
+            />
+          </>
         ))}
       </View>
       {purchaseModalLoadingVisible ? (

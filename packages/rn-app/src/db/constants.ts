@@ -10,3 +10,6 @@ export const listOfErrors = [
   'username already used',
   'only the author can delete his posts',
 ];
+
+export const ESTIMATE_COST_ENDPOINT = '/estimate-tx-costs';
+export const VALIDATE_PURCHASE_ENDPOINT = '/validate-purchase-ios';
