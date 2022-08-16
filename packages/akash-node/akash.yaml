@@ -23,6 +23,7 @@ services:
       #
       # APP CONSTANTS ↓
       #
+      - ACTIVE_MORE_LOGS=true
       - MAINNET=true
       - TX_PRICE_LIMIT=0.05
       - APPLE_IN_APP_PURCHASE_FEE=0.15

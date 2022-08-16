@@ -14,12 +14,13 @@
     "docker:run": "docker run --env-file ../.env -dp 3000:3000 validate-purchase-ios:latest",
     "docker:delete-images": "docker rm -f $(docker ps -a -q)",
     "docker:logs": "docker logs -f $(docker ps -a -q)",
-    "───────────────────────────────": "-─────────────────────────────────",
+    "───────────────────────────────": "─────────────────────────────────",
     "start": "yarn docker:build; yarn docker:run; yarn docker:logs",
     "restart": "yarn docker:delete-images; yarn start",
     "ls": "docker ps -a",
-    "────────────────────────────────": "-─────────────────────────────────",
-    "docker:build-prod": "docker build --platform linux/amd64 -t sturmenta/validate-purchase-ios:latest .",
-    "docker:push-prod": "docker push sturmenta/validate-purchase-ios:latest"
+    "────────────────────────────────": "─────────────────────────────────",
+    "docker:build-prod": "echo Image tag?; read _tag; docker build --platform linux/amd64 -t sturmenta/validate-purchase-ios:$_tag .",
+    "docker:push-prod": "echo Image tag?; read _tag; docker push sturmenta/validate-purchase-ios:$_tag",
+    "docker:build-and-push-prod": "echo Image tag?; read _tag; docker build --platform linux/amd64 -t sturmenta/validate-purchase-ios:$_tag .; docker push sturmenta/validate-purchase-ios:$_tag"
   }
 }

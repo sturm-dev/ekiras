@@ -1,17 +1,29 @@
 const ethers = require("ethers");
-const { getRandomInt, estimatedCostOfTx } = require("../utils");
+const { getRandomInt, estimatedCostOfTx, secondLog } = require("../utils");
 
-const estimateCostOfSaveTxId = async (contract, { gasPrice }, postResult) => {
+const estimateCostOfSaveTxId = async (
+  contract,
+  { gasPrice },
+  { onlyEstimate, postResult }
+) => {
+  secondLog(`onlyEstimate`, onlyEstimate);
+  secondLog(`gasPrice`, gasPrice);
+  secondLog(`postResult`, !!postResult);
+
   let txId = postResult && postResult.data.receipt.in_app[0].transaction_id;
-  if (process.env.INSIDE_SERVER !== "true") {
-    txId = getRandomInt(100, 10000); // fake data for testing
+  if (onlyEstimate || process.env.INSIDE_SERVER !== "true") {
+    txId = getRandomInt(1000000000000000, 9999999999999999); // fake txId for testing
   }
+  secondLog(`txId`, txId);
 
   const estimatedLimit = await contract.estimateGas.addTransactionId(txId, {
     gasPrice,
   });
+  secondLog(`estimatedLimit`, estimatedLimit);
 
   const estimatedCost = estimatedCostOfTx(gasPrice, estimatedLimit);
+  secondLog(`estimatedCost`, estimatedCost);
+
   return { estimatedLimit, estimatedCost };
 };
 

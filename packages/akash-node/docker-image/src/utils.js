@@ -13,7 +13,7 @@ const getConsoleTextByColor = (text, colorText, colorNumber) => {
   // 6 - cyan
   if (process.env.INSIDE_SERVER !== "true")
     return `${text ? `${text} ` : ""}[1;3${colorNumber}m ${colorText}[0m`;
-  else return `${text ? `${text} =>` : ""}${colorText}`;
+  else return `${text ? `${text} ` : ""}${colorText}`;
 };
 
 const textInRedForConsole = (text, colorText) =>
@@ -48,6 +48,10 @@ const printSpacer = (text) => {
   }
 };
 
+const secondLog = (...args) => {
+  if (process.env.ACTIVE_MORE_LOGS === "true") console.log(...args);
+};
+
 // ────────────────────────────────────────────────────────────────────────────────
 
 const fromBigNumberToGwei = (bigNumber) => {
@@ -77,6 +81,11 @@ const getAccountBalance = async (address, provider) =>
   fromBigNumberToEther(await provider.getBalance(address));
 
 const estimatedCostOfTx = (gasPrice, gasLimit) => {
+  if (!gasPrice || !gasLimit)
+    throw new Error(
+      "gasPrice or gasLimit is undefined inside of utils/estimatedCostOfTx"
+    );
+
   let _gasLimit = ethers.BigNumber.from(gasLimit._hex);
   _gasLimit = ethers.utils.formatUnits(_gasLimit, "gwei");
   _gasLimit = parseFloat(_gasLimit);
@@ -112,4 +121,5 @@ module.exports = {
   printInGreen,
   printInYellow,
   printInRed,
+  secondLog,
 };

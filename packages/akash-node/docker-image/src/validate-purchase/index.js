@@ -69,7 +69,7 @@ const validatePurchase = async (postResult, req) => {
     let estimatedData_addTxId = await estimateCostOfSaveTxId(
       contract,
       { gasPrice: gasPrices.gasWithTip },
-      postResult
+      { postResult }
     );
 
     printSpacer("Estimating the cost to send the balance to user...");
@@ -110,7 +110,7 @@ const validatePurchase = async (postResult, req) => {
     estimatedData_addTxId = await estimateCostOfSaveTxId(
       contract,
       { gasPrice: gasPrices.gasWithTip },
-      postResult
+      { postResult }
     );
     estimatedTotalTxFeeInMatic += parseFloat(
       estimatedData_addTxId.estimatedCost

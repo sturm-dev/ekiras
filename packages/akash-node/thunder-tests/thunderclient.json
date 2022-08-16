@@ -69,5 +69,19 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "0387985b-1a1c-4e0f-8ac2-f9f4697dd5b4",
+    "colId": "a885d992-225a-46f0-b7cc-040658e3f07a",
+    "containerId": "",
+    "name": "[PROD] estimate-tx-costs",
+    "url": "{{SERVER_URL}}/estimate-tx-costs",
+    "method": "GET",
+    "sortNum": 60000,
+    "created": "2022-08-16T13:54:32.543Z",
+    "modified": "2022-08-16T13:55:01.279Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

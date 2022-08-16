@@ -50,7 +50,8 @@ const estimateTxCosts = async () => {
     // ─────────────────────────────────────────────────────────────────
     const { estimatedCost: _saveTxIdCost } = await estimateCostOfSaveTxId(
       contract,
-      { gasPrice: gasWithTip }
+      { gasPrice: gasWithTip },
+      { onlyEstimate: true }
     );
     // ─────────────────────────────────────────────────────────────────
     const { estimatedCost: _sendBalanceToUserCost } =
