@@ -2,6 +2,7 @@ import * as ethers from 'ethers';
 import {DYNAMIC_DATA_CONTRACT_ADDRESS} from 'react-native-dotenv';
 
 import {dynamicDataAbi, VALIDATE_PURCHASE_ENDPOINT, provider} from '_db';
+import {secondLog} from '_utils';
 
 export const validatePurchaseIos = async ({
   receipt,
@@ -20,10 +21,10 @@ export const validatePurchaseIos = async ({
     // ───────────────────
     akashNodeEndpoint += VALIDATE_PURCHASE_ENDPOINT;
     // ───────────────────
-    if (!akashNodeEndpoint.startsWith('http://'))
+    if (!(akashNodeEndpoint as string).includes('://'))
       akashNodeEndpoint = 'http://' + akashNodeEndpoint;
     // ───────────────────
-    console.log(`akashNodeEndpoint`, akashNodeEndpoint);
+    secondLog(`akashNodeEndpoint`, akashNodeEndpoint);
     // ─────────────────────────────────────────────────────────────────
 
     const response = await fetch(akashNodeEndpoint, {
@@ -38,10 +39,9 @@ export const validatePurchaseIos = async ({
       }),
     });
 
-    console.log(`response`, response);
+    secondLog(`response`, response);
 
     const json = await response.json();
-
     console.log(`json`, JSON.stringify(json, null, 2));
 
     // {"amountOfMaticSentToTheUser": "0.01", "message": "Success!", "txFee": 0.014482512319999863, "txHash": "0xea1e704bc8b015c602dcc134608398aba8681be611a0a5ee47de8ec2bbfab487",}

@@ -12,7 +12,12 @@ import {TOKEN_NAME} from 'react-native-dotenv';
 
 import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button, Overlay} from '_molecules';
-import {DEVICE_WIDTH, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {
+  DEVICE_WIDTH,
+  MyThemeInterfaceColors,
+  secondLog,
+  themedStyleSheet,
+} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {validatePurchaseIos} from './validatePurchaseIos';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -56,8 +61,8 @@ export const Screen_MyBalance: React.FC<{
       setPurchaseLoading(false);
       setReceiveCryptoLoading(true);
 
-      console.log(`params.userAddress`, params.userAddress);
-      console.log(`receipt`, !!receipt);
+      secondLog(`params.userAddress`, params.userAddress);
+      secondLog(`receipt`, !!receipt);
 
       try {
         const result = await validatePurchaseIos({
@@ -65,7 +70,7 @@ export const Screen_MyBalance: React.FC<{
           receipt,
         });
 
-        console.log(`result`, result);
+        secondLog(`result`, result);
 
         if (result.status === 'ok') {
           IAP.finishTransaction(purchase);

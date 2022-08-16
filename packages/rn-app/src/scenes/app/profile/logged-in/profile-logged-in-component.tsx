@@ -108,9 +108,13 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         setUserBalance(
           balance === 0
             ? '0'
-            : formatBigNumber(
-                balance / parseFloat(SMALL_INTERACTION_COST_APPROX),
-              ),
+            : '≈ ' +
+                parseInt(
+                  formatBigNumber(
+                    balance / parseFloat(SMALL_INTERACTION_COST_APPROX),
+                  ),
+                  10,
+                ).toString(),
         );
       }
     }
