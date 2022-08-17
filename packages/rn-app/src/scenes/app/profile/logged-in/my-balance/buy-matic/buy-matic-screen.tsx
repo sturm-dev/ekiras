@@ -8,6 +8,7 @@ import IAP, {
   PurchaseError,
   SubscriptionPurchase,
 } from 'react-native-iap';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button, Overlay} from '_molecules';
@@ -18,9 +19,9 @@ import {
   themedStyleSheet,
 } from '_utils';
 import {AppStackParamList} from '_navigations';
-import {validatePurchaseIos} from '../validatePurchaseIos';
-import Clipboard from '@react-native-clipboard/clipboard';
+
 import {CONSUMABLE_ID, TOKEN_NAME} from 'src/config/constants';
+import {validatePurchaseIos} from './utils/validatePurchaseIos';
 
 export type Screen_BuyMatic__Params = {
   userAddress: string;

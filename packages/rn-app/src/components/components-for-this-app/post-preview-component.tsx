@@ -228,6 +228,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           ) : null}
         </View>
       </View>
+      {/* ────────────────────────────────────────────────────────────────────────────────  */}
       {showModal ? (
         <Overlay
           isVisible

@@ -48,7 +48,7 @@ export const Screen_MyBalance: React.FC<{
   const onPolygonBalancePress = () => {
     Alert.alert(
       'Redirect to outside link',
-      'Do you want to view your account balance in polygonscan.com?',
+      '\n' + 'Do you want to view your account balance in polygonscan.com?',
       [
         {text: 'Cancel', style: 'cancel'},
         {
@@ -57,6 +57,24 @@ export const Screen_MyBalance: React.FC<{
             Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + params.userAddress),
         },
       ],
+    );
+  };
+
+  const showMoreInfoAboutApproxAmountOfVotes = () => {
+    Alert.alert(
+      'Approx costs',
+      '\n' +
+        '- One vote costs approx: ' +
+        parseFloat(SMALL_INTERACTION_COST_APPROX) +
+        ' ' +
+        TOKEN_NAME +
+        '\n\n' +
+        '- The creation of one post costs approx: ' +
+        parseFloat(SMALL_INTERACTION_COST_APPROX) * 100 +
+        ' ' +
+        TOKEN_NAME +
+        '\n',
+      [{text: 'OK'}],
     );
   };
 
@@ -78,7 +96,7 @@ export const Screen_MyBalance: React.FC<{
             </TextByScale>
             <TouchableOpacity
               style={styles.infoModalButton}
-              onPress={() => Alert.alert('Show modal with more info')}>
+              onPress={showMoreInfoAboutApproxAmountOfVotes}>
               <CustomIcon
                 color={colors.text2}
                 name="info"

@@ -42,7 +42,7 @@ export const Screen_MyPublicAddress: React.FC<{
   const onPolygonscanPress = () => {
     Alert.alert(
       'Redirect to outside link',
-      'Do you want to view your account in polygonscan.com?',
+      '\n' + 'Do you want to view your account in polygonscan.com?',
       [
         {text: 'Cancel', style: 'cancel'},
         {
