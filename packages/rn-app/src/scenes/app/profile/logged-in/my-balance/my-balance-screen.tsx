@@ -6,7 +6,11 @@ import LottieView from 'lottie-react-native';
 import {POLYGON_EXPLORE_ADDRESS_URL} from 'react-native-dotenv';
 
 import {BackButton, CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {
+  formatToDecimals,
+  MyThemeInterfaceColors,
+  themedStyleSheet,
+} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
 import {SMALL_INTERACTION_COST_APPROX} from '_db';
@@ -89,10 +93,11 @@ export const Screen_MyBalance: React.FC<{
           <View style={styles.row}>
             <Image source={image_coin} style={{width: 40, height: 40}} />
             <TextByScale style={{marginLeft: 5, textAlign: 'right'}} scale="h5">
-              {`≈ ${
+              {`≈ ${formatToDecimals(
                 parseFloat(params.balance) /
-                parseFloat(SMALL_INTERACTION_COST_APPROX)
-              } votes`}
+                  parseFloat(SMALL_INTERACTION_COST_APPROX),
+                2,
+              )} votes`}
             </TextByScale>
             <TouchableOpacity
               style={styles.infoModalButton}
