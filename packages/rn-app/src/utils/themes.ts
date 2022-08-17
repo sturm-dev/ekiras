@@ -17,6 +17,7 @@ export interface MyThemeInterfaceColors {
   // notification: string; // The color of Tab Navigator badge.
   // -----------------------------------
   button_bg: string;
+  border: string;
   // -----------------------------------
   success: string;
   info: string;
@@ -32,16 +33,17 @@ export const MyLightTheme: {
   // ...DefaultTheme,
   dark: false,
   colors: {
-    // ...DefaultTheme.colors,
+    // ...DarkTheme.colors,
     // -----------------------------------
     primary: primaryColor,
     accent: '#1A4D2E',
-    background: '#FAF3E3',
-    background2: '#000000',
-    text: '#222222',
+    background: '#0f1216',
+    background2: '#FAF3E3',
+    text: '#d9d9d9',
     text2: '#888888',
     // -----------------------------------
-    button_bg: '#FAF3E3',
+    button_bg: '#151a1f',
+    border: '#2a3035',
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',
@@ -66,6 +68,7 @@ export const MyDarkTheme: {
     text2: '#888888',
     // -----------------------------------
     button_bg: '#151a1f',
+    border: '#2a3035',
     // -----------------------------------
     success: '#2ACA9C',
     info: '#ebb434',

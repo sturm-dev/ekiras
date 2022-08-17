@@ -22,4 +22,5 @@ declare module 'react-native-dotenv' {
   //
   export const POLYGON_GAS_PRICE_ORACLE_URL: string;
   export const POLYGON_EXPLORE_TX_URL: string;
+  export const POLYGON_EXPLORE_ADDRESS_URL: string;
 }

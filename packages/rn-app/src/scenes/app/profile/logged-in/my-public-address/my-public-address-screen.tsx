@@ -1,12 +1,14 @@
 import React from 'react';
-import {Alert, TouchableOpacity, View} from 'react-native';
+import {Alert, Linking, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {POLYGON_EXPLORE_ADDRESS_URL} from 'react-native-dotenv';
 
 import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
+import {Button} from '_molecules';
 
 export type Screen_MyPublicAddress__Params = {
   userAddress: string;
@@ -37,15 +39,28 @@ export const Screen_MyPublicAddress: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onPolygonscanPress = () => {
+    Alert.alert(
+      'Redirect to outside link',
+      'Do you want to view your account in polygonscan.com?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'OK',
+          onPress: () =>
+            Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + params.userAddress),
+        },
+      ],
+    );
+  };
+
   return (
-    <ScreenSafeArea>
+    <ScreenSafeArea withBottomEdgeToo>
       <BackButton onPress={() => navigation.goBack()} />
       <View style={styles.container}>
-        <TextByScale
-          style={{marginTop: 10, marginLeft: 20, marginBottom: 10}}
-          scale="h3">
-          My public address:
-        </TextByScale>
+        <View style={styles.titleContainer}>
+          <TextByScale scale="h5">My public address:</TextByScale>
+        </View>
         <TouchableOpacity
           style={styles.addressContainer}
           onPress={() => {
@@ -54,35 +69,45 @@ export const Screen_MyPublicAddress: React.FC<{
           }}>
           <TextByScale numberOfLines={2} scale="h3">
             {params.userAddress.substring(0, params.userAddress.length / 2) +
-              `\n` +
+              '\n' +
               params.userAddress.substring(
                 params.userAddress.length / 2,
                 params.userAddress.length,
               )}
           </TextByScale>
         </TouchableOpacity>
-        <TextByScale color={colors.text2} scale="caption" center>
-          note: touch to copy on clipboard
-        </TextByScale>
+
+        <Button
+          text="See account in Polygonscan"
+          onPress={onPolygonscanPress}
+          style={{
+            width: '80%',
+            alignSelf: 'center',
+            marginTop: 50,
+            marginBottom: 100,
+          }}
+        />
       </View>
     </ScreenSafeArea>
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     paddingHorizontal: 10,
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 5,
   },
   addressContainer: {
-    borderWidth: 1,
-    borderColor: colors.text2,
-    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.border,
     margin: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 20,
-    marginVertical: 30,
+    marginTop: 5,
+    padding: 20,
+    borderRadius: 10,
   },
 }));

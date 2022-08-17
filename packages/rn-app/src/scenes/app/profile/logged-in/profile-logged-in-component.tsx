@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   TouchableOpacity,
   View,
@@ -9,13 +10,13 @@ import {
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {CustomIcon, TextByScale} from '_atoms';
+import {TextByScale} from '_atoms';
 import {
   themedStyleSheet,
   MyThemeInterfaceColors,
   shortAccountId,
   getPercentageInHex,
-  formatBigNumber,
+  formatToDecimals,
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
@@ -27,6 +28,7 @@ import {
   SMALL_INTERACTION_COST_APPROX,
 } from '_db';
 
+import {image_coin} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
 
 interface ProfileLoggedInProps {
@@ -104,19 +106,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       setUserBalanceLoading(false);
 
       if (error) Alert.alert('Error', error);
-      else {
-        setUserBalance(
-          balance === 0
-            ? '0'
-            : '≈ ' +
-                parseInt(
-                  formatBigNumber(
-                    balance / parseFloat(SMALL_INTERACTION_COST_APPROX),
-                  ),
-                  10,
-                ).toString(),
-        );
-      }
+      else setUserBalance(formatToDecimals(balance));
     }
   };
 
@@ -151,10 +141,12 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.headerSubContainer}
           onPress={() =>
-            navigation.navigate('Screen_UpdateUsername', {
-              userAddress,
-              username,
-            })
+            userAddressOrUsernameLoading
+              ? null
+              : navigation.navigate('Screen_UpdateUsername', {
+                  userAddress,
+                  username,
+                })
           }>
           <View style={styles.userImage} />
           <View style={{flex: 1}}>
@@ -178,9 +170,14 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.amountOfCredits}
           onPress={() =>
-            navigation.navigate('Screen_MyBalance', {userAddress})
+            userAddressOrUsernameLoading
+              ? null
+              : navigation.navigate('Screen_MyBalance', {
+                  userAddress,
+                  balance: userBalance,
+                })
           }>
-          <CustomIcon type="octicon" name="comment" color={colors.text} />
+          <Image source={image_coin} style={{width: 30, height: 30}} />
           {userBalanceLoading ? (
             <ActivityIndicator
               size="large"
@@ -189,9 +186,15 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
           ) : (
             <TextByScale
               scale="caption"
-              style={{marginTop: 5}}
-              color={colors.text2}>
-              {userBalance}
+              color={colors.text2}
+              style={{marginTop: 6}}>
+              {`≈ ${parseInt(
+                (
+                  parseFloat(userBalance) /
+                  parseFloat(SMALL_INTERACTION_COST_APPROX)
+                ).toString(),
+                10,
+              ).toString()}`}
             </TextByScale>
           )}
         </TouchableOpacity>
@@ -201,20 +204,30 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <Item
           text="See my public address"
           onPress={() =>
-            navigation.navigate('Screen_MyPublicAddress', {userAddress})
+            userAddressOrUsernameLoading
+              ? null
+              : navigation.navigate('Screen_MyPublicAddress', {userAddress})
           }
         />
         <View style={styles.separator} />
         <Item
           text="My Posts"
-          onPress={() => navigation.navigate('Screen_MyPosts', {userAddress})}
+          onPress={() =>
+            userAddressOrUsernameLoading
+              ? null
+              : navigation.navigate('Screen_MyPosts', {userAddress})
+          }
         />
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>
         <TouchableOpacity
           style={styles.footer}
-          onPress={logOutLoading ? () => null : handleLogout}
+          onPress={
+            logOutLoading || userAddressOrUsernameLoading
+              ? () => null
+              : handleLogout
+          }
           activeOpacity={logOutLoading ? 1 : 0.8}>
           {logOutLoading ? (
             <ActivityIndicator size="large" color={colors.text} />

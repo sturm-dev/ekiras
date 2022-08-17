@@ -9,3 +9,4 @@ export * from './device';
 export * from './format-big-number';
 export * from './add-objects-to-array-if-id-not-exists';
 export * from './second-log';
+export * from './format-to-decimals';
