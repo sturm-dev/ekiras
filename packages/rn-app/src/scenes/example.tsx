@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {ScreenSafeArea, TextByScale} from '_atoms';
+import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 
@@ -36,10 +36,13 @@ export const Screen_Example: React.FC<{
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <ScreenSafeArea>
+      <BackButton onPress={() => navigation.goBack()} />
       <View style={styles.container}>
         <TextByScale>Screen_Example screen</TextByScale>
       </View>

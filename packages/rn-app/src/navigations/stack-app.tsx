@@ -2,6 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {
+  Screen_BuyMatic,
   Screen_CreatePost,
   Screen_CreateWallet,
   Screen_Home,
@@ -42,6 +43,7 @@ export const Stack_App = (): any => {
       />
       <Stack.Screen name="Screen_MyPosts" component={Screen_MyPosts} />
       <Stack.Screen name="Screen_MyBalance" component={Screen_MyBalance} />
+      <Stack.Screen name="Screen_BuyMatic" component={Screen_BuyMatic} />
     </Stack.Navigator>
   );
 };

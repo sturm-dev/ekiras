@@ -7,8 +7,6 @@ declare module 'react-native-dotenv' {
   export const MAINNET__CONTRACT_ADDRESS: string;
   export const TESTNET__CONTRACT_ADDRESS: string;
   //
-  export const TOKEN_NAME: string;
-  //
   export const MAINNET__SMALL_INTERACTION_COST_APPROX: string;
   export const TESTNET__SMALL_INTERACTION_COST_APPROX: string;
   //

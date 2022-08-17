@@ -13,6 +13,7 @@ import {
   Screen_MyPublicAddress__Params,
   Screen_MyPosts__Params,
   Screen_MyBalance__Params,
+  Screen_BuyMatic__Params,
 } from '_scenes';
 
 export type RootStackParamList = {
@@ -37,4 +38,5 @@ export type AppStackParamList = {
   Screen_MyPublicAddress: Screen_MyPublicAddress__Params;
   Screen_MyPosts: Screen_MyPosts__Params;
   Screen_MyBalance: Screen_MyBalance__Params;
+  Screen_BuyMatic: Screen_BuyMatic__Params;
 };

@@ -17,7 +17,7 @@ import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getUserAddress, PostInterface, useGetPosts} from '_db';
 
-import {PAGINATION_SIZE} from 'src/config/constants';
+import {CUSTOM_FONT_NAME, PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -117,9 +117,7 @@ export const Screen_Home: React.FC<{
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10}}>
-            <TextByScale
-              scale="h1"
-              style={{fontFamily: 'Baskervville-Regular'}}>
+            <TextByScale scale="h1" style={{fontFamily: CUSTOM_FONT_NAME}}>
               Ekiras
             </TextByScale>
           </View>
