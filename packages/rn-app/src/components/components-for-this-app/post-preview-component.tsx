@@ -21,7 +21,7 @@ import {
   PostInterface,
   vote,
 } from '_db';
-import {Overlay} from '_molecules';
+import {LoaderFullScreen, Overlay} from '_molecules';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -52,8 +52,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   const [loadingDownVote, setLoadingDownVote] = useState(false);
   const [downVote, setDownVote] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-  const [loadingModal, setLoadingModal] = useState(false);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [loadingOptionsModal, setLoadingOptionsModal] = useState(false);
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -134,16 +134,16 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   };
 
   const onDeletePost = async () => {
-    setLoadingModal(true);
+    setLoadingOptionsModal(true);
     const {error} = await deletePost({postId: post.id, userAddress: myAddress});
-    setLoadingModal(false);
+    setLoadingOptionsModal(false);
 
     if (error) {
       if (error === 'gas required exceeds allowance') {
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      setShowModal(false);
+      setShowOptionsModal(false);
 
       removeLocalPost && removeLocalPost(post);
     }
@@ -223,7 +223,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           {compareTwoAddress(myAddress, post.author.id) ? (
             <TouchableOpacity
               style={styles.threeDots}
-              onPress={() => setShowModal(true)}>
+              onPress={() => setShowOptionsModal(true)}>
               <CustomIcon
                 name="dots-three-horizontal"
                 type="entypo"
@@ -234,21 +234,23 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         </View>
       </View>
       {/* ────────────────────────────────────────────────────────────────────────────────  */}
-      {showModal ? (
+      {showOptionsModal ? (
         <Overlay
           isVisible
           onBackdropPress={
-            loadingModal ? () => null : () => setShowModal(false)
+            loadingOptionsModal ? () => null : () => setShowOptionsModal(false)
           }
-          overlayStyle={styles.modal}
+          overlayStyle={styles.optionsModal}
           animationType="fade">
-          {loadingModal ? (
+          {loadingOptionsModal ? (
             <ActivityIndicator
               size="large"
               style={{transform: [{scale: 1.5}]}}
             />
           ) : (
-            <TouchableOpacity style={styles.modalButton} onPress={onDeletePost}>
+            <TouchableOpacity
+              style={styles.optionsModalButton}
+              onPress={onDeletePost}>
               <TextByScale color={colors.error} bold>
                 Delete post
               </TextByScale>
@@ -256,6 +258,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
           )}
         </Overlay>
       ) : null}
+      {/* ────────────────────────────────────────────────────────────────────────────────  */}
+      {voteInProgress ? <LoaderFullScreen /> : null}
     </View>
   );
 };
@@ -313,12 +317,12 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     padding: 15,
     justifyContent: 'center',
   },
-  modal: {
+  optionsModal: {
     padding: 0,
     borderRadius: 10,
     backgroundColor: '#fff0',
   },
-  modalButton: {
+  optionsModalButton: {
     borderRadius: 10,
     backgroundColor: colors.background,
     width: DEVICE_WIDTH * 0.8,

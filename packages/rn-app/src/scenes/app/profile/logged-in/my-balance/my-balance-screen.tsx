@@ -121,7 +121,7 @@ export const Screen_MyBalance: React.FC<{
 
         <View style={styles.animationContainer}>
           <LottieView
-            // https://assets8.lottiefiles.com/packages/lf20_ikaawl5v.json
+            // https://lottiefiles.com/69760-currency
             source={animation_currency}
             autoPlay
             loop

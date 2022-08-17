@@ -18,6 +18,8 @@ export const ExampleComponent: React.FC<ExampleComponentProps> = ({
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

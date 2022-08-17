@@ -1,4 +1,4 @@
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode} from 'react';
 import {
   View,
   StyleSheet,
@@ -37,8 +37,6 @@ export const Overlay: React.FC<OverlayProps> = ({
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
-  const [blurType, setBlurType] = useState<'light' | 'dark'>('light');
-
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
@@ -46,20 +44,11 @@ export const Overlay: React.FC<OverlayProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (isVisible) {
-      setTimeout(() => {
-        setBlurType('light');
-        setBlurType('dark');
-      }, 2);
-    }
-  }, [isVisible]);
-
   const content = () => (
     <>
       <View style={styles.container} pointerEvents="box-none">
         <View style={styles.absolute} />
-        <BlurView style={styles.absolute} blurType={blurType} blurAmount={1} />
+        <BlurView style={styles.absolute} blurType="dark" blurAmount={1} />
         <TouchableWithoutFeedback
           onPress={onBackdropPress}
           testID="RNE__Overlay__backdrop">
