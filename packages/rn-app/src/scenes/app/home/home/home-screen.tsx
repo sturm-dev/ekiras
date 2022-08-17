@@ -117,7 +117,11 @@ export const Screen_Home: React.FC<{
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10}}>
-            <TextByScale scale="h3">Just Feedback</TextByScale>
+            <TextByScale
+              scale="h1"
+              style={{fontFamily: 'Baskervville-Regular'}}>
+              Ekiras
+            </TextByScale>
           </View>
           <TouchableOpacity
             onPress={() =>
