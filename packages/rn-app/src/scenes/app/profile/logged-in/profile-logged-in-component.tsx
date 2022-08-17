@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import Jazzicon from 'react-native-jazzicon';
 
 import {TextByScale} from '_atoms';
 import {
@@ -148,7 +149,11 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
                   username,
                 })
           }>
-          <View style={styles.userImage} />
+          <Jazzicon
+            size={30}
+            address={userAddress}
+            containerStyle={{marginRight: 10}}
+          />
           <View style={{flex: 1}}>
             {userAddressOrUsernameLoading ? (
               <ActivityIndicator

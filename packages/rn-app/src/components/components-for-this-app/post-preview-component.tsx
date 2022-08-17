@@ -3,6 +3,7 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, Alert, TouchableOpacity, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
+import Jazzicon from 'react-native-jazzicon';
 
 import {CustomIcon, TextByScale} from '_atoms';
 import {
@@ -154,7 +155,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
-        <View style={styles.userImage} />
+        <Jazzicon
+          size={30}
+          address={post.author.id}
+          containerStyle={{marginRight: 10}}
+        />
         <View style={{flex: 1}}>
           {post.author.username ? (
             <TextByScale>{post.author.username}</TextByScale>
@@ -266,13 +271,9 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  userImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: 'violet',
-    marginRight: 10,
+    height: 50,
+    paddingLeft: 10,
+    paddingRight: 5,
   },
   dateContainer: {
     marginRight: 5,
