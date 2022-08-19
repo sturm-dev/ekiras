@@ -1,4 +1,4 @@
-import {VALIDATE_PURCHASE_ENDPOINT} from '_db';
+import {handleError, VALIDATE_PURCHASE_ENDPOINT} from '_db';
 import {secondLog} from '_utils';
 import {getAkashNodeEndpoint} from './getEndpoint';
 
@@ -8,7 +8,10 @@ export const validatePurchaseIos = async ({
 }: {
   receipt: string;
   userAddress: string;
-}): Promise<{status: 'ok' | 'error'}> => {
+}): Promise<{
+  purchaseResult: any;
+  error?: string;
+}> => {
   try {
     const response = await fetch(
       (await getAkashNodeEndpoint()) + VALIDATE_PURCHASE_ENDPOINT,
@@ -30,23 +33,14 @@ export const validatePurchaseIos = async ({
     const json = await response.json();
     console.log(`json`, JSON.stringify(json, null, 2));
 
-    // {"amountOfMaticSentToTheUser": "0.01", "message": "Success!", "txFee": 0.014482512319999863, "txHash": "0xea1e704bc8b015c602dcc134608398aba8681be611a0a5ee47de8ec2bbfab487",}
-    // {"amountOfMaticSentToTheUser": "0", "errorString": "already saved this transactionId", "txFee": 0}
-
     if (!json.error && !json.errorString) {
-      // TODO: return tx hash
-      return {status: 'ok'};
+      return {purchaseResult: json};
     } else {
-      if (json.errorString === 'already saved this transactionId') {
-        // TODO: show message
-        return {status: 'error'};
-      } else {
-        return {status: 'error'};
-      }
+      return {error: json.errorString, purchaseResult: undefined};
     }
   } catch (error) {
     console.error('validatePurchaseIos - catch', error);
 
-    return {status: 'error'};
+    return {purchaseResult: undefined, ...handleError(error)};
   }
 };

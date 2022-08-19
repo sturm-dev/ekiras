@@ -36,6 +36,29 @@ interface ValidatePurchaseProps {
   onFinishPurchase: () => void;
 }
 
+type ValidatePurchaseResultType = {
+  feeEstimationHitRate: string;
+  actualMaticFee: {
+    onlyNetwork: string;
+    total: string;
+  };
+  txHash: string;
+  amountOfMaticSentToTheUser: string;
+  estimatedCostsInMatic: {
+    saveTxId: string;
+    sendBalanceToUser: string;
+    appleFee: string;
+    serverFee: string;
+    totalCostOfTx: string;
+  };
+  gasPrices: {
+    standard: string;
+    fast: string;
+    fastWithTip: string;
+  };
+  usdPrice: string;
+};
+
 export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   userAddress,
   amountOfMaticToBuy,
@@ -50,7 +73,8 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   const [purchaseModalLoadingVisible, setPurchaseModalLoadingVisible] =
     useState(false);
 
-  const [purchaseResult, setPurchaseResult] = useState<any>();
+  const [purchaseResult, setPurchaseResult] =
+    useState<ValidatePurchaseResultType>();
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -71,26 +95,20 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
       secondLog(`receipt`, !!receipt);
 
       try {
-        const result = await validatePurchaseIos({
-          userAddress: userAddress,
-          receipt,
-        });
+        const {purchaseResult: _purchaseResult, error} =
+          await validatePurchaseIos({
+            userAddress: userAddress,
+            receipt,
+          });
 
-        secondLog(`result`, result);
+        if (!error) {
+          secondLog(`_purchaseResult`, _purchaseResult);
 
-        if (result.status === 'ok') {
           IAP.finishTransaction(purchase);
-          // TODO: integrate animations and show animation of success when purchase is finished
+          setPurchaseResult(_purchaseResult);
         } else {
+          Alert.alert('Error validating purchase', error);
           setPurchaseModalLoadingVisible(false);
-          Alert.alert('Error', 'Purchase failed');
-          // TODO: show toast with error
-
-          if (result.status === 'error') {
-            console.error('FAILURE! 💩');
-          } else {
-            throw new Error(`Unknown status: ${result.status}`);
-          }
         }
       } catch (e) {
         console.log('validatePurchaseInServer error', e);
@@ -126,17 +144,17 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
             else setProducts(_products);
           });
 
-        IAP.getAvailablePurchases()
-          .catch(err => console.log('getPurchases error', err))
-          .then(async purchases => {
-            if (!purchases || purchases.length === 0)
-              console.log('no purchases');
-            else
-              validatePurchaseInServer(
-                purchases[0].transactionReceipt,
-                purchases[0],
-              );
-          });
+        // IAP.getAvailablePurchases()
+        //   .catch(err => console.log('getPurchases error', err))
+        //   .then(async purchases => {
+        //     if (!purchases || purchases.length === 0)
+        //       console.log('no purchases');
+        //     else
+        //       validatePurchaseInServer(
+        //         purchases[0].transactionReceipt,
+        //         purchases[0],
+        //       );
+        //   });
       });
 
     const purchaseErrorListener = IAP.purchaseErrorListener(
@@ -171,7 +189,22 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
         {
           text: 'OK',
           onPress: () =>
-            Linking.openURL(POLYGON_EXPLORE_TX_URL + purchaseResult.txHash),
+            Linking.openURL(POLYGON_EXPLORE_TX_URL + purchaseResult?.txHash),
+        },
+      ],
+    );
+  };
+
+  const notePreviousBuy = () => {
+    Alert.alert(
+      'Pre-purchase notice',
+      '\n' +
+        'As this is a sandbox purchase, the actual value sent to your account will be 0.01 MATIC for every time you run this flow',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'OK',
+          onPress: onRequestPurchase,
         },
       ],
     );
@@ -179,11 +212,15 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
 
   return (
     <>
-      {!products || !products.length ? <ActivityIndicator /> : null}
+      {!products || !products.length ? (
+        <View style={{height: 80}}>
+          <ActivityIndicator />
+        </View>
+      ) : null}
       {products.map(product => (
         <Button
           key={product.productId}
-          onPress={onRequestPurchase}
+          onPress={notePreviousBuy}
           numberOfLines={2}
           style={{height: 80}}>
           <TextByScale>
@@ -253,6 +290,16 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                 <TextByScale center scale="h2">
                   Purchase completed! 🎉
                 </TextByScale>
+                {purchaseResult?.amountOfMaticSentToTheUser ? (
+                  <TextByScale style={{marginTop: 10}}>
+                    <TextByScale center color={colors.primary}>
+                      {purchaseResult?.amountOfMaticSentToTheUser}
+                    </TextByScale>
+                    <TextByScale center color={colors.text2}>
+                      {` ${TOKEN_NAME} were sent to your account`}
+                    </TextByScale>
+                  </TextByScale>
+                ) : null}
                 <View style={{...styles.animationContainer, marginTop: -10}}>
                   <AnimatedLottieView
                     // https://lottiefiles.com/519-load-complete
@@ -279,11 +326,13 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                     }}
                   />
                 </View>
-                <TouchableOpacity onPress={viewTxOnPolygonPress}>
-                  <TextByScale center scale="body2" color={colors.text2}>
-                    View TX on Polygonscan
-                  </TextByScale>
-                </TouchableOpacity>
+                {purchaseResult ? (
+                  <TouchableOpacity onPress={viewTxOnPolygonPress}>
+                    <TextByScale center scale="body2" color={colors.text2}>
+                      View TX on Polygonscan
+                    </TextByScale>
+                  </TouchableOpacity>
+                ) : null}
               </>
             )}
           </View>
