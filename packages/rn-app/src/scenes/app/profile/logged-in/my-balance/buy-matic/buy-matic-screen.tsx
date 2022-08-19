@@ -1,7 +1,15 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, Alert, Image, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import Clipboard from '@react-native-clipboard/clipboard';
+// import {APP_STORE_CONNECT_TEST_USER_PASS} from 'react-native-dotenv';
 
 import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {
@@ -10,13 +18,17 @@ import {
   themedStyleSheet,
 } from '_utils';
 import {AppStackParamList} from '_navigations';
+import {
+  IN_APP_PRODUCT_PRICE,
+  SMALL_INTERACTION_COST_APPROX,
+  TOKEN_NAME,
+} from '_db';
+import {Button} from '_molecules';
 
+import {image_polygon} from 'src/assets/images';
+import {testingOnIPhone} from 'src/config/constants';
 import {estimateTxCosts} from './utils/estimateTxCosts';
 import {ValidatePurchase} from './utils/validate-purchase-component';
-import {TOKEN_NAME} from 'src/config/constants';
-import {Button} from '_molecules';
-import {IN_APP_PRODUCT_PRICE, SMALL_INTERACTION_COST_APPROX} from '_db';
-import {image_polygon} from 'src/assets/images';
 
 export type Screen_BuyMatic__Params = {
   userAddress: string;
@@ -87,6 +99,8 @@ export const Screen_BuyMatic: React.FC<{
       </View>
     );
 
+  //
+
   return (
     <ScreenSafeArea withBottomEdgeToo>
       <BackButton onPress={() => navigation.goBack()} />
@@ -109,10 +123,20 @@ export const Screen_BuyMatic: React.FC<{
                 marginBottom: 5,
                 justifyContent: 'center',
               }}>
-              <Image
-                source={image_polygon}
-                style={{width: 25, height: 25, marginRight: 5}}
-              />
+              <TouchableOpacity
+                activeOpacity={testingOnIPhone ? 1 : 0.8}
+                onPress={
+                  testingOnIPhone
+                    ? () =>
+                        // Clipboard.setString(APP_STORE_CONNECT_TEST_USER_PASS)
+                        Clipboard.setString('lqkAND4S9K') // TODO: remove this
+                    : () => null
+                }>
+                <Image
+                  source={image_polygon}
+                  style={{width: 25, height: 25, marginRight: 5}}
+                />
+              </TouchableOpacity>
               <TextByScale>
                 <TextByScale scale="h5">{`${TOKEN_NAME}`}</TextByScale>
                 <TextByScale scale="h4">{` ≈ `}</TextByScale>
@@ -273,6 +297,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     paddingHorizontal: 30,
+    paddingBottom: 10,
   },
   infoContainer: {
     flex: 1,

@@ -122,7 +122,6 @@ export const Screen_CreatePost: React.FC<{
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,

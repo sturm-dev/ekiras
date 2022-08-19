@@ -13,11 +13,10 @@ import {
 } from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
-import {SMALL_INTERACTION_COST_APPROX} from '_db';
+import {SMALL_INTERACTION_COST_APPROX, TOKEN_NAME} from '_db';
 
 import {animation_currency} from 'src/assets/animations';
 import {image_coin, image_polygon} from 'src/assets/images';
-import {TOKEN_NAME} from 'src/config/constants';
 
 export type Screen_MyBalance__Params = {
   userAddress: string;
@@ -152,6 +151,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   titleContainer: {
     paddingHorizontal: 20,

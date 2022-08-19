@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {ActivityIndicator, Alert, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
 import IAP, {
@@ -16,10 +17,9 @@ import {
   secondLog,
   themedStyleSheet,
 } from '_utils';
+import {CONSUMABLE_ID, TOKEN_NAME} from '_db';
 
-import {CONSUMABLE_ID, TOKEN_NAME} from 'src/config/constants';
 import {validatePurchaseIos} from '../utils/validatePurchaseIos';
-import {ActivityIndicator, Alert, View} from 'react-native';
 
 interface ValidatePurchaseProps {
   userAddress: string;
