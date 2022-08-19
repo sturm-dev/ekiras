@@ -24,7 +24,7 @@ export interface MyThemeInterfaceColors {
   error: string;
 }
 
-const primaryColor = '#FF9F29';
+const primaryColor = '#7b4add';
 
 export const MyLightTheme: {
   dark: boolean;

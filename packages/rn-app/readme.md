@@ -5,3 +5,9 @@
 - yarn ios
 
 note: after install a new package with yarn do a `npm i` (monorepo?)
+
+---
+
+### link assets
+
+> npx react-native-asset

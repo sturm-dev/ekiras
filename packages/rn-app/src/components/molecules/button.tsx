@@ -153,7 +153,7 @@ const useStyles = themedStyleSheet(
       alignSelf: props.autoWidth ? 'auto' : 'center',
       backgroundColor: props.background || colors.button_bg,
       borderColor:
-        '#7f8993' +
+        colors.primary +
         getPercentageInHex(props.locked || props.disabled ? 30 : 100),
       borderWidth: 2,
     },

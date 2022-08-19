@@ -17,7 +17,11 @@ import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getUserAddress, PostInterface, useGetPosts} from '_db';
 
-import {CUSTOM_FONT_NAME, PAGINATION_SIZE} from 'src/config/constants';
+import {
+  CUSTOM_FONT,
+  CUSTOM_FONT_NAME,
+  PAGINATION_SIZE,
+} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -117,7 +121,10 @@ export const Screen_Home: React.FC<{
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{flex: 1, padding: 10}}>
-            <TextByScale scale="h1" style={{fontFamily: CUSTOM_FONT_NAME}}>
+            <TextByScale
+              scale="h1"
+              style={styles.appName}
+              color={colors.primary}>
               Ekiras
             </TextByScale>
           </View>
@@ -185,6 +192,20 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  appName: {
+    fontFamily: CUSTOM_FONT.SEMI_BOLD,
+    letterSpacing: 5,
+    // shadow style ──────────────
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 5,
+    // shadow style ──────────────
   },
   loadingContainer: {
     flex: 1,

@@ -25,6 +25,7 @@ import {LoaderFullScreen, Overlay} from '_molecules';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {CUSTOM_FONT} from 'src/config/constants';
 dayjs.extend(relativeTime);
 
 interface PostPreviewProps {
@@ -162,11 +163,25 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         />
         <View style={{flex: 1}}>
           {post.author.username ? (
-            <TextByScale>{post.author.username}</TextByScale>
+            <TextByScale
+              style={{
+                fontFamily: CUSTOM_FONT.BOLD,
+                letterSpacing: 0.3,
+              }}>
+              {post.author.username}
+            </TextByScale>
           ) : null}
           <TextByScale
             scale={post.author.username ? 'caption' : 'body1'}
-            color={post.author.username ? colors.text2 : colors.text}>
+            color={post.author.username ? colors.text2 : colors.text}
+            style={{
+              ...(post.author.username
+                ? {}
+                : {
+                    fontFamily: CUSTOM_FONT.BOLD,
+                    letterSpacing: 0.3,
+                  }),
+            }}>
             {shortAccountId(post.author.id)}
           </TextByScale>
         </View>
@@ -180,7 +195,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
         </View>
       </View>
       <View style={styles.body}>
-        <TextByScale>{post.text}</TextByScale>
+        <TextByScale
+          style={{
+            fontFamily: CUSTOM_FONT.LIGHT,
+            letterSpacing: 0.5,
+          }}>
+          {post.text}
+        </TextByScale>
       </View>
       <View style={styles.footer}>
         <TouchableOpacity
