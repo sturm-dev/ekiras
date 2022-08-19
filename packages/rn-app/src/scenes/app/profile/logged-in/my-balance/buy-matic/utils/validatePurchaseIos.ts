@@ -1,8 +1,6 @@
-import * as ethers from 'ethers';
-import {DYNAMIC_DATA_CONTRACT_ADDRESS} from 'react-native-dotenv';
-
-import {dynamicDataAbi, VALIDATE_PURCHASE_ENDPOINT, provider} from '_db';
+import {VALIDATE_PURCHASE_ENDPOINT} from '_db';
 import {secondLog} from '_utils';
+import {getAkashNodeEndpoint} from './getEndpoint';
 
 export const validatePurchaseIos = async ({
   receipt,
@@ -12,32 +10,20 @@ export const validatePurchaseIos = async ({
   userAddress: string;
 }): Promise<{status: 'ok' | 'error'}> => {
   try {
-    // ─────────────────────────────────────────────────────────────────
-    let akashNodeEndpoint = await new ethers.Contract(
-      DYNAMIC_DATA_CONTRACT_ADDRESS,
-      dynamicDataAbi,
-      provider,
-    ).akashNodeUrl();
-    // ───────────────────
-    akashNodeEndpoint += VALIDATE_PURCHASE_ENDPOINT;
-    // ───────────────────
-    if (!(akashNodeEndpoint as string).includes('://'))
-      akashNodeEndpoint = 'http://' + akashNodeEndpoint;
-    // ───────────────────
-    secondLog(`akashNodeEndpoint`, akashNodeEndpoint);
-    // ─────────────────────────────────────────────────────────────────
-
-    const response = await fetch(akashNodeEndpoint, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      (await getAkashNodeEndpoint()) + VALIDATE_PURCHASE_ENDPOINT,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'receipt-data': receipt,
+          'user-public-address': userAddress,
+        }),
       },
-      body: JSON.stringify({
-        'receipt-data': receipt,
-        'user-public-address': userAddress,
-      }),
-    });
+    );
 
     secondLog(`response`, response);
 

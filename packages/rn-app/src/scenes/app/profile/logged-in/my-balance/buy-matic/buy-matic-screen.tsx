@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Alert, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -8,7 +8,6 @@ import IAP, {
   PurchaseError,
   SubscriptionPurchase,
 } from 'react-native-iap';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button, Overlay} from '_molecules';
@@ -22,6 +21,7 @@ import {AppStackParamList} from '_navigations';
 
 import {CONSUMABLE_ID, TOKEN_NAME} from 'src/config/constants';
 import {validatePurchaseIos} from './utils/validatePurchaseIos';
+import {estimateTxCosts} from './utils/estimateTxCosts';
 
 export type Screen_BuyMatic__Params = {
   userAddress: string;
@@ -31,8 +31,6 @@ type Screen_BuyMatic__Prop = NativeStackNavigationProp<
   AppStackParamList,
   'Screen_BuyMatic'
 >;
-
-// TODO: show warning -> sandbox test can be very slow - https://youtu.be/4JLHRV2kiCU?t=2442
 
 export const Screen_BuyMatic: React.FC<{
   route: RouteProp<{
@@ -149,6 +147,21 @@ export const Screen_BuyMatic: React.FC<{
     };
   }, [params.userAddress, validatePurchaseInServer, handleIAPPurchaseError]);
 
+  const getEstimateTxCosts = async () => {
+    const {estimatedTxCosts, error} = await estimateTxCosts();
+    if (error) Alert.alert('Error', error);
+    else {
+      console.log(
+        `estimatedTxCosts`,
+        JSON.stringify(estimatedTxCosts, null, 2),
+      );
+    }
+  };
+
+  useEffect(() => {
+    getEstimateTxCosts();
+  }, []);
+
   const onRequestPurchase = () => {
     setPurchaseLoading(true);
     setPurchaseModalLoadingVisible(true);
@@ -160,6 +173,21 @@ export const Screen_BuyMatic: React.FC<{
   // TODO: show friendly loading when "verifying purchase in decentralized server to receive the crypto"
   // TODO: show big message of success when purchase in finished
 
+  // "usdPrice": "0.837069",
+  // "gasPrices": {
+  //   "standard": "39.1",
+  //   "fast": "39.6",
+  //   "fastWithTip": "40.1"
+  // },
+  // "estimatedCostsInMatic": {
+  //   "saveTxId": "0.00189047",
+  //   "sendBalanceToUser": "0.00084210",
+  //   "appleFee": "0.12430475",
+  //   "serverFee": "0.03811119",
+  //   "totalCostOfTx": "0.16514851"
+  // },
+  // "estimatedMaticToSend": "0.66354980"
+
   return (
     <ScreenSafeArea>
       <BackButton
@@ -169,15 +197,6 @@ export const Screen_BuyMatic: React.FC<{
         {!products || !products.length ? <ActivityIndicator /> : null}
         {products.map(product => (
           <>
-            {/* TODO: create condition to show this if dev */}
-            <Button
-              text="Copy test user pass (only work in iPhone connected with xcode)"
-              onPress={() => {
-                Clipboard.setString('lqkAND4S9K');
-                Alert.alert('Pass copied to clipboard!');
-              }}
-              numberOfLines={2}
-            />
             <Button
               key={product.productId}
               text={`Buy some ${TOKEN_NAME} for ${product.price} ${product.currency}`}
@@ -281,6 +300,8 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
   },
 }));
+
+// sandbox test can be very slow - https://youtu.be/4JLHRV2kiCU?t=2442
 
 // https://www.youtube.com/watch?v=4JLHRV2kiCU&ab_channel=EuanMorgan
 // https://react-native-iap.dooboolab.com/docs/usage_instructions/restoring_purchases
