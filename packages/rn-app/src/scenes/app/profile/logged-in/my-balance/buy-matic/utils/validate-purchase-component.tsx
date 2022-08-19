@@ -23,10 +23,12 @@ import {ActivityIndicator, Alert, View} from 'react-native';
 
 interface ValidatePurchaseProps {
   userAddress: string;
+  amountOfMaticToBuy: string;
 }
 
 export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   userAddress,
+  amountOfMaticToBuy,
 }: ValidatePurchaseProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -158,11 +160,21 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
       {products.map(product => (
         <Button
           key={product.productId}
-          text={`Buy some ${TOKEN_NAME} for ${product.price} ${product.currency}`}
           onPress={onRequestPurchase}
           numberOfLines={2}
-          style={{height: 80}}
-        />
+          style={{height: 80}}>
+          <TextByScale>
+            <TextByScale>{`Buy `}</TextByScale>
+            <TextByScale color={colors.text2}>{`≈ `}</TextByScale>
+            <TextByScale
+              color={colors.primary}>{`${amountOfMaticToBuy}`}</TextByScale>
+            <TextByScale scale="body2">{` ${TOKEN_NAME}`}</TextByScale>
+            <TextByScale color={colors.text2}>{` for`}</TextByScale>
+            <TextByScale
+              color={colors.success}>{` ${product.price}`}</TextByScale>
+            <TextByScale scale="body2">{` ${product.currency}`}</TextByScale>
+          </TextByScale>
+        </Button>
       ))}
       {/* MODAL WHEN VALIDATING PURCHASE ────────────────────────────────────────────────────────────────────────────────  */}
       {purchaseModalLoadingVisible ? (

@@ -13,3 +13,4 @@ export const listOfErrors = [
 
 export const ESTIMATE_COST_ENDPOINT = '/estimate-tx-costs';
 export const VALIDATE_PURCHASE_ENDPOINT = '/validate-purchase-ios';
+export const IN_APP_PRODUCT_PRICE = 0.99;

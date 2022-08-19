@@ -21,7 +21,11 @@ export const estimateTxCosts = async (): Promise<{
 
     const json = await response.json();
 
-    return {estimatedTxCosts: json};
+    if (!json.error && !json.errorString) {
+      return {estimatedTxCosts: json};
+    } else {
+      return {error: json.errorString, estimatedTxCosts: undefined};
+    }
   } catch (error) {
     console.error('estimateTxCosts - catch', error);
 

@@ -17,11 +17,7 @@ import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getUserAddress, PostInterface, useGetPosts} from '_db';
 
-import {
-  CUSTOM_FONT,
-  CUSTOM_FONT_NAME,
-  PAGINATION_SIZE,
-} from 'src/config/constants';
+import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
 
 export type Screen_Home__Params = {
   updateTime?: number;
