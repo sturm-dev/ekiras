@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, Alert, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
 import IAP, {
@@ -20,24 +26,31 @@ import {
 import {CONSUMABLE_ID, TOKEN_NAME} from '_db';
 
 import {validatePurchaseIos} from '../utils/validatePurchaseIos';
+import AnimatedLottieView from 'lottie-react-native';
+import {animation_checkMark, animation_loading} from 'src/assets/animations';
+import {POLYGON_EXPLORE_TX_URL} from 'react-native-dotenv';
 
 interface ValidatePurchaseProps {
   userAddress: string;
   amountOfMaticToBuy: string;
+  onFinishPurchase: () => void;
 }
 
 export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   userAddress,
   amountOfMaticToBuy,
+  onFinishPurchase,
 }: ValidatePurchaseProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [receiveCryptoLoading, setReceiveCryptoLoading] = useState(false);
   const [purchaseModalLoadingVisible, setPurchaseModalLoadingVisible] =
     useState(false);
+
+  const [purchaseResult, setPurchaseResult] = useState<any>();
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
@@ -149,10 +162,20 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
     IAP.requestPurchase(CONSUMABLE_ID);
   };
 
-  // TODO: show modal when making purchase
-  // TODO: hide modal when purchase is finished
-  // TODO: show friendly loading when "verifying purchase in decentralized server to receive the crypto"
-  // TODO: show big message of success when purchase in finished
+  const viewTxOnPolygonPress = () => {
+    Alert.alert(
+      'Redirect to outside link',
+      '\n' + 'Do you want to view your TX in polygonscan.com?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'OK',
+          onPress: () =>
+            Linking.openURL(POLYGON_EXPLORE_TX_URL + purchaseResult.txHash),
+        },
+      ],
+    );
+  };
 
   return (
     <>
@@ -180,58 +203,89 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
       {purchaseModalLoadingVisible ? (
         <Overlay isVisible overlayStyle={styles.modal} animationType="fade">
           <View style={styles.modalContainer}>
-            <View style={styles.row}>
-              <View style={styles.iconContainer}>
-                {purchaseLoading ? (
-                  <ActivityIndicator />
-                ) : (
-                  <TextByScale>✅</TextByScale>
-                )}
-              </View>
-              <View style={styles.textContainer}>
-                {purchaseLoading ? (
-                  <TextByScale>
-                    Making the purchase on the Apple Servers...
-                  </TextByScale>
-                ) : (
-                  <TextByScale>
-                    Purchase on the Apple servers complete!
-                  </TextByScale>
-                )}
-              </View>
-            </View>
-            {!purchaseLoading ? (
-              <View style={styles.row}>
-                <View style={styles.iconContainer}>
-                  {receiveCryptoLoading ? (
+            {purchaseLoading || receiveCryptoLoading ? (
+              <>
+                <View style={styles.row}>
+                  <View style={styles.iconContainer}>
                     <ActivityIndicator />
-                  ) : (
-                    <TextByScale>✅</TextByScale>
-                  )}
+                  </View>
+                  <View style={styles.textContainer}>
+                    {purchaseLoading ? (
+                      <TextByScale>
+                        Making the purchase on the Apple Servers...
+                      </TextByScale>
+                    ) : (
+                      <>
+                        <TextByScale>
+                          Validating the purchase on own decentralized
+                          servers...
+                        </TextByScale>
+                        <TextByScale
+                          color={colors.text2}
+                          scale="body2"
+                          style={{marginTop: 3}}>
+                          {'(may take approx 30 seconds)'}
+                        </TextByScale>
+                      </>
+                    )}
+                  </View>
                 </View>
-                <View style={styles.textContainer}>
-                  {receiveCryptoLoading ? (
-                    <TextByScale>
-                      Validating the Apple purchase on own decentralized
-                      servers...
-                    </TextByScale>
-                  ) : (
-                    <TextByScale>
-                      {`Apple purchase validated & ${TOKEN_NAME} sended to the user! 🎉`}
-                    </TextByScale>
-                  )}
+                <View style={styles.animationContainer}>
+                  <AnimatedLottieView
+                    // https://lottiefiles.com/99627-loading-blocks
+                    source={animation_loading}
+                    autoPlay
+                    loop
+                    style={{width: '90%'}}
+                  />
                 </View>
-              </View>
-            ) : null}
-            {!purchaseLoading && !receiveCryptoLoading ? (
-              <View style={{...styles.row, justifyContent: 'center'}}>
-                <Button
-                  disabled={purchaseLoading || receiveCryptoLoading}
-                  text="OK"
-                  onPress={() => setPurchaseModalLoadingVisible(false)}
-                />
-              </View>
-            ) : null}
+                <View style={styles.tipContainer}>
+                  <TextByScale>{'Blockchain Tip:\n'}</TextByScale>
+                  <TextByScale>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua.
+                  </TextByScale>
+                </View>
+              </>
+            ) : (
+              <>
+                <TextByScale center scale="h2">
+                  Purchase completed! 🎉
+                </TextByScale>
+                <View style={{...styles.animationContainer, marginTop: -10}}>
+                  <AnimatedLottieView
+                    // https://lottiefiles.com/519-load-complete
+                    source={animation_checkMark}
+                    autoPlay
+                    loop={false}
+                    style={{width: '90%'}}
+                  />
+                </View>
+
+                <View
+                  style={{
+                    ...styles.row,
+                    justifyContent: 'center',
+                    paddingBottom: 10,
+                  }}>
+                  <Button
+                    disabled={purchaseLoading || receiveCryptoLoading}
+                    text="OK"
+                    style={{width: '100%'}}
+                    onPress={() => {
+                      setPurchaseModalLoadingVisible(false);
+                      onFinishPurchase();
+                    }}
+                  />
+                </View>
+                <TouchableOpacity onPress={viewTxOnPolygonPress}>
+                  <TextByScale center scale="body2" color={colors.text2}>
+                    View TX on Polygonscan
+                  </TextByScale>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </Overlay>
       ) : null}
@@ -239,7 +293,6 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   modal: {
     flex: 1,
@@ -258,12 +311,26 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flexDirection: 'row',
     width: '100%',
     padding: 20,
+    paddingBottom: 0,
   },
   iconContainer: {
-    marginRight: 10,
+    marginRight: 20,
   },
   textContainer: {
     flex: 1,
+  },
+  animationContainer: {
+    marginTop: -50,
+    marginBottom: -30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tipContainer: {
+    alignSelf: 'center',
+    width: DEVICE_WIDTH * 0.8,
+    borderRadius: 10,
+    backgroundColor: colors.background,
+    padding: 30,
   },
 }));
 

@@ -21,15 +21,9 @@ import {
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {
-  getBalance,
-  getUserAddress,
-  getUsername,
-  onLogout,
-  SMALL_INTERACTION_COST_APPROX,
-} from '_db';
+import {getBalance, getUserAddress, getUsername, onLogout} from '_db';
 
-import {image_coin} from 'src/assets/images';
+import {image_polygon} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
 
 interface ProfileLoggedInProps {
@@ -182,7 +176,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
                   balance: userBalance,
                 })
           }>
-          <Image source={image_coin} style={{width: 30, height: 30}} />
+          <Image source={image_polygon} style={{width: 30, height: 30}} />
           {userBalanceLoading ? (
             <ActivityIndicator
               size="large"
@@ -193,13 +187,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
               scale="caption"
               color={colors.text2}
               style={{marginTop: 6}}>
-              {`≈ ${parseInt(
-                (
-                  parseFloat(userBalance) /
-                  parseFloat(SMALL_INTERACTION_COST_APPROX)
-                ).toString(),
-                10,
-              ).toString()}`}
+              {userBalance}
             </TextByScale>
           )}
         </TouchableOpacity>

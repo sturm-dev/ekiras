@@ -99,8 +99,6 @@ export const Screen_BuyMatic: React.FC<{
       </View>
     );
 
-  //
-
   return (
     <ScreenSafeArea withBottomEdgeToo>
       <BackButton onPress={() => navigation.goBack()} />
@@ -281,6 +279,10 @@ export const Screen_BuyMatic: React.FC<{
               estimatedResults.estimatedMaticToSend,
             )}
             userAddress={params.userAddress}
+            onFinishPurchase={() => {
+              navigation.goBack();
+              // TODO: go back and refresh user balance
+            }}
           />
         </View>
       )}

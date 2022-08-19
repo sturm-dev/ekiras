@@ -16,7 +16,7 @@ import {Button} from '_molecules';
 import {SMALL_INTERACTION_COST_APPROX, TOKEN_NAME} from '_db';
 
 import {animation_currency} from 'src/assets/animations';
-import {image_coin, image_polygon} from 'src/assets/images';
+import {image_polygon} from 'src/assets/images';
 
 export type Screen_MyBalance__Params = {
   userAddress: string;
@@ -89,37 +89,37 @@ export const Screen_MyBalance: React.FC<{
           <TextByScale scale="h5">My Balance:</TextByScale>
         </View>
         <View style={styles.myBalance}>
+          <TouchableOpacity style={styles.row} onPress={onPolygonBalancePress}>
+            <Image source={image_polygon} style={{width: 40, height: 40}} />
+            <TextByScale style={{marginLeft: 10}}>
+              <TextByScale scale="h5">{params.balance}</TextByScale>
+              <TextByScale scale="h5">{` ${TOKEN_NAME}`}</TextByScale>
+            </TextByScale>
+          </TouchableOpacity>
+          <View style={{height: 15}} />
           <View style={styles.row}>
-            <Image source={image_coin} style={{width: 40, height: 40}} />
-            <TextByScale style={{marginLeft: 5, textAlign: 'right'}} scale="h5">
-              {`≈ ${formatToDecimals(
+            <TextByScale style={{marginHorizontal: 8}} scale="h5">
+              {'≈'}
+            </TextByScale>
+          </View>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={showMoreInfoAboutApproxAmountOfVotes}>
+            <TextByScale scale="h5">
+              {`${formatToDecimals(
                 parseFloat(params.balance) /
                   parseFloat(SMALL_INTERACTION_COST_APPROX),
                 2,
               )} votes`}
             </TextByScale>
-            <TouchableOpacity
-              style={styles.infoModalButton}
-              onPress={showMoreInfoAboutApproxAmountOfVotes}>
+            <View style={styles.infoModalButton}>
               <CustomIcon
                 color={colors.text2}
                 name="info"
                 type="simple-line-icon"
-                size={20}
+                size={15}
               />
-            </TouchableOpacity>
-          </View>
-          <View style={{height: 15}} />
-          <TouchableOpacity style={styles.row} onPress={onPolygonBalancePress}>
-            <Image source={image_polygon} style={{width: 40, height: 40}} />
-            <TextByScale
-              style={{
-                marginLeft: 10,
-                textAlign: 'right',
-              }}>
-              <TextByScale scale="h5">{params.balance}</TextByScale>
-              <TextByScale scale="h5">{` ${TOKEN_NAME}`}</TextByScale>
-            </TextByScale>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -164,13 +164,14 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     marginTop: 5,
     padding: 20,
     borderRadius: 10,
+    flexDirection: 'row',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   infoModalButton: {
-    marginLeft: 8,
+    marginLeft: 5,
   },
   animationContainer: {
     flex: 1,
