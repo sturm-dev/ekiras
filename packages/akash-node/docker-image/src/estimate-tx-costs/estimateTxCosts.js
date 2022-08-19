@@ -16,6 +16,8 @@ const estimateCostOfSaveTxId = async (
   }
   secondLog(`txId`, txId);
 
+  // TODO: check error with random txId = operation="BigNumber.from", value=9050173599836220
+
   const estimatedLimit = await contract.estimateGas.addTransactionId(txId, {
     gasPrice,
   });

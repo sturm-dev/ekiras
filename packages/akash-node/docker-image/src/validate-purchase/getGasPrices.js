@@ -8,6 +8,7 @@ const {
   textInYellowForConsole,
   textInGreenForConsole,
   textInBlueForConsole,
+  secondLog,
 } = require("../utils");
 
 const getGasPrices = async () => {
@@ -25,11 +26,13 @@ const getGasPrices = async () => {
   const gasTip = parseFloat(fast) - parseFloat(standard);
   const gasWithTip = formatToDecimals(parseFloat(fast) + gasTip, 2);
 
+  secondLog("gasWithTip", gasWithTip);
+
   const gasPrices = {
     usdPrice,
     standardByOracle: standard,
     fastByOracle: fast,
-    gasWithTip: ethers.utils.parseUnits(gasWithTip, "gwei"),
+    gasWithTip: ethers.utils.parseUnits(gasWithTip, "gwei"), // TODO: error here "invalid decimal value"
   };
 
   printGasPrices(gasPrices);
