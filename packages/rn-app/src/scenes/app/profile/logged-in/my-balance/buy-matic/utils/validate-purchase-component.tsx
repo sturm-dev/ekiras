@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -76,7 +76,7 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
   const [purchaseResult, setPurchaseResult] =
     useState<ValidatePurchaseResultType>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
@@ -133,7 +133,7 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     IAP.initConnection()
       .catch(err => console.log('initConnection error', err))
       .then(() => {
@@ -248,9 +248,7 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                   </View>
                   <View style={styles.textContainer}>
                     {purchaseLoading ? (
-                      <TextByScale>
-                        Making the purchase on the Apple Servers...
-                      </TextByScale>
+                      <TextByScale>Making the Apple purchase ...</TextByScale>
                     ) : (
                       <>
                         <TextByScale>
@@ -304,6 +302,7 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                   <AnimatedLottieView
                     // https://lottiefiles.com/519-load-complete
                     source={animation_checkMark}
+                    progress={1}
                     autoPlay
                     loop={false}
                     style={{width: '90%'}}
