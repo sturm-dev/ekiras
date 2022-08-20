@@ -92,20 +92,20 @@ export const Screen_MyBalance: React.FC<{
           <TouchableOpacity style={styles.row} onPress={onPolygonBalancePress}>
             <Image source={image_polygon} style={{width: 40, height: 40}} />
             <TextByScale style={{marginLeft: 10}}>
-              <TextByScale scale="h5">{params.balance}</TextByScale>
-              <TextByScale scale="h5">{` ${TOKEN_NAME}`}</TextByScale>
+              <TextByScale scale="h6">{params.balance}</TextByScale>
+              <TextByScale scale="body1">{` ${TOKEN_NAME}`}</TextByScale>
             </TextByScale>
           </TouchableOpacity>
           <View style={{height: 15}} />
           <View style={styles.row}>
-            <TextByScale style={{marginHorizontal: 8}} scale="h5">
+            <TextByScale style={{marginHorizontal: 8}} scale="body1">
               {'≈'}
             </TextByScale>
           </View>
           <TouchableOpacity
             style={styles.row}
             onPress={showMoreInfoAboutApproxAmountOfVotes}>
-            <TextByScale scale="h5">
+            <TextByScale scale="h6">
               {`${formatToDecimals(
                 parseFloat(params.balance) /
                   parseFloat(SMALL_INTERACTION_COST_APPROX),
@@ -162,7 +162,8 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     borderColor: colors.border,
     margin: 10,
     marginTop: 5,
-    padding: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
     borderRadius: 10,
     flexDirection: 'row',
   },
