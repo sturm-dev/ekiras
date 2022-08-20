@@ -17,21 +17,24 @@ import {
   MyThemeInterfaceColors,
   shortAccountId,
   getPercentageInHex,
-  formatToDecimals,
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {getBalance, getUserAddress, getUsername, onLogout} from '_db';
+import {getUsername, onLogout} from '_db';
 
 import {image_polygon} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
+  userAddress: string;
+  userBalance: string;
 }
 
 export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
   updateTime,
+  userAddress,
+  userBalance,
 }: ProfileLoggedInProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
@@ -41,14 +44,8 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
   const {handleResetNavigation} = useNavigationReset();
 
   // ────────────────────────────────────────────────────────────────────────────────
-  const [userAddress, setUserAddress] = useState('');
   const [username, setUsername] = useState('');
-  const [userAddressOrUsernameLoading, setUserAddressOrUsernameLoading] =
-    useState(true);
-  // ────────────────────────
-  const [userBalance, setUserBalance] = useState('0');
-  const [userBalanceLoading, setUserBalanceLoading] = useState(true);
-  // ────────────────────────
+  const [usernameLoading, setUsernameLoading] = useState(true);
   const [logOutLoading, setLogOutLoading] = useState(false);
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -62,46 +59,25 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
   // do refresh after update username
   useEffect(() => {
     getUserInfo();
-  }, [updateTime]);
 
-  useEffect(() => {
-    getUserBalance(userAddress);
-  }, [userAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateTime]);
 
   // ────────────────────────────────────────────────────────────────────────────────
 
   const getUserInfo = async () => {
-    setUserAddressOrUsernameLoading(true);
-    const {userAddress: _userAddress, error: getUserAddressError} =
-      await getUserAddress();
+    setUsernameLoading(true);
 
-    if (getUserAddressError) {
-      Alert.alert('Error', getUserAddressError);
-      setUserAddressOrUsernameLoading(false);
+    const {username: _username, error: getUsernameError} = await getUsername(
+      userAddress,
+    );
+
+    if (getUsernameError) {
+      Alert.alert('Error', getUsernameError);
+      setUsernameLoading(false);
     } else {
-      setUserAddress(_userAddress);
-      const {username: _username, error: getUsernameError} = await getUsername(
-        _userAddress,
-      );
-
-      if (getUsernameError) {
-        Alert.alert('Error', getUsernameError);
-        setUserAddressOrUsernameLoading(false);
-      } else {
-        setUsername(_username);
-        setUserAddressOrUsernameLoading(false);
-      }
-    }
-  };
-
-  const getUserBalance = async (_userAddress: string) => {
-    if (_userAddress) {
-      setUserBalanceLoading(true);
-      const {balance, error} = await getBalance(_userAddress);
-      setUserBalanceLoading(false);
-
-      if (error) Alert.alert('Error', error);
-      else setUserBalance(formatToDecimals(balance));
+      setUsername(_username);
+      setUsernameLoading(false);
     }
   };
 
@@ -136,11 +112,12 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.headerSubContainer}
           onPress={() =>
-            userAddressOrUsernameLoading
+            usernameLoading
               ? null
               : navigation.navigate('Screen_UpdateUsername', {
                   userAddress,
                   username,
+                  userBalance,
                 })
           }>
           <Jazzicon
@@ -149,7 +126,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
             containerStyle={{marginRight: 10}}
           />
           <View style={{flex: 1}}>
-            {userAddressOrUsernameLoading ? (
+            {usernameLoading ? (
               <ActivityIndicator
                 size="small"
                 style={{alignSelf: 'flex-start'}}
@@ -169,7 +146,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.amountOfCredits}
           onPress={() =>
-            userAddressOrUsernameLoading
+            usernameLoading
               ? null
               : navigation.navigate('Screen_MyBalance', {
                   userAddress,
@@ -177,19 +154,12 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
                 })
           }>
           <Image source={image_polygon} style={{width: 30, height: 30}} />
-          {userBalanceLoading ? (
-            <ActivityIndicator
-              size="large"
-              style={{transform: [{scale: 0.4}]}}
-            />
-          ) : (
-            <TextByScale
-              scale="caption"
-              color={colors.text2}
-              style={{marginTop: 6}}>
-              {userBalance}
-            </TextByScale>
-          )}
+          <TextByScale
+            scale="caption"
+            color={colors.text2}
+            style={{marginTop: 6}}>
+            {userBalance}
+          </TextByScale>
         </TouchableOpacity>
       </View>
       {/* • • • • • */}
@@ -197,7 +167,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <Item
           text="See my public address"
           onPress={() =>
-            userAddressOrUsernameLoading
+            usernameLoading
               ? null
               : navigation.navigate('Screen_MyPublicAddress', {userAddress})
           }
@@ -206,7 +176,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <Item
           text="My Posts"
           onPress={() =>
-            userAddressOrUsernameLoading
+            usernameLoading
               ? null
               : navigation.navigate('Screen_MyPosts', {userAddress})
           }
@@ -216,11 +186,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       <SafeAreaView edges={['bottom']}>
         <TouchableOpacity
           style={styles.footer}
-          onPress={
-            logOutLoading || userAddressOrUsernameLoading
-              ? () => null
-              : handleLogout
-          }
+          onPress={logOutLoading || usernameLoading ? () => null : handleLogout}
           activeOpacity={logOutLoading ? 1 : 0.8}>
           {logOutLoading ? (
             <ActivityIndicator size="large" color={colors.text} />

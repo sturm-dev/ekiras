@@ -117,7 +117,8 @@ export const useGetPosts = ({
   }, [onFetch, data?.posts, error, oldPosts, refetch, posts]);
 
   const onGetPosts = () => {
-    console.log('onGetPosts');
+    console.log(`[1;33m -- onGetPosts --[0m`); // log in yellow
+
     setOnFetch(true);
     setGetMorePressed(false);
 
@@ -125,7 +126,8 @@ export const useGetPosts = ({
   };
 
   const getMore = () => {
-    console.log('getMore');
+    console.log(`[1;33m -- onGetMorePosts --[0m`); // log in yellow
+
     setOnFetch(true);
     setGetMorePressed(true);
 
@@ -133,7 +135,8 @@ export const useGetPosts = ({
   };
 
   const onRefetch = () => {
-    console.log('onRefetch');
+    console.log(`[1;33m -- onRefetchPosts --[0m`); // log in yellow
+
     setOnFetch(true);
     setGetMorePressed(false);
 

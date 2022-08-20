@@ -14,8 +14,12 @@ import {Button} from '_molecules';
 import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getUserAddress, PostInterface, useGetPosts} from '_db';
+import {
+  formatToDecimals,
+  MyThemeInterfaceColors,
+  themedStyleSheet,
+} from '_utils';
+import {getBalance, getUserAddress, PostInterface, useGetPosts} from '_db';
 
 import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
 
@@ -55,6 +59,7 @@ export const Screen_Home: React.FC<{
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [myAddress, setMyAddress] = useState('');
+  const [myBalance, setMyBalance] = useState('');
   const [oldUpdateTime, setOldUpdateTime] = useState(0);
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
 
@@ -112,6 +117,21 @@ export const Screen_Home: React.FC<{
     setLoadingUserAddress(false);
   };
 
+  const getUserBalance = async (userAddress: string) => {
+    if (userAddress) {
+      const {balance, error} = await getBalance(userAddress);
+
+      if (error) Alert.alert('Error getting user balance', error);
+      else setMyBalance(formatToDecimals(balance));
+    }
+  };
+
+  useEffect(() => {
+    if (myAddress) {
+      getUserBalance(myAddress);
+    }
+  }, [myAddress]);
+
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
@@ -134,7 +154,14 @@ export const Screen_Home: React.FC<{
             <CustomIcon name="add" type="material" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Screen_Profile', {})}
+            onPress={() =>
+              myBalance && myAddress
+                ? navigation.navigate('Screen_Profile', {
+                    userAddress: myAddress,
+                    userBalance: myBalance,
+                  })
+                : null
+            }
             style={{padding: 10}}>
             <CustomIcon name="ios-person-sharp" type="ionicon" />
           </TouchableOpacity>

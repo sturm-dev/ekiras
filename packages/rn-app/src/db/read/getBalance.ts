@@ -6,6 +6,8 @@ export const getBalance = async (
   balance: number;
   error?: string;
 }> => {
+  console.log(`[1;33m -- getBalance --[0m`); // log in yellow
+
   try {
     return {
       balance: formatBalance((await provider.getBalance(userAddress))._hex),

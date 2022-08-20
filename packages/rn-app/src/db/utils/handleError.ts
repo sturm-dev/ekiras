@@ -1,3 +1,4 @@
+import {secondLog} from '_utils';
 import {listOfErrors} from '../constants';
 
 export const handleError = (error: any): {error: string} => {
@@ -7,6 +8,8 @@ export const handleError = (error: any): {error: string} => {
     if ((error as any).toString().includes(errorMessage))
       errorMessageToReturn = errorMessage;
   });
+
+  secondLog('handleError', error);
 
   if (errorMessageToReturn === 'unknown error') console.warn(`error`, error);
 

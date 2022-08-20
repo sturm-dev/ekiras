@@ -7,6 +7,8 @@ export const getUpVote = async (
   upVote: boolean;
   error?: string;
 }> => {
+  console.log(`[1;33m -- getUpVote --[0m`); // log in yellow
+
   try {
     const upVote = await contractWithoutSigner.votesUp(postId, userAddress);
 

@@ -9,6 +9,8 @@ export const listOfErrors = [
   'only one upVote for post',
   'username already used',
   'only the author can delete his posts',
+  // alchemy ──────────────────────────────
+  'Your app has exceeded its compute units per second capacity',
 ];
 
 export const ESTIMATE_COST_ENDPOINT = '/estimate-tx-costs';

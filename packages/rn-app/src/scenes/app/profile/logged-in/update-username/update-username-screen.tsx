@@ -13,6 +13,7 @@ import {updateUsername} from '_db';
 export type Screen_UpdateUsername__Params = {
   username: string;
   userAddress: string;
+  userBalance: string;
 };
 
 type Screen_UpdateUsername__Prop = NativeStackNavigationProp<
@@ -54,7 +55,11 @@ export const Screen_UpdateUsername: React.FC<{
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      navigation.navigate('Screen_Profile', {updateTime: new Date().getTime()});
+      navigation.navigate('Screen_Profile', {
+        updateTime: new Date().getTime(),
+        userAddress: params.userAddress,
+        userBalance: params.userBalance,
+      });
     }
   };
 

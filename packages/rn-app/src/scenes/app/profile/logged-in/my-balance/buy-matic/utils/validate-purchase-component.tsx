@@ -7,6 +7,8 @@ import {
   View,
 } from 'react-native';
 import {useTheme} from '@react-navigation/native';
+import AnimatedLottieView from 'lottie-react-native';
+import {POLYGON_EXPLORE_TX_URL} from 'react-native-dotenv';
 
 import IAP, {
   Product,
@@ -25,10 +27,8 @@ import {
 } from '_utils';
 import {CONSUMABLE_ID, TOKEN_NAME} from '_db';
 
-import {validatePurchaseIos} from '../utils/validatePurchaseIos';
-import AnimatedLottieView from 'lottie-react-native';
 import {animation_checkMark, animation_loading} from 'src/assets/animations';
-import {POLYGON_EXPLORE_TX_URL} from 'react-native-dotenv';
+import {validatePurchaseIos} from '../utils/validatePurchaseIos';
 
 interface ValidatePurchaseProps {
   userAddress: string;
