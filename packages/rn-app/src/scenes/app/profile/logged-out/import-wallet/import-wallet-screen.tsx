@@ -82,7 +82,7 @@ export const Screen_ImportWallet: React.FC<{
   };
 
   const pressNextButtonIsDisabled =
-    !word || word.includes(' ') || word.length < 4 || word.length > 9;
+    !word || word.includes(' ') || word.length < 3 || word.length > 9;
 
   const onPressNext = () => {
     if (!pressNextButtonIsDisabled) {
@@ -152,11 +152,11 @@ export const Screen_ImportWallet: React.FC<{
         ) : (
           <View style={styles.finishContainer}>
             <TextByScale scale="h3" center style={{marginBottom: 20}}>
-              The 12 words of your existing wallet:
+              The 12 words of your existing account:
             </TextByScale>
             <ListOf12Words words={words} grayWords />
             <Button
-              text="Import wallet 🔐"
+              text="Import account 🔐"
               style={{marginTop: 30}}
               onPress={onImportWallet}
               loading={loading}
