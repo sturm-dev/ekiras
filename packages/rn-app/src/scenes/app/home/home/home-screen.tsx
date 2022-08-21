@@ -173,7 +173,7 @@ export const Screen_Home: React.FC<{
           ) : null}
           {!goToProfileIsLoading ? (
             <TouchableOpacity
-              onPress={() => navigation.navigate('Screen_Profile', {})}
+              onPress={() => navigation.navigate('Screen_Profile')}
               activeOpacity={goToProfileIsLoading ? 1 : 0.8}
               style={{padding: 10}}>
               <CustomIcon name="ios-person-sharp" type="ionicon" />

@@ -24,9 +24,11 @@ import {animation_currency} from 'src/assets/animations';
 import {image_polygon} from 'src/assets/images';
 import {loadLocalData} from 'src/db/local';
 
-export type Screen_MyBalance__Params = {
-  updateTime?: number;
-};
+export type Screen_MyBalance__Params =
+  | {
+      updateTime?: number;
+    }
+  | undefined;
 
 type Screen_MyBalance__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -35,7 +37,7 @@ type Screen_MyBalance__Prop = NativeStackNavigationProp<
 
 export const Screen_MyBalance: React.FC<{
   route: RouteProp<{
-    params: Screen_MyBalance__Params;
+    params?: Screen_MyBalance__Params;
   }>;
 }> = ({route}) => {
   const styles = useStyles();

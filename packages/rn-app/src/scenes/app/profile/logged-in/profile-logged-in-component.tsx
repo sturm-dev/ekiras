@@ -124,6 +124,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerSubContainer}
+          activeOpacity={usernameLoading ? 1 : 0.8}
           onPress={async () =>
             usernameLoading
               ? null
@@ -154,9 +155,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.amountOfCredits}
-          onPress={() =>
-            usernameLoading ? null : navigation.navigate('Screen_MyBalance', {})
-          }>
+          onPress={() => navigation.navigate('Screen_MyBalance')}>
           <Image source={image_polygon} style={{width: 30, height: 30}} />
           <TextByScale
             scale="caption"
@@ -170,25 +169,24 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       <View style={styles.body}>
         <Item
           text="See my public address"
-          onPress={() =>
-            usernameLoading
-              ? null
-              : navigation.navigate('Screen_MyPublicAddress')
-          }
+          onPress={() => navigation.navigate('Screen_MyPublicAddress')}
+        />
+        <View style={styles.separator} />
+        <Item
+          text="My Balance"
+          onPress={() => navigation.navigate('Screen_MyBalance')}
         />
         <View style={styles.separator} />
         <Item
           text="My Posts"
-          onPress={() =>
-            usernameLoading ? null : navigation.navigate('Screen_MyPosts')
-          }
+          onPress={() => navigation.navigate('Screen_MyPosts')}
         />
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>
         <TouchableOpacity
           style={styles.footer}
-          onPress={logOutLoading || usernameLoading ? () => null : handleLogout}
+          onPress={logOutLoading ? () => null : handleLogout}
           activeOpacity={logOutLoading ? 1 : 0.8}>
           {logOutLoading ? (
             <ActivityIndicator size="large" color={colors.text} />

@@ -11,9 +11,11 @@ import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {ProfileLoggedIn} from './logged-in';
 import {ProfileLoggedOut} from './logged-out';
 
-export type Screen_Profile__Params = {
-  updateTime?: number;
-};
+export type Screen_Profile__Params =
+  | {
+      updateTime?: number;
+    }
+  | undefined;
 
 export type Screen_Profile__Prop = NativeStackNavigationProp<
   AppStackParamList,
