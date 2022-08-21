@@ -3,6 +3,7 @@ import {
   handleError,
   getFastestGasPrice,
   printTxHash,
+  getBalance,
 } from '_db';
 
 export const updateUsername = async ({
@@ -29,6 +30,8 @@ export const updateUsername = async ({
         if (msgSender === userAddress) res();
       });
     });
+
+    await getBalance(userAddress);
 
     return {};
   } catch (error) {

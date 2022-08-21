@@ -4,6 +4,7 @@ import {
   PostInterface,
   getFastestGasPrice,
   printTxHash,
+  getBalance,
 } from '_db';
 
 export const vote = async ({
@@ -33,6 +34,8 @@ export const vote = async ({
         if (msgSender === userAddress) res();
       });
     });
+
+    await getBalance(userAddress);
 
     return {};
   } catch (error) {

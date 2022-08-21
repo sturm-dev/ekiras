@@ -4,6 +4,7 @@ import {
   getFastestGasPrice,
   printTxHash,
   formatHexBigNumber,
+  getBalance,
 } from '_db';
 
 export const createPost = async ({
@@ -28,6 +29,8 @@ export const createPost = async ({
         if (msgSender === userAddress) res(formatHexBigNumber(postId));
       });
     });
+
+    await getBalance(userAddress);
 
     return {newPostId};
   } catch (error) {

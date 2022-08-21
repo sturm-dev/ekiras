@@ -3,6 +3,7 @@ import {
   handleError,
   getFastestGasPrice,
   printTxHash,
+  getBalance,
 } from '_db';
 
 export const deletePost = async ({
@@ -26,6 +27,8 @@ export const deletePost = async ({
         if (msgSender === userAddress) res();
       });
     });
+
+    await getBalance(userAddress);
 
     return {};
   } catch (error) {
