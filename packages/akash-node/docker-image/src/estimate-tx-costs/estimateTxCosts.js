@@ -12,7 +12,7 @@ const estimateCostOfSaveTxId = async (
 
   let txId = postResult && postResult.data.receipt.in_app[0].transaction_id;
   if (onlyEstimate || process.env.INSIDE_SERVER !== "true") {
-    txId = getRandomInt(1000000000000000, 9999999999999999); // fake txId for testing
+    txId = getRandomInt(1000000000000000, 2000000000000000); // fake txId for testing
   }
   secondLog(`txId`, txId);
 

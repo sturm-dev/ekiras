@@ -15,7 +15,7 @@ const saveTxId = async (
 ) => {
   let transactionId = postResult.data.receipt.in_app[0].transaction_id;
   if (process.env.INSIDE_SERVER !== "true") {
-    transactionId = getRandomInt(1000000000000000, 9999999999999999); // fake txId for testing
+    txId = getRandomInt(1000000000000000, 2000000000000000); // fake txId for testing
   }
 
   // ────────────────────────────────────────────────────────────────────────────────
