@@ -13,7 +13,12 @@ import {
 } from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
-import {getBalance, SMALL_INTERACTION_COST_APPROX, TOKEN_NAME} from '_db';
+import {
+  getBalance,
+  VOTE_COST_APPROX,
+  TOKEN_NAME,
+  CREATE_POST_COST_APPROX,
+} from '_db';
 
 import {animation_currency} from 'src/assets/animations';
 import {image_polygon} from 'src/assets/images';
@@ -104,12 +109,12 @@ export const Screen_MyBalance: React.FC<{
       'Approx costs',
       '\n' +
         '- One vote costs approx: ' +
-        parseFloat(SMALL_INTERACTION_COST_APPROX) +
+        parseFloat(VOTE_COST_APPROX) +
         ' ' +
         TOKEN_NAME +
         '\n\n' +
         '- The creation of one post costs approx: ' +
-        parseFloat(SMALL_INTERACTION_COST_APPROX) * 100 +
+        parseFloat(CREATE_POST_COST_APPROX) +
         ' ' +
         TOKEN_NAME +
         '\n',
@@ -152,7 +157,7 @@ export const Screen_MyBalance: React.FC<{
             <TextByScale scale="h6">
               {`${formatToDecimals(
                 parseFloat(myUpdatedBalance || myBalance) /
-                  parseFloat(SMALL_INTERACTION_COST_APPROX),
+                  parseFloat(VOTE_COST_APPROX),
                 2,
               )} votes`}
             </TextByScale>

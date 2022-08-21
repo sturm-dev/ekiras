@@ -30,7 +30,7 @@ export const createPost = async ({
       });
     });
 
-    await getBalance(userAddress);
+    getBalance(userAddress);
 
     return {newPostId};
   } catch (error) {

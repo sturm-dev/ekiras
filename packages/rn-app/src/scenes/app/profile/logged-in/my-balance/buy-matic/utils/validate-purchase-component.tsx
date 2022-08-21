@@ -199,7 +199,7 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
     Alert.alert(
       'Pre-purchase notice',
       '\n' +
-        'As this is a sandbox purchase, the actual value sent to your account will be 0.01 MATIC for every time you run this flow',
+        'As this is a sandbox purchase, the actual value sent to your account will be 0.03 MATIC for every time you run this flow',
       [
         {text: 'Cancel', style: 'cancel'},
         {

@@ -28,7 +28,7 @@ export const deletePost = async ({
       });
     });
 
-    await getBalance(userAddress);
+    getBalance(userAddress);
 
     return {};
   } catch (error) {

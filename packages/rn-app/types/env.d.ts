@@ -7,8 +7,11 @@ declare module 'react-native-dotenv' {
   export const MAINNET__CONTRACT_ADDRESS: string;
   export const TESTNET__CONTRACT_ADDRESS: string;
   //
-  export const MAINNET__SMALL_INTERACTION_COST_APPROX: string;
-  export const TESTNET__SMALL_INTERACTION_COST_APPROX: string;
+  export const MAINNET__VOTE_COST_APPROX: string;
+  export const TESTNET__VOTE_COST_APPROX: string;
+  //
+  export const MAINNET__CREATE_POST_COST_APPROX: string;
+  export const TESTNET__CREATE_POST_COST_APPROX: string;
   //
   export const ONLY_DEV__SEED_1: string;
   export const ONLY_DEV__SEED_2: string;

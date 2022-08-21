@@ -31,7 +31,7 @@ export const updateUsername = async ({
       });
     });
 
-    await getBalance(userAddress);
+    getBalance(userAddress);
 
     return {};
   } catch (error) {

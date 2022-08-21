@@ -73,29 +73,31 @@ export const Screen_CreateWallet: React.FC<{
 
   return (
     <ScreenSafeArea withBottomEdgeToo>
-      <BackButton onPress={() => navigation.goBack()} />
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.text} />
         </View>
       ) : (
-        <View style={styles.container}>
-          <TextByScale scale="h3">Your account was created! 🎉</TextByScale>
-          <TextByScale
-            style={{marginTop: 10, marginBottom: 25}}
-            color={colors.text2}>
-            Write this 12 words in paper and save in a safe place, with only
-            this words anyone can access your account.
-          </TextByScale>
-          <ListOf12Words words={mnemonic} />
-          <Button
-            loading={saveWalletLoading}
-            text="I have already written the words"
-            style={{marginTop: 30, paddingHorizontal: 50}}
-            numberOfLines={3}
-            onPress={onLogInWithNewWallet}
-          />
-        </View>
+        <>
+          <BackButton onPress={() => navigation.goBack()} />
+          <View style={styles.container}>
+            <TextByScale scale="h3">Your account was created! 🎉</TextByScale>
+            <TextByScale
+              style={{marginTop: 10, marginBottom: 25}}
+              color={colors.text2}>
+              Write this 12 words in paper and save in a safe place, with only
+              this words anyone can access your account.
+            </TextByScale>
+            <ListOf12Words words={mnemonic} />
+            <Button
+              loading={saveWalletLoading}
+              text="I have already written the words"
+              style={{marginTop: 30, paddingHorizontal: 50}}
+              numberOfLines={3}
+              onPress={onLogInWithNewWallet}
+            />
+          </View>
+        </>
       )}
     </ScreenSafeArea>
   );

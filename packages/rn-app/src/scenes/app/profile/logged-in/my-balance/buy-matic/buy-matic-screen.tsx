@@ -18,11 +18,7 @@ import {
   themedStyleSheet,
 } from '_utils';
 import {AppStackParamList} from '_navigations';
-import {
-  IN_APP_PRODUCT_PRICE,
-  SMALL_INTERACTION_COST_APPROX,
-  TOKEN_NAME,
-} from '_db';
+import {IN_APP_PRODUCT_PRICE, VOTE_COST_APPROX, TOKEN_NAME} from '_db';
 import {Button} from '_molecules';
 
 import {image_polygon} from 'src/assets/images';
@@ -265,7 +261,7 @@ export const Screen_BuyMatic: React.FC<{
                   <TextByScale center color={colors.info}>{`${parseInt(
                     (
                       parseFloat(estimatedResults.estimatedMaticToSend) /
-                      parseFloat(SMALL_INTERACTION_COST_APPROX)
+                      parseFloat(VOTE_COST_APPROX)
                     ).toString(),
                     10,
                   )}`}</TextByScale>

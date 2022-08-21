@@ -35,7 +35,7 @@ export const vote = async ({
       });
     });
 
-    await getBalance(userAddress);
+    getBalance(userAddress);
 
     return {};
   } catch (error) {
