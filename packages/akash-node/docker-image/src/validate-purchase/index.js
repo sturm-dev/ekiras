@@ -51,7 +51,7 @@ const validatePurchase = async (postResult, req) => {
     const isSandbox = postResult.data.environment === "Sandbox";
     const userAddress = req.body["user-public-address"];
 
-    provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
+    provider = new ethers.providers.StaticJsonRpcProvider(RPC_FULL_URL);
     wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 
     // ────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ const fromPrivateKeyToAddress = (privateKey) => {
 }
 
 const getAccountBalance = async (address, rpc_url) => {
-  const provider = new ethers.providers.JsonRpcProvider(rpc_url)
+  const provider = new ethers.providers.StaticJsonRpcProvider(rpc_url)
   return formatBalanceInHex((await provider.getBalance(address))._hex)
 }
 

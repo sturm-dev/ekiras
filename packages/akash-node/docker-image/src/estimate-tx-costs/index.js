@@ -37,7 +37,7 @@ const estimateTxCosts = async () => {
   try {
     printSpacer("Start with estimate tx costs...");
 
-    const provider = new ethers.providers.JsonRpcProvider(RPC_FULL_URL);
+    const provider = new ethers.providers.StaticJsonRpcProvider(RPC_FULL_URL);
     const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 
     printSpacer("Getting contract...");

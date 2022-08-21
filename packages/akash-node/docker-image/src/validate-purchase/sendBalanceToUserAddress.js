@@ -45,7 +45,7 @@ const sendBalanceToUserAddress = async (
   }
 
   const amountOfMaticToSend = isSandbox
-    ? "0.01"
+    ? "0.03"
     : formatToDecimals(estimatedMaticToSend, 8);
 
   printInYellow(
