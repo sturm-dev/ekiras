@@ -12,7 +12,7 @@ import {
 } from '_atoms';
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {Button, MultilineTextInput} from '_molecules';
+import {Button, LoaderFullScreen, MultilineTextInput} from '_molecules';
 import {createPost, getUsername, PostInterface} from '_db';
 import {loadLocalData} from 'src/db/local';
 
@@ -113,6 +113,8 @@ export const Screen_CreatePost: React.FC<{
           </View>
         </View>
       </CustomKeyboardAvoidingView>
+      {/* ───────────────────────────────────────────────────────────────── */}
+      {loading ? <LoaderFullScreen /> : null}
     </ScreenSafeArea>
   );
 };

@@ -6,6 +6,7 @@ import {
   TextProps as RN_TextProps,
   TextStyle,
 } from 'react-native';
+import {CUSTOM_FONT} from 'src/config/constants';
 
 import {
   MyThemeInterfaceColors,
@@ -43,7 +44,8 @@ export const TextByScale: React.FC<TextByScaleProps> = ({
         ...(bold ? {fontWeight: 'bold'} : {}),
         ...(underline ? {textDecorationLine: 'underline'} : {}),
         ...(center ? {textAlign: 'center'} : {}),
-        // fontFamily: 'Roboto-Regular',
+        fontFamily: CUSTOM_FONT.REGULAR,
+        letterSpacing: 0.5,
         fontSize: fontSizeByScale[scale as fontSizeScales],
         color: color || colors.text,
         lineHeight: fontSizeByScale[scale as fontSizeScales] * 1.5,

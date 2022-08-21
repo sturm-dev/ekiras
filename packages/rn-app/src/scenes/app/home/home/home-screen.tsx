@@ -1,11 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, FlatList, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import * as Keychain from 'react-native-keychain';
@@ -20,6 +14,8 @@ import {getBalance, getUserAddress, PostInterface, useGetPosts} from '_db';
 
 import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
 import {loadLocalData, saveLocalData} from 'src/db/local';
+import AnimatedLottieView from 'lottie-react-native';
+import {animation_loading} from 'src/assets/animations';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -186,7 +182,14 @@ export const Screen_Home: React.FC<{
         </View>
         {(!posts.length && loading) || loadingUserAddress ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.text} />
+            <TextByScale scale="h2">Loading posts...</TextByScale>
+            <AnimatedLottieView
+              // https://lottiefiles.com/99627-loading-blocks
+              source={animation_loading}
+              autoPlay
+              loop
+              style={{width: '90%', marginTop: -20}}
+            />
           </View>
         ) : (
           <FlatList

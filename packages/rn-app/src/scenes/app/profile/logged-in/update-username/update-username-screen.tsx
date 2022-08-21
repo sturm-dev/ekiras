@@ -7,7 +7,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {BackButton, CustomKeyboardAvoidingView, ScreenSafeArea} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
-import {Button, TextInput} from '_molecules';
+import {Button, LoaderFullScreen, TextInput} from '_molecules';
 import {updateUsername} from '_db';
 import {loadLocalData} from 'src/db/local';
 
@@ -90,6 +90,8 @@ export const Screen_UpdateUsername: React.FC<{
           <View style={{flex: 0.5}} />
         </View>
       </CustomKeyboardAvoidingView>
+      {/* ───────────────────────────────────────────────────────────────── */}
+      {loading ? <LoaderFullScreen /> : null}
     </ScreenSafeArea>
   );
 };
