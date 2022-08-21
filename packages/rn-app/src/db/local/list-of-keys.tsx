@@ -1,1 +1,1 @@
-export type listOfKeys = 'myBalance' | 'myAddress';
+export type listOfKeys = 'myBalance' | 'myAddress' | 'devMode';

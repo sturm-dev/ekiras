@@ -19,6 +19,7 @@ import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getBalance, getUserAddress, PostInterface, useGetPosts} from '_db';
 
 import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
+import {loadLocalData, saveLocalData} from 'src/db/local';
 
 export type Screen_Home__Params = {
   updateTime?: number;
@@ -69,8 +70,8 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
-    getPosts();
     checkUserLogged();
+    getPosts();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -131,8 +132,11 @@ export const Screen_Home: React.FC<{
   };
 
   const checkUserLogged = async () => {
-    setUserLogged(!!(await Keychain.getGenericPassword()));
+    const _userLogged = !!(await Keychain.getGenericPassword());
+    setUserLogged(_userLogged);
     setUserLoggedLoading(false);
+
+    if (!_userLogged) setLoadingUserAddress(false);
   };
 
   useEffect(() => {
@@ -149,33 +153,36 @@ export const Screen_Home: React.FC<{
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={{flex: 1, padding: 10}}>
+          <TouchableOpacity
+            style={{flex: 1, padding: 10}}
+            onPress={async () =>
+              await saveLocalData(
+                'devMode',
+                (await loadLocalData('devMode')) ? '' : 'true',
+              )
+            }>
             <TextByScale
               scale="h1"
               style={styles.appName}
               color={colors.primary}>
               Ekiras
             </TextByScale>
-          </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Screen_CreatePost')}
-            style={{padding: 10}}>
-            <CustomIcon name="add" type="material" />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              goToProfileIsLoading
-                ? null
-                : navigation.navigate('Screen_Profile', {})
-            }
-            activeOpacity={goToProfileIsLoading ? 1 : 0.8}
-            style={{padding: 10}}>
-            {goToProfileIsLoading ? (
-              <ActivityIndicator color={colors.text} />
-            ) : (
+          {!goToProfileIsLoading ? (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Screen_CreatePost')}
+              style={{padding: 10}}>
+              <CustomIcon name="add" type="material" />
+            </TouchableOpacity>
+          ) : null}
+          {!goToProfileIsLoading ? (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Screen_Profile', {})}
+              activeOpacity={goToProfileIsLoading ? 1 : 0.8}
+              style={{padding: 10}}>
               <CustomIcon name="ios-person-sharp" type="ionicon" />
-            )}
-          </TouchableOpacity>
+            </TouchableOpacity>
+          ) : null}
         </View>
         {(!posts.length && loading) || loadingUserAddress ? (
           <View style={styles.loadingContainer}>

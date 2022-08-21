@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
@@ -14,6 +14,7 @@ import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
 import {useNavigationReset} from '_hooks';
 
 import {Screen_Profile__Prop} from '../profile-screen';
+import {loadLocalData} from 'src/db/local';
 
 const devSeeds = [
   ONLY_DEV__SEED_1,
@@ -32,14 +33,23 @@ export const ProfileLoggedOut: React.FC<
 
   const navigation = useNavigation<Screen_Profile__Prop>();
 
+  const [devMode, setDevMode] = useState('');
+
   const {handleResetNavigation} = useNavigationReset();
 
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
+    getLocalData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getLocalData = async () => {
+    const _devMode = await loadLocalData('devMode');
+    setDevMode(_devMode);
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -47,8 +57,8 @@ export const ProfileLoggedOut: React.FC<
         style={styles.card}
         onPress={() => navigation.navigate('Screen_ImportWallet')}>
         <CustomIcon
-          name="wallet-outline"
-          type="ionicon"
+          name="account-check"
+          type="material-community"
           style={styles.icon}
           size={50}
         />
@@ -59,28 +69,34 @@ export const ProfileLoggedOut: React.FC<
       <TouchableOpacity
         style={{...styles.card, marginTop: 0}}
         onPress={() => navigation.navigate('Screen_CreateWallet')}>
-        <CustomIcon name="add" type="material" style={styles.icon} size={50} />
+        <CustomIcon
+          name="account-plus"
+          type="material-community"
+          style={styles.icon}
+          size={50}
+        />
         <TextByScale style={styles.text} scale="h5">
           Create a new account
         </TextByScale>
       </TouchableOpacity>
-      {}
-      <View style={styles.fastLogInContainer_onlyDevTesting}>
-        {[1, 2, 3, 4].map(i => (
-          <TouchableOpacity
-            key={i}
-            style={styles.fastLogIn_onlyDevTesting}
-            onPress={async () => {
-              await Keychain.setGenericPassword('', devSeeds[i - 1]);
-              handleResetNavigation({
-                stack: 'Stack_App',
-                screen: 'Screen_Home',
-              });
-            }}>
-            <TextByScale>{i}</TextByScale>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {devMode ? (
+        <View style={styles.fastLogInContainer_onlyDevTesting}>
+          {[1, 2, 3, 4].map(i => (
+            <TouchableOpacity
+              key={i}
+              style={styles.fastLogIn_onlyDevTesting}
+              onPress={async () => {
+                await Keychain.setGenericPassword('', devSeeds[i - 1]);
+                handleResetNavigation({
+                  stack: 'Stack_App',
+                  screen: 'Screen_Home',
+                });
+              }}>
+              <TextByScale>{i}</TextByScale>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 };
