@@ -8,17 +8,14 @@ import {
 } from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import * as Keychain from 'react-native-keychain';
 
 import {CustomIcon, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
 import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
-import {
-  formatToDecimals,
-  MyThemeInterfaceColors,
-  themedStyleSheet,
-} from '_utils';
+import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {getBalance, getUserAddress, PostInterface, useGetPosts} from '_db';
 
 import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
@@ -58,8 +55,9 @@ export const Screen_Home: React.FC<{
   });
 
   const [voteInProgress, setVoteInProgress] = useState(false);
+  const [userLogged, setUserLogged] = useState(false);
+  const [userLoggedLoading, setUserLoggedLoading] = useState(true);
   const [myAddress, setMyAddress] = useState('');
-  const [myBalance, setMyBalance] = useState('');
   const [oldUpdateTime, setOldUpdateTime] = useState(0);
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
 
@@ -71,8 +69,8 @@ export const Screen_Home: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
-    getAndSetUserAddress();
     getPosts();
+    checkUserLogged();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -81,6 +79,8 @@ export const Screen_Home: React.FC<{
   useEffect(() => {
     if (params?.updateTime && params.updateTime !== oldUpdateTime) {
       setOldUpdateTime(params?.updateTime);
+
+      getUserBalance(myAddress);
 
       if (params?.createLocalPost) {
         // if redirect to this screen with new local post to create, then create it
@@ -96,6 +96,7 @@ export const Screen_Home: React.FC<{
     refetch,
     oldUpdateTime,
     editLocalPosts,
+    myAddress,
   ]);
 
   useEffect(() => {
@@ -110,6 +111,10 @@ export const Screen_Home: React.FC<{
     }
   }, [loading, limitReached]);
 
+  useEffect(() => {
+    if (userLogged) getAndSetUserAddress();
+  }, [userLogged]);
+
   const getAndSetUserAddress = async () => {
     const {userAddress, error} = await getUserAddress();
     if (!error) await setMyAddress(userAddress);
@@ -119,18 +124,26 @@ export const Screen_Home: React.FC<{
 
   const getUserBalance = async (userAddress: string) => {
     if (userAddress) {
-      const {balance, error} = await getBalance(userAddress);
+      const {error} = await getBalance(userAddress);
 
       if (error) Alert.alert('Error getting user balance', error);
-      else setMyBalance(formatToDecimals(balance));
     }
   };
 
+  const checkUserLogged = async () => {
+    setUserLogged(!!(await Keychain.getGenericPassword()));
+    setUserLoggedLoading(false);
+  };
+
   useEffect(() => {
-    if (myAddress) {
-      getUserBalance(myAddress);
-    }
+    if (myAddress) getUserBalance(myAddress);
   }, [myAddress]);
+
+  const goToProfileIsLoading = userLoggedLoading
+    ? true
+    : !userLogged || myAddress
+    ? false
+    : true;
 
   return (
     <ScreenSafeArea colorStatusBar={colors.background}>
@@ -145,25 +158,23 @@ export const Screen_Home: React.FC<{
             </TextByScale>
           </View>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('Screen_CreatePost', {
-                userAddress: myAddress,
-              })
-            }
+            onPress={() => navigation.navigate('Screen_CreatePost')}
             style={{padding: 10}}>
             <CustomIcon name="add" type="material" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              myBalance && myAddress
-                ? navigation.navigate('Screen_Profile', {
-                    userAddress: myAddress,
-                    userBalance: myBalance,
-                  })
-                : null
+              goToProfileIsLoading
+                ? null
+                : navigation.navigate('Screen_Profile', {})
             }
+            activeOpacity={goToProfileIsLoading ? 1 : 0.8}
             style={{padding: 10}}>
-            <CustomIcon name="ios-person-sharp" type="ionicon" />
+            {goToProfileIsLoading ? (
+              <ActivityIndicator color={colors.text} />
+            ) : (
+              <CustomIcon name="ios-person-sharp" type="ionicon" />
+            )}
           </TouchableOpacity>
         </View>
         {(!posts.length && loading) || loadingUserAddress ? (

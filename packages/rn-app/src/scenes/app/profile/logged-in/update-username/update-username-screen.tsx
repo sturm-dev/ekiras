@@ -9,11 +9,10 @@ import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button, TextInput} from '_molecules';
 import {updateUsername} from '_db';
+import {loadLocalData} from 'src/db/local';
 
 export type Screen_UpdateUsername__Params = {
   username: string;
-  userAddress: string;
-  userBalance: string;
 };
 
 type Screen_UpdateUsername__Prop = NativeStackNavigationProp<
@@ -29,6 +28,8 @@ export const Screen_UpdateUsername: React.FC<{
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
+  const [myAddress, setMyAddress] = useState('');
+
   const navigation = useNavigation<Screen_UpdateUsername__Prop>();
   const {params} = route;
 
@@ -40,13 +41,20 @@ export const Screen_UpdateUsername: React.FC<{
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
+
+    getLocalData();
   }, []);
+
+  const getLocalData = async () => {
+    const _myAddress = await loadLocalData('myAddress');
+    setMyAddress(_myAddress);
+  };
 
   const onUpdateUsername = async () => {
     setLoading(true);
     const {error} = await updateUsername({
       newUsername: username,
-      userAddress: params.userAddress,
+      userAddress: myAddress,
     });
     setLoading(false);
 
@@ -57,8 +65,6 @@ export const Screen_UpdateUsername: React.FC<{
     } else {
       navigation.navigate('Screen_Profile', {
         updateTime: new Date().getTime(),
-        userAddress: params.userAddress,
-        userBalance: params.userBalance,
       });
     }
   };

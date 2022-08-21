@@ -90,7 +90,7 @@ export const Screen_CreateWallet: React.FC<{
           <Button
             loading={saveWalletLoading}
             text="I have already written the words! 📝"
-            style={{marginTop: 30, height: 80, paddingHorizontal: 50}}
+            style={{marginTop: 30, paddingHorizontal: 50}}
             numberOfLines={3}
             onPress={onLogInWithNewWallet}
           />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Alert, Linking, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -9,10 +9,9 @@ import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
+import {loadLocalData} from 'src/db/local';
 
-export type Screen_MyPublicAddress__Params = {
-  userAddress: string;
-};
+export type Screen_MyPublicAddress__Params = undefined;
 
 type Screen_MyPublicAddress__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -27,6 +26,8 @@ export const Screen_MyPublicAddress: React.FC<{
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
+  const [myAddress, setMyAddress] = useState('');
+
   const navigation = useNavigation<Screen_MyPublicAddress__Prop>();
   const {params} = route;
 
@@ -36,8 +37,14 @@ export const Screen_MyPublicAddress: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
+    getLocalData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getLocalData = async () => {
+    const _myAddress = await loadLocalData('myAddress');
+    setMyAddress(_myAddress);
+  };
 
   const onPolygonscanPress = () => {
     Alert.alert(
@@ -48,7 +55,7 @@ export const Screen_MyPublicAddress: React.FC<{
         {
           text: 'OK',
           onPress: () =>
-            Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + params.userAddress),
+            Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + myAddress),
         },
       ],
     );
@@ -64,16 +71,13 @@ export const Screen_MyPublicAddress: React.FC<{
         <TouchableOpacity
           style={styles.addressContainer}
           onPress={() => {
-            Clipboard.setString(params.userAddress);
+            Clipboard.setString(myAddress);
             Alert.alert('Public address copied to clipboard!');
           }}>
           <TextByScale numberOfLines={2} scale="h3">
-            {params.userAddress.substring(0, params.userAddress.length / 2) +
+            {myAddress.substring(0, myAddress.length / 2) +
               '\n' +
-              params.userAddress.substring(
-                params.userAddress.length / 2,
-                params.userAddress.length,
-              )}
+              myAddress.substring(myAddress.length / 2, myAddress.length)}
           </TextByScale>
         </TouchableOpacity>
 

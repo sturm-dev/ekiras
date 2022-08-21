@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Alert, FlatList, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -12,10 +12,9 @@ import {PostPreview} from '_componentsForThisApp';
 import {useNavigationReset} from '_hooks';
 
 import {PAGINATION_SIZE} from 'src/config/constants';
+import {loadLocalData} from 'src/db/local';
 
-export type Screen_MyPosts__Params = {
-  userAddress: string;
-};
+export type Screen_MyPosts__Params = undefined;
 
 type Screen_MyPosts__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -30,6 +29,8 @@ export const Screen_MyPosts: React.FC<{
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
 
+  const [myAddress, setMyAddress] = useState('');
+
   const navigation = useNavigation<Screen_MyPosts__Prop>();
   const {params} = route;
 
@@ -38,7 +39,7 @@ export const Screen_MyPosts: React.FC<{
   const {getPosts, posts, loading, getMore, limitReached, editLocalPosts} =
     useGetPosts({
       paginationSize: PAGINATION_SIZE,
-      authorId: params.userAddress,
+      authorId: myAddress,
     });
 
   useEffect(() => {
@@ -47,10 +48,17 @@ export const Screen_MyPosts: React.FC<{
     if (!navigation) console.log();
     if (!params) console.log();
 
-    getPosts();
+    getLocalData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getLocalData = async () => {
+    const _myAddress = await loadLocalData('myAddress');
+    await setMyAddress(_myAddress);
+
+    getPosts();
+  };
 
   useEffect(() => {
     if (!loading && limitReached) {
@@ -81,7 +89,7 @@ export const Screen_MyPosts: React.FC<{
               renderItem={({item}) => (
                 <PostPreview
                   post={item}
-                  myAddress={params.userAddress}
+                  myAddress={myAddress}
                   removeLocalPost={editLocalPosts.removeLocalPost}
                 />
               )}

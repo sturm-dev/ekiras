@@ -13,8 +13,6 @@ import {ProfileLoggedOut} from './logged-out';
 
 export type Screen_Profile__Params = {
   updateTime?: number;
-  userAddress?: string;
-  userBalance?: string;
 };
 
 export type Screen_Profile__Prop = NativeStackNavigationProp<
@@ -69,11 +67,7 @@ export const Screen_Profile: React.FC<{
           <ActivityIndicator size="large" color={colors.text} />
         </View>
       ) : userLogged ? (
-        <ProfileLoggedIn
-          updateTime={params?.updateTime}
-          userAddress={params.userAddress!}
-          userBalance={params.userBalance!}
-        />
+        <ProfileLoggedIn updateTime={params?.updateTime} />
       ) : (
         <ProfileLoggedOut />
       )}

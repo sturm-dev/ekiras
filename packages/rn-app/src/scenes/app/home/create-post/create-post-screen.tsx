@@ -14,10 +14,9 @@ import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, MultilineTextInput} from '_molecules';
 import {createPost, getUsername, PostInterface} from '_db';
+import {loadLocalData} from 'src/db/local';
 
-export type Screen_CreatePost__Params = {
-  userAddress: string;
-};
+export type Screen_CreatePost__Params = undefined;
 
 type Screen_CreatePost__Prop = NativeStackNavigationProp<
   AppStackParamList,
@@ -51,11 +50,10 @@ export const Screen_CreatePost: React.FC<{
   }, []);
 
   const onCreatePost = async () => {
+    const userAddress = await loadLocalData('myAddress');
+
     setLoading(true);
-    const {error, newPostId} = await createPost({
-      text,
-      userAddress: params.userAddress,
-    });
+    const {error, newPostId} = await createPost({text, userAddress});
     setLoading(false);
 
     if (error) {
@@ -65,16 +63,13 @@ export const Screen_CreatePost: React.FC<{
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
-      const {username} = await getUsername(params.userAddress);
+      const {username} = await getUsername(userAddress);
 
       const newPost: PostInterface = {
         id: newPostId,
         createdDate: dayjs().unix(),
         text,
-        author: {
-          id: params.userAddress,
-          username,
-        },
+        author: {id: userAddress, username},
         downVotesCount: 0,
         upVotesCount: 0,
       };

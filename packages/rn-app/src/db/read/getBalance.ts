@@ -1,18 +1,23 @@
 import {provider, formatBalance, handleError} from '_db';
+import {formatToDecimals} from '_utils';
+import {saveLocalData} from '../local';
 
 export const getBalance = async (
   userAddress: string,
 ): Promise<{
-  balance: number;
+  balance: string;
   error?: string;
 }> => {
   console.log(`[1;33m -- getBalance --[0m`); // log in yellow
 
   try {
-    return {
-      balance: formatBalance((await provider.getBalance(userAddress))._hex),
-    };
+    const newBalance = formatToDecimals(
+      formatBalance((await provider.getBalance(userAddress))._hex),
+    );
+    await saveLocalData('myBalance', newBalance);
+
+    return {balance: newBalance};
   } catch (error) {
-    return {balance: 0, ...handleError(error)};
+    return {balance: '', ...handleError(error)};
   }
 };

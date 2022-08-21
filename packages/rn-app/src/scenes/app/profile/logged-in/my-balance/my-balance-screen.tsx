@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Image, Linking, TouchableOpacity, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -13,14 +13,14 @@ import {
 } from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
-import {SMALL_INTERACTION_COST_APPROX, TOKEN_NAME} from '_db';
+import {getBalance, SMALL_INTERACTION_COST_APPROX, TOKEN_NAME} from '_db';
 
 import {animation_currency} from 'src/assets/animations';
 import {image_polygon} from 'src/assets/images';
+import {loadLocalData} from 'src/db/local';
 
 export type Screen_MyBalance__Params = {
-  userAddress: string;
-  balance: string;
+  updateTime?: number;
 };
 
 type Screen_MyBalance__Prop = NativeStackNavigationProp<
@@ -39,14 +39,50 @@ export const Screen_MyBalance: React.FC<{
   const navigation = useNavigation<Screen_MyBalance__Prop>();
   const {params} = route;
 
+  const [myAddress, setMyAddress] = useState('');
+  const [myBalance, setMyBalance] = useState('');
+  const [myUpdatedBalance, setMyUpdatedBalance] = useState('');
+
   React.useEffect(() => {
     // delete all this console.log - is for not showing error of unused vars
     if (!colors) console.log();
     if (!navigation) console.log();
     if (!params) console.log();
 
+    getLocalData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getLocalData = async () => {
+    const _myAddress = await loadLocalData('myAddress');
+    setMyAddress(_myAddress);
+    const _myBalance = await loadLocalData('myBalance');
+    setMyBalance(_myBalance);
+  };
+
+  // ────────────────────────────────────────────────────────────────────────────────
+  const [oldUpdateTime, setOldUpdateTime] = useState(0);
+  // do refresh when go back to this screen and updateTime is changed
+  useEffect(() => {
+    if (params?.updateTime && params.updateTime !== oldUpdateTime) {
+      setOldUpdateTime(params?.updateTime);
+
+      // The refresh logic ─────────────────────────────────────────────────────────────────
+      refetchUserBalance(myAddress);
+      // The refresh logic ─────────────────────────────────────────────────────────────────
+    }
+  }, [params?.updateTime, oldUpdateTime, myAddress]);
+  // ────────────────────────────────────────────────────────────────────────────────
+
+  const refetchUserBalance = async (userAddress: string) => {
+    if (userAddress) {
+      const {balance, error} = await getBalance(userAddress);
+
+      if (error) Alert.alert('Error getting user balance', error);
+      else setMyUpdatedBalance(balance);
+    }
+  };
 
   const onPolygonBalancePress = () => {
     Alert.alert(
@@ -57,7 +93,7 @@ export const Screen_MyBalance: React.FC<{
         {
           text: 'OK',
           onPress: () =>
-            Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + params.userAddress),
+            Linking.openURL(POLYGON_EXPLORE_ADDRESS_URL + myAddress),
         },
       ],
     );
@@ -83,7 +119,13 @@ export const Screen_MyBalance: React.FC<{
 
   return (
     <ScreenSafeArea withBottomEdgeToo>
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton
+        onPress={() =>
+          navigation.navigate('Screen_Profile', {
+            updateTime: new Date().getTime(),
+          })
+        }
+      />
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <TextByScale scale="h5">My Balance:</TextByScale>
@@ -92,7 +134,9 @@ export const Screen_MyBalance: React.FC<{
           <TouchableOpacity style={styles.row} onPress={onPolygonBalancePress}>
             <Image source={image_polygon} style={{width: 40, height: 40}} />
             <TextByScale style={{marginLeft: 10}}>
-              <TextByScale scale="h6">{params.balance}</TextByScale>
+              <TextByScale scale="h6">
+                {myUpdatedBalance || myBalance}
+              </TextByScale>
               <TextByScale scale="body1">{` ${TOKEN_NAME}`}</TextByScale>
             </TextByScale>
           </TouchableOpacity>
@@ -107,7 +151,7 @@ export const Screen_MyBalance: React.FC<{
             onPress={showMoreInfoAboutApproxAmountOfVotes}>
             <TextByScale scale="h6">
               {`${formatToDecimals(
-                parseFloat(params.balance) /
+                parseFloat(myUpdatedBalance || myBalance) /
                   parseFloat(SMALL_INTERACTION_COST_APPROX),
                 2,
               )} votes`}
@@ -137,7 +181,7 @@ export const Screen_MyBalance: React.FC<{
           text={`Buy ${TOKEN_NAME} →`}
           onPress={() =>
             navigation.navigate('Screen_BuyMatic', {
-              userAddress: params.userAddress,
+              userAddress: myAddress,
             })
           }
           style={{width: '80%', alignSelf: 'center'}}

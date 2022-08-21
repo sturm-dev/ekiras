@@ -279,10 +279,11 @@ export const Screen_BuyMatic: React.FC<{
               estimatedResults.estimatedMaticToSend,
             )}
             userAddress={params.userAddress}
-            onFinishPurchase={() => {
-              navigation.goBack();
-              // TODO: go back and refresh user balance
-            }}
+            onFinishPurchase={() =>
+              navigation.navigate('Screen_MyBalance', {
+                updateTime: new Date().getTime(),
+              })
+            }
           />
         </View>
       )}

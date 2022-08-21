@@ -24,20 +24,20 @@ import {getUsername, onLogout} from '_db';
 
 import {image_polygon} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
+import {loadLocalData} from 'src/db/local';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
-  userAddress: string;
-  userBalance: string;
 }
 
 export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
   updateTime,
-  userAddress,
-  userBalance,
 }: ProfileLoggedInProps) => {
   const styles = useStyles();
   const colors = useTheme().colors as unknown as MyThemeInterfaceColors;
+
+  const [myAddress, setMyAddress] = useState('');
+  const [myBalance, setMyBalance] = useState('');
 
   const navigation = useNavigation<Screen_Profile__Prop>();
 
@@ -53,23 +53,36 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
 
+    getUserInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // do refresh after update username
+  // ────────────────────────────────────────────────────────────────────────────────
+  const [oldUpdateTime, setOldUpdateTime] = useState(0);
+  // do refresh when go back to this screen and updateTime is changed
   useEffect(() => {
-    getUserInfo();
+    if (updateTime && updateTime !== oldUpdateTime) {
+      setOldUpdateTime(updateTime);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateTime]);
+      // The refresh logic ─────────────────────────────────────────────────────────────────
+      getUserInfo();
+      // The refresh logic ─────────────────────────────────────────────────────────────────
+    }
+  }, [updateTime, oldUpdateTime]);
+  // ────────────────────────────────────────────────────────────────────────────────
 
   // ────────────────────────────────────────────────────────────────────────────────
 
   const getUserInfo = async () => {
     setUsernameLoading(true);
 
+    const _myAddress = await loadLocalData('myAddress');
+    setMyAddress(_myAddress);
+    const _myBalance = await loadLocalData('myBalance');
+    setMyBalance(_myBalance);
+
     const {username: _username, error: getUsernameError} = await getUsername(
-      userAddress,
+      _myAddress,
     );
 
     if (getUsernameError) {
@@ -111,18 +124,14 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerSubContainer}
-          onPress={() =>
+          onPress={async () =>
             usernameLoading
               ? null
-              : navigation.navigate('Screen_UpdateUsername', {
-                  userAddress,
-                  username,
-                  userBalance,
-                })
+              : navigation.navigate('Screen_UpdateUsername', {username})
           }>
           <Jazzicon
             size={30}
-            address={userAddress}
+            address={myAddress}
             containerStyle={{marginRight: 10}}
           />
           <View style={{flex: 1}}>
@@ -137,7 +146,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
                 <TextByScale
                   scale={username ? 'caption' : 'body1'}
                   color={username ? colors.text2 : colors.text}>
-                  {shortAccountId(userAddress)}
+                  {shortAccountId(myAddress)}
                 </TextByScale>
               </>
             )}
@@ -146,19 +155,14 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.amountOfCredits}
           onPress={() =>
-            usernameLoading
-              ? null
-              : navigation.navigate('Screen_MyBalance', {
-                  userAddress,
-                  balance: userBalance,
-                })
+            usernameLoading ? null : navigation.navigate('Screen_MyBalance', {})
           }>
           <Image source={image_polygon} style={{width: 30, height: 30}} />
           <TextByScale
             scale="caption"
             color={colors.text2}
             style={{marginTop: 6}}>
-            {userBalance}
+            {myBalance}
           </TextByScale>
         </TouchableOpacity>
       </View>
@@ -169,16 +173,14 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
           onPress={() =>
             usernameLoading
               ? null
-              : navigation.navigate('Screen_MyPublicAddress', {userAddress})
+              : navigation.navigate('Screen_MyPublicAddress')
           }
         />
         <View style={styles.separator} />
         <Item
           text="My Posts"
           onPress={() =>
-            usernameLoading
-              ? null
-              : navigation.navigate('Screen_MyPosts', {userAddress})
+            usernameLoading ? null : navigation.navigate('Screen_MyPosts')
           }
         />
       </View>

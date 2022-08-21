@@ -20,6 +20,8 @@ export const ListOf12Words: React.FC<ListOf12WordsProps> = ({
   React.useEffect(() => {
     // delete this - is for not showing error of unused vars
     if (!colors) console.log();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -55,10 +57,9 @@ export const ListOf12Words: React.FC<ListOf12WordsProps> = ({
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   mainContainer: {
-    backgroundColor: 'black',
+    backgroundColor: colors.background,
     flexDirection: 'row',
     padding: 10,
   },
