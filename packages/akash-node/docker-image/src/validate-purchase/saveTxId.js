@@ -4,6 +4,7 @@ const {
   textInBlueForConsole,
   textInGreenForConsole,
   getDecimalOfBigNumber,
+  customLogger,
 } = require("../utils");
 
 const saveTxId = async (
@@ -26,7 +27,7 @@ const saveTxId = async (
   if (parseFloat(estimatedUsdCost) >= parseFloat(process.env.TX_PRICE_LIMIT))
     throw Error(`TX cost is greater than ${process.env.TX_PRICE_LIMIT}`);
 
-  console.log(
+  customLogger(
     "⛽️ Estimated cost of save TX_id:",
     textInBlueForConsole("\n\t\t\t\t\t\t(🪙 MATIC):\t", estimatedCost),
     textInGreenForConsole("\n\t\t\t\t\t\t(💵 USD):\t", estimatedUsdCost)
@@ -38,14 +39,14 @@ const saveTxId = async (
     gasPrice: gasWithTip,
     gasLimit: estimatedLimit,
   });
-  console.log("\ntx: save tx_id", transactionId, tx);
+  customLogger("\ntx: save tx_id", transactionId, tx);
 
   await new Promise((res) => {
     contract.on("AddTransactionIdEvent", (txId) => {
       if (parseInt(transactionId) === getDecimalOfBigNumber(txId)) res();
     });
   });
-  console.log(`\nAddTransactionIdEvent emitted`);
+  customLogger(`\nAddTransactionIdEvent emitted`);
 };
 
 module.exports = saveTxId;

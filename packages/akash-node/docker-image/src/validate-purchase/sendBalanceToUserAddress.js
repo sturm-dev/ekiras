@@ -6,6 +6,7 @@ const {
   formatToDecimals,
   textInBlueForConsole,
   textInGreenForConsole,
+  customLogger,
 } = require("../utils");
 
 // ────────────────────────────────────────────────────────────────────────────────
@@ -29,7 +30,7 @@ const sendBalanceToUserAddress = async (
   if (parseFloat(estimatedUsdCost) >= parseFloat(process.env.TX_PRICE_LIMIT))
     throw Error(`TX cost is greater than ${process.env.TX_PRICE_LIMIT}`);
 
-  console.log(
+  customLogger(
     "⛽️ Estimated cost of send balance to user:",
     textInBlueForConsole("\n\t\t\t\t\t\t(🪙 MATIC):\t", estimatedCost),
     textInGreenForConsole("\n\t\t\t\t\t\t(💵 USD):\t", estimatedUsdCost)
@@ -38,7 +39,7 @@ const sendBalanceToUserAddress = async (
   // ────────────────────────────────────────────────────────────────────────────────
 
   if (isSandbox) {
-    console.log(
+    customLogger(
       `\nreal matic to send if not sandbox`,
       formatToDecimals(estimatedMaticToSend, 8)
     );
@@ -63,12 +64,12 @@ const sendBalanceToUserAddress = async (
     gasLimit: estimatedLimit,
   });
 
-  console.log(`\ntx: send balance to user`, tx);
+  customLogger(`\ntx: send balance to user`, tx);
 
   printSpacer("Transaction mined!", tx.hash);
   const receipt = await tx.wait();
   // The transaction is now on chain!
-  console.log(`Mined in block ${receipt.blockNumber}`);
+  customLogger(`Mined in block ${receipt.blockNumber}`);
 
   return {
     amountOfMaticSentToTheUser: amountOfMaticToSend,

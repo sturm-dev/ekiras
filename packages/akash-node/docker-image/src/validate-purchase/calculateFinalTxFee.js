@@ -5,6 +5,7 @@ const {
   formatToDecimals,
   getAccountBalance,
   printInGreen,
+  customLogger,
 } = require("../utils");
 
 const calculateFinalTxFee = async (
@@ -34,7 +35,6 @@ const calculateFinalTxFee = async (
 
   let feeEstimationHitRate = "";
 
-  console.log();
   const catchBlockText = catchBlock
     ? textInYellowForConsole("- ", "CATCH BLOCK")
     : "";
@@ -46,8 +46,8 @@ const calculateFinalTxFee = async (
   const coloredHitRate =
     feeEstimationHitRate <= 100 ? 2 : feeEstimationHitRate < 130 ? 3 : 1; // green - yellow - red
 
-  console.log(
-    catchBlockText + "⛽️ Tx fee in matic: ",
+  customLogger(
+    "\n" + catchBlockText + "⛽️ Tx fee in matic: ",
     textInCyanForConsole("", `estimated: ${_estimatedTotalTxFeeInMatic}`),
     "/",
     textInYellowForConsole("", `actual: ${txRealFee}`),
@@ -58,10 +58,8 @@ const calculateFinalTxFee = async (
   if (usdPrice) {
     printInGreen(
       catchBlockText + "💵 Tx fee in usd: ",
-      parseFloat(txRealFee) * parseFloat(usdPrice)
+      parseFloat(txRealFee) * parseFloat(usdPrice) + "\n"
     );
-
-    console.log();
   }
 
   return { txRealFee, txOnlyNetworkFee, feeEstimationHitRate };

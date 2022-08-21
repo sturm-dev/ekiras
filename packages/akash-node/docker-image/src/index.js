@@ -24,7 +24,7 @@ const axios = require("axios");
 const bodyParser = require("body-parser");
 const app = require("express")();
 
-const { printSpacer, printInRed } = require("./utils.js");
+const { printSpacer, printInRed, customLogger } = require("./utils.js");
 const validatePurchase = require("./validate-purchase");
 const estimateTxCosts = require("./estimate-tx-costs");
 
@@ -78,7 +78,7 @@ app.post("/validate-purchase-ios", async (req, res) => {
     "exclude-old-transactions": true,
   });
 
-  // console.log(`dataToSend`, JSON.stringify(JSON.parse(dataToSend), null, 2));
+  // customLogger(`dataToSend`, JSON.stringify(JSON.parse(dataToSend), null, 2));
 
   let result;
 
@@ -92,9 +92,8 @@ app.post("/validate-purchase-ios", async (req, res) => {
   } catch (e) {
     printInRed("", "-- INSIDE INDEX 'validate-purchase-ios' CATCH BLOCK --");
 
-    console.error(e);
-    console.log();
-    console.log(e.toString());
+    customLogger(e);
+    customLogger("\n" + e.toString());
 
     res.json({ error: e, errorString: e.toString() });
   }
@@ -110,9 +109,8 @@ app.get("/estimate-tx-costs", async (req, res) => {
   } catch (e) {
     printInRed("", "-- INSIDE INDEX 'estimate-tx-costs' CATCH BLOCK --");
 
-    console.error(e);
-    console.log();
-    console.log(e.toString());
+    customLogger(e);
+    customLogger("\n" + e.toString());
 
     res.json({ error: e, errorString: e.toString() });
   }
@@ -121,7 +119,7 @@ app.get("/estimate-tx-costs", async (req, res) => {
 // ────────────────────────────────────────────────────────────────────────────────
 
 app.listen(process.env.port || 3000, () => {
-  console.log(`Server running on port ${process.env.port || 3000}`);
+  customLogger(`Server running on port ${process.env.port || 3000}`);
 });
 
 // https://developer.apple.com/documentation/appstorereceipts/verifyreceipt

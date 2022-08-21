@@ -1,4 +1,5 @@
 const ethers = require("ethers");
+const dayjs = require("dayjs");
 
 // ─── CONSOLE UTILS ─────────────────────────────────────────────────────────────────────────────
 
@@ -32,24 +33,36 @@ const textInCyanForConsole = (text, colorText) =>
   getConsoleTextByColor(text, colorText, 6);
 
 const printInGreen = (text, greenText) =>
-  console.log(textInGreenForConsole(text, greenText));
+  customLogger(textInGreenForConsole(text, greenText));
 
 const printInYellow = (text, yellowText) =>
-  console.log(textInYellowForConsole(text, yellowText));
+  customLogger(textInYellowForConsole(text, yellowText));
 
 const printInRed = (text, redText) =>
-  console.log(textInRedForConsole(text, redText));
+  customLogger(textInRedForConsole(text, redText));
 
 const printSpacer = (text) => {
   if (process.env.INSIDE_SERVER === "true") {
-    console.log(`\n\n-${text}\n\n`);
+    customLogger(`\n\n-${text}\n\n`);
   } else {
-    console.log(`\n\n [1;33m -[0m ${text}\n\n`);
+    customLogger(`\n\n [1;33m -[0m ${text}\n\n`);
   }
 };
 
 const secondLog = (...args) => {
-  if (process.env.ACTIVE_MORE_LOGS === "true") console.log(...args);
+  if (process.env.ACTIVE_MORE_LOGS === "true") customLogger(...args);
+};
+
+const customLogger = (...args) => {
+  // https://day.js.org/docs/en/durations/format //YYYY-MM-DDTHH:mm:ss
+
+  if (process.env.INSIDE_SERVER === "true") {
+    const formattedDate = dayjs().subtract(3, "hour").format("DD-MM HH:mm:ss");
+
+    console.log(formattedDate + " \t", ...args);
+  } else {
+    console.log(...args);
+  }
 };
 
 // ────────────────────────────────────────────────────────────────────────────────
@@ -122,4 +135,5 @@ module.exports = {
   printInYellow,
   printInRed,
   secondLog,
+  customLogger,
 };

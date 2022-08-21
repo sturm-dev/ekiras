@@ -9,6 +9,7 @@ const {
   textInGreenForConsole,
   textInBlueForConsole,
   secondLog,
+  customLogger,
 } = require("../utils");
 
 const getGasPrices = async () => {
@@ -46,14 +47,14 @@ const printGasPrices = ({
   gasWithTip,
   usdPrice,
 }) => {
-  console.log();
-  console.log(
+  customLogger(
+    "\n",
     textInBlueForConsole("standard ->", standardByOracle),
     textInYellowForConsole("\tfast ->", fastByOracle),
     textInCyanForConsole("\twith-tip ->", fromBigNumberToGwei(gasWithTip)),
-    textInGreenForConsole("\tusdPrice ->", usdPrice)
+    textInGreenForConsole("\tusdPrice ->", usdPrice),
+    "\n"
   );
-  console.log();
 };
 
 module.exports = getGasPrices;

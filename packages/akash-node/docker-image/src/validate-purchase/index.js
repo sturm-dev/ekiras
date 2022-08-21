@@ -8,6 +8,7 @@ const {
   printInRed,
   fromBigNumberToGwei,
   formatToDecimals,
+  customLogger,
 } = require("../utils.js");
 
 const saveTxId = require("./saveTxId");
@@ -173,7 +174,7 @@ const validatePurchase = async (postResult, req) => {
       );
       txFee = _txFee;
     } catch (e) {
-      console.log("calculateFinalTxFee error ->", e);
+      customLogger("calculateFinalTxFee error ->", e);
     }
 
     if (e.toString().includes(errors.ALREADY_SAVED_THIS_TRANSACTION_ID)) {
@@ -192,9 +193,8 @@ const validatePurchase = async (postResult, req) => {
         errorString: errorString,
       };
     } else {
-      console.error(e);
-      console.log();
-      console.log(`error in string:`, e.toString());
+      customLogger(e);
+      customLogger(`\nerror in string:`, e.toString());
       return {
         txFee,
         error: e,

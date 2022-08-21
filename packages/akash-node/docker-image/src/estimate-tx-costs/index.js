@@ -6,6 +6,7 @@ const {
   printInRed,
   formatToDecimals,
   fromBigNumberToGwei,
+  customLogger,
 } = require("../utils.js");
 const getGasPrices = require("../validate-purchase/getGasPrices");
 const {
@@ -100,9 +101,8 @@ const estimateTxCosts = async () => {
         errorString: errorString,
       };
     } else {
-      console.error(e);
-      console.log();
-      console.log(`error in string:`, e.toString());
+      customLogger(e);
+      customLogger(`\n error in string:`, e.toString());
       return {
         error: e,
         errorString: e.toString(),
