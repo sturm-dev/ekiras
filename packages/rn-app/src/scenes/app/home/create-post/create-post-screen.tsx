@@ -51,6 +51,24 @@ export const Screen_CreatePost: React.FC<{
   const onCreatePost = async () => {
     const userAddress = await loadLocalData('myAddress');
 
+    const proceed = await new Promise<boolean>(res => {
+      Alert.alert(
+        'Are you sure about creating this post?',
+        `\nThe entered text will be visible "forever" on the Polygon blockchain, anyone can access this information publicly by accessing it with the Transaction ID, which is quite easy to obtain.` +
+          `\n\nIf you later want to "delete" the post, what you will end up doing is hiding it from the users of this app.`,
+        [
+          {
+            text: 'No, I would like to edit the text',
+            style: 'cancel',
+            onPress: () => res(false),
+          },
+          {text: 'Yes', onPress: () => res(true)},
+        ],
+      );
+    });
+
+    if (!proceed) return;
+
     setLoading(true);
     const {error, newPostId} = await createPost({text, userAddress});
     setLoading(false);

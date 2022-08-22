@@ -157,7 +157,7 @@ export const Screen_Slides: React.FC<{
                       source={image}
                       style={{
                         width: portraitImage
-                          ? 571 * 0.5
+                          ? 571 * 0.48
                           : squareImage
                           ? DEVICE_WIDTH *
                             (squareImageWithCustomSize
@@ -165,7 +165,7 @@ export const Screen_Slides: React.FC<{
                               : 0.7)
                           : 2282 * 0.127,
                         height: portraitImage
-                          ? 792 * 0.5
+                          ? 792 * 0.48
                           : squareImage
                           ? DEVICE_WIDTH *
                             (squareImageWithCustomSize
@@ -257,6 +257,7 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingTop: 25,
   },
   slide: {
     flex: 1,
