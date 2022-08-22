@@ -15,7 +15,11 @@ import {Button} from '_molecules';
 import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
-import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
+import {
+  getPercentageInHex,
+  MyThemeInterfaceColors,
+  themedStyleSheet,
+} from '_utils';
 import {
   getBalance,
   getUserAddress,
@@ -62,6 +66,8 @@ export const Screen_Home: React.FC<{
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [showTrendingPosts, setShowTrendingPosts] = useState(false);
+
   React.useEffect(() => {
     console.log('on mount home screen');
 
@@ -72,6 +78,7 @@ export const Screen_Home: React.FC<{
 
     checkUserLogged();
     getPosts();
+    getLocalData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -135,6 +142,11 @@ export const Screen_Home: React.FC<{
     }
   };
 
+  const getLocalData = async () => {
+    const _showTrendingPosts = await loadLocalData('showTrendingPosts');
+    setShowTrendingPosts(!!_showTrendingPosts);
+  };
+
   const checkUserLogged = async () => {
     const _userLogged = !!(await Keychain.getGenericPassword());
     setUserLogged(_userLogged);
@@ -162,22 +174,43 @@ export const Screen_Home: React.FC<{
     <ScreenSafeArea colorStatusBar={colors.background}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            style={{flex: 1, padding: 10}}
-            onPress={async () => {
-              await saveLocalData('slidesAlreadySeen', '');
-              await saveLocalData(
-                'devMode',
-                (await loadLocalData('devMode')) ? '' : 'true',
-              );
-            }}>
-            <TextByScale
-              scale="h1"
-              style={styles.appName}
-              color={colors.primary}>
-              Ekiras
-            </TextByScale>
-          </TouchableOpacity>
+          <View style={{...styles.header, flex: 1}}>
+            <TouchableOpacity
+              style={{padding: 10}}
+              onPress={async () => {
+                await saveLocalData('slidesAlreadySeen', '');
+                await saveLocalData(
+                  'devMode',
+                  (await loadLocalData('devMode')) ? '' : 'true',
+                );
+              }}>
+              <TextByScale
+                scale="h1"
+                style={styles.appName}
+                color={colors.primary}>
+                Ekiras
+              </TextByScale>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={async () => {
+                const alreadyShowingTrendingPosts = !!(await loadLocalData(
+                  'showTrendingPosts',
+                ));
+
+                setShowTrendingPosts(!alreadyShowingTrendingPosts);
+                await saveLocalData(
+                  'showTrendingPosts',
+                  alreadyShowingTrendingPosts ? '' : 'true',
+                );
+                await getPosts();
+              }}
+              style={{
+                ...styles.trendingPostIcon,
+                ...(showTrendingPosts ? styles.showTrendingPostSelected : {}),
+              }}>
+              <TextByScale>🔥</TextByScale>
+            </TouchableOpacity>
+          </View>
           {!goToProfileIsLoading ? (
             <TouchableOpacity
               onPress={() => navigation.navigate('Screen_CreatePost')}
@@ -271,5 +304,16 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  trendingPostIcon: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 10,
+    borderRadius: 10,
+  },
+  showTrendingPostSelected: {
+    borderWidth: 1,
+    borderColor: 'transparent',
+    backgroundColor: colors.primary + getPercentageInHex(20),
   },
 }));

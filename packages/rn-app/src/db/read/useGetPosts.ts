@@ -2,9 +2,11 @@ import {useEffect, useState} from 'react';
 import {gql, useLazyQuery} from '@apollo/client';
 import {Alert} from 'react-native';
 import {jsonToGraphQLQuery} from 'json-to-graphql-query';
+import dayjs from 'dayjs';
 
-import {PostInterface} from '../DBInterfaces';
 import {addObjectsToArrayIfIdNotExists} from '_utils';
+import {PostInterface} from '../DBInterfaces';
+import {loadLocalData} from '../local';
 
 // const logThePosts = (text: string, _posts: PostInterface[]) => {
 //   const newPosts: any[] = [];
@@ -18,11 +20,26 @@ import {addObjectsToArrayIfIdNotExists} from '_utils';
 //   console.log(text, JSON.stringify(newPosts, null, 2));
 // };
 
-const mergePosts = (_old: PostInterface[], _new: PostInterface[]) =>
-  sortArrayByCreatedDate(addObjectsToArrayIfIdNotExists([..._old], [..._new]));
+const mergePosts = (
+  _old: PostInterface[],
+  _new: PostInterface[],
+  showTrendingPosts: boolean,
+) =>
+  sortArray(
+    addObjectsToArrayIfIdNotExists([..._old], [..._new]),
+    showTrendingPosts,
+  );
 
-const sortArrayByCreatedDate = (_array: PostInterface[]): PostInterface[] =>
-  _array.sort((a, b) => b.createdDate - a.createdDate);
+const sortArray = (
+  _array: PostInterface[],
+  showTrendingPosts: boolean,
+): PostInterface[] => {
+  return showTrendingPosts
+    ? _array.sort((a, b) => b.upVotesCount - a.upVotesCount)
+    : _array.sort((a, b) => b.createdDate - a.createdDate);
+};
+
+const last3Days = dayjs().unix() - 86400 * 3;
 
 export const useGetPosts = ({
   paginationSize,
@@ -38,6 +55,8 @@ export const useGetPosts = ({
   const [onFetch, setOnFetch] = useState(false);
   const [localPosts, setLocalPosts] = useState<PostInterface[]>([]);
 
+  const [showTrendingPosts, setShowTrendingPosts] = useState(false);
+
   const [getPosts, {data, loading, refetch, error}] = useLazyQuery(
     gql`
       ${jsonToGraphQLQuery(
@@ -45,11 +64,15 @@ export const useGetPosts = ({
           query: {
             posts: {
               __args: {
-                orderBy: 'createdDate',
+                orderBy: showTrendingPosts ? 'upVotesCount' : 'createdDate',
                 orderDirection: 'desc',
                 skip: oldPosts.length,
                 first: paginationSize,
-                ...(authorId ? {where: {author: authorId.toLowerCase()}} : {}),
+                ...(authorId
+                  ? {where: {author: authorId.toLowerCase()}}
+                  : showTrendingPosts
+                  ? {where: {createdDate_gt: last3Days}}
+                  : {}),
               },
               id: true,
               createdDate: true,
@@ -67,6 +90,15 @@ export const useGetPosts = ({
       )}
     `,
   );
+
+  const getLocalData = async () => {
+    const _showTrendingPosts = await loadLocalData('showTrendingPosts');
+    setShowTrendingPosts(!!_showTrendingPosts);
+  };
+
+  useEffect(() => {
+    getLocalData();
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -106,19 +138,31 @@ export const useGetPosts = ({
               ),
           );
 
-          setOldPosts(mergePosts(oldPostsWithoutNewPosts, _posts));
+          setOldPosts(
+            mergePosts(oldPostsWithoutNewPosts, _posts, showTrendingPosts),
+          );
         } else {
-          setOldPosts(mergePosts(oldPosts, _posts));
+          setOldPosts(mergePosts(oldPosts, _posts, showTrendingPosts));
         }
-        setLocalPosts(mergePosts(oldPosts, _posts));
+        setLocalPosts(mergePosts(oldPosts, _posts, showTrendingPosts));
       }
       setPosts(_posts);
     }
-  }, [onFetch, data?.posts, error, oldPosts, refetch, posts]);
+  }, [
+    onFetch,
+    data?.posts,
+    error,
+    oldPosts,
+    refetch,
+    posts,
+    showTrendingPosts,
+  ]);
 
   const onGetPosts = async () => {
     console.log(`[1;33m -- onGetPosts --[0m`); // log in yellow
     setGetMorePressed(false);
+
+    await getLocalData();
 
     await setLocalPosts([]);
     await setOldPosts([]);
@@ -164,7 +208,7 @@ export const useGetPosts = ({
 
   const createLocalPost = (post: PostInterface) => {
     console.log('createLocalPost');
-    setLocalPosts(sortArrayByCreatedDate([...localPosts, post]));
+    setLocalPosts(sortArray([...localPosts, post], showTrendingPosts));
   };
 
   const removeLocalPost = (post: PostInterface) => {
@@ -173,8 +217,9 @@ export const useGetPosts = ({
 
     if (postIndex !== -1)
       setLocalPosts(
-        sortArrayByCreatedDate(
+        sortArray(
           [...localPosts].filter(obj => post.id !== obj.id),
+          showTrendingPosts,
         ),
       );
   };
