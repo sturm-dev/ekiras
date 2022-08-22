@@ -124,7 +124,7 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <TouchableOpacity
           style={styles.headerSubContainer}
           activeOpacity={usernameLoading ? 1 : 0.8}
-          onPress={async () =>
+          onPress={() =>
             usernameLoading
               ? null
               : navigation.navigate('Screen_UpdateUsername', {username})
@@ -169,11 +169,6 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
         <Item
           text="See my public address"
           onPress={() => navigation.navigate('Screen_MyPublicAddress')}
-        />
-        <View style={styles.separator} />
-        <Item
-          text="My Balance"
-          onPress={() => navigation.navigate('Screen_MyBalance')}
         />
         <View style={styles.separator} />
         <Item
