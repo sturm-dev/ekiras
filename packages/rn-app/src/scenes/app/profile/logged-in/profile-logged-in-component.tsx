@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Linking,
   ScrollView,
   TouchableOpacity,
   View,
@@ -10,6 +11,7 @@ import {
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Jazzicon from 'react-native-jazzicon';
+import DeviceInfo from 'react-native-device-info';
 
 import {TextByScale} from '_atoms';
 import {
@@ -24,6 +26,7 @@ import {getUsername, onLogout, loadLocalData} from '_db';
 
 import {image_polygon} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
+import {REPO_GITHUB_URL} from 'src/config/constants';
 
 interface ProfileLoggedInProps {
   updateTime?: number;
@@ -105,6 +108,27 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
     }
   };
 
+  const onAboutPress = () => {
+    Alert.alert(
+      'We ❤️ open Source',
+      '\n' +
+        'Do you want to view the project on GitHub?' +
+        '\n\n\n' +
+        'Ekiras v' +
+        DeviceInfo.getVersion() +
+        ' - ' +
+        'Build ' +
+        DeviceInfo.getBuildNumber(),
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'OK',
+          onPress: () => Linking.openURL(REPO_GITHUB_URL),
+        },
+      ],
+    );
+  };
+
   // ──────────────────────────────────────────────────────────────
 
   const Item = ({text, onPress}: {text: string; onPress?: () => void}) => {
@@ -175,6 +199,8 @@ export const ProfileLoggedIn: React.FC<ProfileLoggedInProps> = ({
           text="My Posts"
           onPress={() => navigation.navigate('Screen_MyPosts')}
         />
+        <View style={styles.separator} />
+        <Item text="About" onPress={onAboutPress} />
       </View>
       {/* • • • • • */}
       <SafeAreaView edges={['bottom']}>
@@ -229,11 +255,12 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
   },
   item: {
     paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   separator: {
     height: 1,
     backgroundColor: colors.text2 + getPercentageInHex(50),
-    width: '100%',
+    width: '95%',
     alignSelf: 'center',
   },
   footer: {

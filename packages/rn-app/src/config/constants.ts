@@ -6,3 +6,4 @@ export const CUSTOM_FONT = {
   SEMI_BOLD: 'TitilliumWeb-SemiBold',
   BOLD: 'TitilliumWeb-Bold',
 };
+export const REPO_GITHUB_URL = 'https://github.com/sturm-dev/ekiras';
