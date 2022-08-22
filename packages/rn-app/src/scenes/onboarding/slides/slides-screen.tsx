@@ -12,6 +12,7 @@ import {Button} from '_molecules';
 import {
   image_censored,
   image_cuneiform,
+  image_ekiras,
   image_freedomOfSpeech,
   image_polygonAndEthereum,
 } from 'src/assets/images';
@@ -64,44 +65,56 @@ export const Screen_Slides: React.FC<{
   const data = [
     {
       id: 1,
+      image: image_ekiras,
+      squareImage: true,
+      title: 'Ekiras',
+      text2: 'Using blockchain technology to take back power to individuals',
+    },
+    {
+      id: 2,
       image: image_freedomOfSpeech,
       portraitImage: true,
       text: 'I disapprove of what you say, but I will defend to the death your right to say it.',
       text2: '- Voltaire',
     },
     {
-      id: 2,
+      id: 3,
       image: image_censored,
       portraitImage: true,
+      subTitle: 'Censored not allowed',
       text: `In today's internet if we post something that generates controversy or makes someone in power uncomfortable in any way we can be censored and our post deleted, and thus the rest of the people never get to see it.`,
     },
     {
-      id: 3,
+      id: 4,
       animation: animation_megaphone,
       portraitImage: true,
+      subTitle: `It's your time to say it`,
       text: 'This app is a tool to express opinions and thoughts freely about anything, without anyone having the power to censor or delete what is published thanks to the power of blockchain technology.',
       animationCustomSize: '110%',
     },
     {
-      id: 4,
+      id: 5,
       image: image_cuneiform,
       portraitImage: true,
-      text: `The idea is that what you publish with this app "will be written in stone" that's why the name of this app "Ekiras" which in hungarian means cuneiform, the first type of writing in stone that we know of.`,
+      subTitle: 'Why Ekiras?',
+      text: `The idea is that what you publish with this app "will be written in stone" that's why the name of this app, which in hungarian means cuneiform, the first type of writing in stone that we know of.`,
     },
     {
-      id: 4,
+      id: 6,
       image: image_polygonAndEthereum,
       portraitImage: false,
-      text: `The publications and all dynamic information from this app will be stored publicly on the Polygon network and in a some way in the Ethereum network as well.`,
+      subTitle: `Where is the data stored?`,
+      text: `All the dynamic information from this app will be stored publicly on the Polygon network and in a some way in the Ethereum network as well.`,
     },
     {
-      id: 5,
+      id: 7,
       animation: animation_blockchain,
       portraitImage: false,
+      subTitle: `Exchange of value`,
       text: `In most of the apps if they are "free" is that we pay with our information, to use this app you will have to moderate the publications of other users or if you do not want to do this you can buy US$ 0.99 in crypto from this app which will give you many interactions.`,
     },
     {
-      id: 5,
+      id: 8,
       animation: animation_rocket,
       lastSlide: true,
       text: `This is one of the first apps that gives the power of blockchain to the average user, it's your time to be part of this revolution!`,
@@ -119,9 +132,12 @@ export const Screen_Slides: React.FC<{
           renderItem={({
             item: {
               image,
+              title,
+              subTitle,
               text,
               text2,
               portraitImage,
+              squareImage,
               lastSlide,
               animation,
               animationCustomSize,
@@ -134,8 +150,16 @@ export const Screen_Slides: React.FC<{
                     <Image
                       source={image}
                       style={{
-                        width: portraitImage ? 571 * 0.5 : 2282 * 0.127,
-                        height: portraitImage ? 792 * 0.5 : 1704 * 0.127,
+                        width: portraitImage
+                          ? 571 * 0.5
+                          : squareImage
+                          ? DEVICE_WIDTH * 0.7
+                          : 2282 * 0.127,
+                        height: portraitImage
+                          ? 792 * 0.5
+                          : squareImage
+                          ? DEVICE_WIDTH * 0.7
+                          : 1704 * 0.127,
                         borderRadius: 12,
                       }}
                     />
@@ -155,20 +179,38 @@ export const Screen_Slides: React.FC<{
                   </View>
                 )}
                 <View style={styles.textContainer}>
-                  <TextByScale scale="body2" center>
-                    {text}
-                  </TextByScale>
+                  {title ? (
+                    <TextByScale scale="h1" center>
+                      {title}
+                    </TextByScale>
+                  ) : null}
+                  {subTitle ? (
+                    <TextByScale
+                      scale="h4"
+                      center
+                      style={{marginTop: -25, marginBottom: 10}}>
+                      {subTitle}
+                    </TextByScale>
+                  ) : null}
+                  {text ? (
+                    <TextByScale scale="body2" center>
+                      {text}
+                    </TextByScale>
+                  ) : null}
                   {text2 ? (
                     <TextByScale
                       scale="body2"
                       color={colors.text2}
+                      center
                       style={{marginTop: 5}}>
                       {text2}
                     </TextByScale>
                   ) : null}
                 </View>
 
-                {lastSlide ? <Button text="Go!" onPress={onFinish} /> : null}
+                {lastSlide ? (
+                  <Button text="I am ready to go!" onPress={onFinish} />
+                ) : null}
               </View>
             );
           }}
