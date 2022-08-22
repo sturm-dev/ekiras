@@ -31,7 +31,6 @@ export const LoaderFullScreen: React.FC<
       animationType="fade">
       <View style={styles.animationContainer}>
         <LottieView
-          // https://lottiefiles.com/99627-loading-blocks
           source={animation_loading}
           autoPlay
           loop

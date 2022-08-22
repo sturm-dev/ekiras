@@ -267,7 +267,6 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                 </View>
                 <View style={styles.animationContainer}>
                   <AnimatedLottieView
-                    // https://lottiefiles.com/99627-loading-blocks
                     source={animation_loading}
                     autoPlay
                     loop
@@ -300,7 +299,6 @@ export const ValidatePurchase: React.FC<ValidatePurchaseProps> = ({
                 ) : null}
                 <View style={{...styles.animationContainer, marginTop: -10}}>
                   <AnimatedLottieView
-                    // https://lottiefiles.com/519-load-complete
                     source={animation_checkMark}
                     progress={1}
                     autoPlay

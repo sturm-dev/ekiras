@@ -176,7 +176,6 @@ export const Screen_MyBalance: React.FC<{
 
         <View style={styles.animationContainer}>
           <LottieView
-            // https://lottiefiles.com/69760-currency
             source={animation_currency}
             autoPlay
             loop

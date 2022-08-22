@@ -184,7 +184,6 @@ export const Screen_Home: React.FC<{
           <View style={styles.loadingContainer}>
             <TextByScale scale="h2">Loading posts...</TextByScale>
             <AnimatedLottieView
-              // https://lottiefiles.com/99627-loading-blocks
               source={animation_loading}
               autoPlay
               loop
