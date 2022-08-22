@@ -3,6 +3,7 @@ import {Image, View} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
+import AnimatedLottieView from 'lottie-react-native';
 
 import {ScreenSafeArea, TextByScale} from '_atoms';
 import {OnboardingStackParamList} from '_navigations';
@@ -10,6 +11,7 @@ import {DEVICE_WIDTH, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {useNavigationReset} from '_hooks';
 import {Button} from '_molecules';
 import {saveLocalData} from '_db';
+
 import {
   image_censored,
   image_cuneiform,
@@ -17,12 +19,12 @@ import {
   image_freedomOfSpeech,
   image_polygonAndEthereum,
 } from 'src/assets/images';
-import AnimatedLottieView from 'lottie-react-native';
 import {
   animation_blockchain,
   animation_megaphone,
   animation_rocket,
 } from 'src/assets/animations';
+import {CUSTOM_FONT} from 'src/config/constants';
 
 export type Screen_Slides__Params = undefined;
 
@@ -70,6 +72,7 @@ export const Screen_Slides: React.FC<{
       id: 1,
       image: image_ekiras,
       squareImage: true,
+      squareImageWithCustomSize: 0.7,
       title: 'Ekiras',
       text2: 'Using blockchain technology to take back power to individuals',
     },
@@ -90,10 +93,10 @@ export const Screen_Slides: React.FC<{
     {
       id: 4,
       animation: animation_megaphone,
+      animationCustomSize: '110%',
       portraitImage: true,
       subTitle: `It's your time to say it`,
       text: 'This app is a tool to express opinions and thoughts freely about anything, without anyone having the power to censor or delete what is published thanks to the power of blockchain technology.',
-      animationCustomSize: '110%',
     },
     {
       id: 5,
@@ -105,20 +108,19 @@ export const Screen_Slides: React.FC<{
     {
       id: 6,
       image: image_polygonAndEthereum,
-      portraitImage: false,
       subTitle: `Where is the data stored?`,
       text: `All the dynamic information from this app will be stored publicly on the Polygon network and in a some way in the Ethereum network as well.`,
     },
     {
       id: 7,
       animation: animation_blockchain,
-      portraitImage: false,
       subTitle: `Exchange of value`,
       text: `In most of the apps if they are "free" is that we pay with our information, to use this app you will have to moderate the publications of other users or if you do not want to do this you can buy US$ 0.99 in crypto from this app which will give you many interactions.`,
     },
     {
       id: 8,
       animation: animation_rocket,
+      animationCustomSize: '120%',
       lastSlide: true,
       text: `This is one of the first apps that gives the power of blockchain to the average user, it's your time to be part of this revolution!`,
     },
@@ -141,6 +143,7 @@ export const Screen_Slides: React.FC<{
               text2,
               portraitImage,
               squareImage,
+              squareImageWithCustomSize,
               lastSlide,
               animation,
               animationCustomSize,
@@ -156,12 +159,18 @@ export const Screen_Slides: React.FC<{
                         width: portraitImage
                           ? 571 * 0.5
                           : squareImage
-                          ? DEVICE_WIDTH * 0.7
+                          ? DEVICE_WIDTH *
+                            (squareImageWithCustomSize
+                              ? squareImageWithCustomSize
+                              : 0.7)
                           : 2282 * 0.127,
                         height: portraitImage
                           ? 792 * 0.5
                           : squareImage
-                          ? DEVICE_WIDTH * 0.7
+                          ? DEVICE_WIDTH *
+                            (squareImageWithCustomSize
+                              ? squareImageWithCustomSize
+                              : 0.7)
                           : 1704 * 0.127,
                         borderRadius: 12,
                       }}
@@ -177,13 +186,20 @@ export const Screen_Slides: React.FC<{
                         width: animationCustomSize
                           ? animationCustomSize
                           : '90%',
+                        ...(lastSlide ? {marginBottom: -70} : {}),
                       }}
                     />
                   </View>
                 )}
                 <View style={styles.textContainer}>
                   {title ? (
-                    <TextByScale scale="h1" center>
+                    <TextByScale
+                      scale="h1"
+                      center
+                      style={{
+                        fontFamily: CUSTOM_FONT.BOLD,
+                        letterSpacing: 1.5,
+                      }}>
                       {title}
                     </TextByScale>
                   ) : null}
@@ -191,7 +207,12 @@ export const Screen_Slides: React.FC<{
                     <TextByScale
                       scale="h4"
                       center
-                      style={{marginTop: -25, marginBottom: 10}}>
+                      style={{
+                        marginTop: -25,
+                        marginBottom: 10,
+                        fontFamily: CUSTOM_FONT.BOLD,
+                        letterSpacing: 1,
+                      }}>
                       {subTitle}
                     </TextByScale>
                   ) : null}
@@ -212,7 +233,11 @@ export const Screen_Slides: React.FC<{
                 </View>
 
                 {lastSlide ? (
-                  <Button text="I am ready to go!" onPress={onFinish} />
+                  <Button
+                    text="I am ready to go!"
+                    onPress={onFinish}
+                    style={{marginTop: 30}}
+                  />
                 ) : null}
               </View>
             );
