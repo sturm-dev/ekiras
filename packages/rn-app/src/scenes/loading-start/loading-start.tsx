@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {useTheme, RouteProp} from '@react-navigation/native';
 
 import {useNavigationReset} from '_hooks';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {ScreenSafeArea} from '_atoms';
+import {loadLocalData} from '_db';
 
 export type Screen_LoadingStart__Params = undefined;
 
@@ -18,14 +19,22 @@ export const Screen_LoadingStart: React.FC<{
 
   const {handleResetNavigation} = useNavigationReset();
 
-  useEffect(() => {
-    setTimeout(() => {
+  const checkIfSlidesAlreadySeen = useCallback(async () => {
+    const slidesAlreadySeen = await loadLocalData('slidesAlreadySeen');
+
+    if (slidesAlreadySeen) {
+      handleResetNavigation({stack: 'Stack_App', screen: 'Screen_Home'});
+    } else {
       handleResetNavigation({
         stack: 'Stack_Onboarding',
         screen: 'Screen_Slides',
       });
-    }, 1000);
+    }
   }, [handleResetNavigation]);
+
+  useEffect(() => {
+    checkIfSlidesAlreadySeen();
+  }, [checkIfSlidesAlreadySeen]);
 
   return (
     <ScreenSafeArea withBottomEdgeToo>

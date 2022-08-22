@@ -13,8 +13,7 @@ import {
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {Button, LoaderFullScreen, MultilineTextInput} from '_molecules';
-import {createPost, getUsername, PostInterface} from '_db';
-import {loadLocalData} from 'src/db/local';
+import {createPost, getUsername, PostInterface, loadLocalData} from '_db';
 
 export type Screen_CreatePost__Params = undefined;
 

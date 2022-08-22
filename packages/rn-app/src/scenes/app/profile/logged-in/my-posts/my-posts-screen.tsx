@@ -7,12 +7,11 @@ import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {Button} from '_molecules';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
-import {useGetPosts} from '_db';
+import {useGetPosts, loadLocalData} from '_db';
 import {PostPreview} from '_componentsForThisApp';
 import {useNavigationReset} from '_hooks';
 
 import {PAGINATION_SIZE} from 'src/config/constants';
-import {loadLocalData} from 'src/db/local';
 
 export type Screen_MyPosts__Params = undefined;
 

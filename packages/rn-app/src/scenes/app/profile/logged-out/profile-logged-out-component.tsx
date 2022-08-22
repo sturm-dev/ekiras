@@ -12,9 +12,9 @@ import {
 import {CustomIcon, TextByScale} from '_atoms';
 import {themedStyleSheet, MyThemeInterfaceColors} from '_utils';
 import {useNavigationReset} from '_hooks';
+import {loadLocalData} from '_db';
 
 import {Screen_Profile__Prop} from '../profile-screen';
-import {loadLocalData} from 'src/db/local';
 
 const devSeeds = [
   ONLY_DEV__SEED_1,

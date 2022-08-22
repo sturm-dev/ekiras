@@ -20,11 +20,10 @@ import {
 } from '_utils';
 import {useNavigationReset} from '_hooks';
 
-import {getUsername, onLogout} from '_db';
+import {getUsername, onLogout, loadLocalData} from '_db';
 
 import {image_polygon} from 'src/assets/images';
 import {Screen_Profile__Prop} from '../profile-screen';
-import {loadLocalData} from 'src/db/local';
 
 interface ProfileLoggedInProps {
   updateTime?: number;

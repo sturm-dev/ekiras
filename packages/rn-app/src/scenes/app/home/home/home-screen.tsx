@@ -10,10 +10,16 @@ import {PostPreview} from '_componentsForThisApp';
 
 import {AppStackParamList} from '_navigations';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
-import {getBalance, getUserAddress, PostInterface, useGetPosts} from '_db';
+import {
+  getBalance,
+  getUserAddress,
+  loadLocalData,
+  PostInterface,
+  saveLocalData,
+  useGetPosts,
+} from '_db';
 
 import {CUSTOM_FONT, PAGINATION_SIZE} from 'src/config/constants';
-import {loadLocalData, saveLocalData} from 'src/db/local';
 import AnimatedLottieView from 'lottie-react-native';
 import {animation_loading} from 'src/assets/animations';
 
@@ -151,12 +157,13 @@ export const Screen_Home: React.FC<{
         <View style={styles.header}>
           <TouchableOpacity
             style={{flex: 1, padding: 10}}
-            onPress={async () =>
+            onPress={async () => {
+              await saveLocalData('slidesAlreadySeen', '');
               await saveLocalData(
                 'devMode',
                 (await loadLocalData('devMode')) ? '' : 'true',
-              )
-            }>
+              );
+            }}>
             <TextByScale
               scale="h1"
               style={styles.appName}

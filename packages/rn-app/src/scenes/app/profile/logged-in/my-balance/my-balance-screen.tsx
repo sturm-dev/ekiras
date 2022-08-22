@@ -18,11 +18,11 @@ import {
   VOTE_COST_APPROX,
   TOKEN_NAME,
   CREATE_POST_COST_APPROX,
+  loadLocalData,
 } from '_db';
 
 import {animation_currency} from 'src/assets/animations';
 import {image_polygon} from 'src/assets/images';
-import {loadLocalData} from 'src/db/local';
 
 export type Screen_MyBalance__Params =
   | {

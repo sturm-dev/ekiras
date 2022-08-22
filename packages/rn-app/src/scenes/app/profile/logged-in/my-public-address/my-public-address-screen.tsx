@@ -9,7 +9,7 @@ import {BackButton, ScreenSafeArea, TextByScale} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button} from '_molecules';
-import {loadLocalData} from 'src/db/local';
+import {loadLocalData} from '_db';
 
 export type Screen_MyPublicAddress__Params = undefined;
 

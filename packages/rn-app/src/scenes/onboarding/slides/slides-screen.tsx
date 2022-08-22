@@ -9,6 +9,7 @@ import {OnboardingStackParamList} from '_navigations';
 import {DEVICE_WIDTH, MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {useNavigationReset} from '_hooks';
 import {Button} from '_molecules';
+import {saveLocalData} from '_db';
 import {
   image_censored,
   image_cuneiform,
@@ -55,7 +56,9 @@ export const Screen_Slides: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onFinish = () => {
+  const onFinish = async () => {
+    await saveLocalData('slidesAlreadySeen', 'true');
+
     handleResetNavigation({
       stack: 'Stack_App',
       screen: 'Screen_Home',

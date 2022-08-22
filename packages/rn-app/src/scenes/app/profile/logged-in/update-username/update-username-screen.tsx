@@ -8,8 +8,7 @@ import {BackButton, CustomKeyboardAvoidingView, ScreenSafeArea} from '_atoms';
 import {MyThemeInterfaceColors, themedStyleSheet} from '_utils';
 import {AppStackParamList} from '_navigations';
 import {Button, LoaderFullScreen, TextInput} from '_molecules';
-import {updateUsername} from '_db';
-import {loadLocalData} from 'src/db/local';
+import {updateUsername, loadLocalData} from '_db';
 
 export type Screen_UpdateUsername__Params = {
   username: string;
