@@ -10,3 +10,4 @@ export * from './compareTwoAddress';
 export * from './getFastestGasPrice';
 export * from './printTxHash';
 export * from './formatHexBigNumber';
+export * from './estimateCostOfTx';

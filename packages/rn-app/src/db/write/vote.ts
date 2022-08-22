@@ -6,6 +6,7 @@ import {
   printTxHash,
   getBalance,
 } from '_db';
+import {checkTxPriceIsNormalBeforeContinue} from '../utils/checkTxPriceIsNormalBeforeContinue';
 
 export const vote = async ({
   post,
@@ -21,23 +22,34 @@ export const vote = async ({
   try {
     const contract = await contractWithSigner();
     const gasPrice = await getFastestGasPrice();
+    if (!gasPrice) throw Error('no gas price');
 
-    const tx = await contract.votePost(
-      post.id,
-      voteIsTypeUp,
-      gasPrice ? {gasPrice} : {},
-    );
-    printTxHash(tx.hash);
+    const fnName = 'votePost';
+    const fnArgs = [post.id, voteIsTypeUp, gasPrice ? {gasPrice} : {}];
 
-    await new Promise<void>(res => {
-      contract.on('VoteEvent', msgSender => {
-        if (msgSender === userAddress) res();
-      });
+    const proceed = await checkTxPriceIsNormalBeforeContinue({
+      contract,
+      gasPrice,
+      fnName,
+      fnArgs,
     });
 
-    getBalance(userAddress);
+    if (proceed) {
+      const tx = await contract[fnName](...fnArgs);
+      printTxHash(tx.hash);
 
-    return {};
+      await new Promise<void>(res => {
+        contract.on('VoteEvent', msgSender => {
+          if (msgSender === userAddress) res();
+        });
+      });
+
+      getBalance(userAddress);
+
+      return {};
+    } else {
+      return {error: 'tx is too expensive'};
+    }
   } catch (error) {
     return handleError(error);
   }

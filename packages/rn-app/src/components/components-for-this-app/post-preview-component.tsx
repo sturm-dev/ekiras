@@ -107,7 +107,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({
       setVoteInProgress && setVoteInProgress(false);
 
       if (error) {
-        if (error === 'no mnemonic found') {
+        if (error === 'tx is too expensive') {
+        } else if (error === 'no mnemonic found') {
           Alert.alert('You need to log-in to interact with the app');
         } else if (error === 'gas required exceeds allowance') {
           Alert.alert("You don't have enough gas");
