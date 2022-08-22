@@ -62,6 +62,10 @@ export const Screen_UpdateUsername: React.FC<{
         Alert.alert("You don't have enough gas");
       } else Alert.alert('Error', error);
     } else {
+      Alert.alert(
+        'Possible delay to see the changes in the posts',
+        `\nBetween the blockchain data and "The graph" data there is a few seconds delay.`,
+      );
       navigation.navigate('Screen_Profile', {
         updateTime: new Date().getTime(),
       });

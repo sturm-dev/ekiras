@@ -16,7 +16,7 @@ export const cache = new InMemoryCache();
 const client = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/sturmenta/just-feedback',
   cache,
-  defaultOptions: {watchQuery: {fetchPolicy: 'cache-and-network'}},
+  defaultOptions: {watchQuery: {fetchPolicy: 'network-only'}},
 });
 
 export const App = (): any => {

@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, FlatList, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation, RouteProp, useTheme} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import * as Keychain from 'react-native-keychain';
@@ -45,17 +51,8 @@ export const Screen_Home: React.FC<{
   const navigation = useNavigation<Screen_Home__Prop>();
   const {params} = route;
 
-  const {
-    getPosts,
-    posts,
-    loading,
-    refetch,
-    getMore,
-    limitReached,
-    editLocalPosts,
-  } = useGetPosts({
-    paginationSize: PAGINATION_SIZE,
-  });
+  const {getPosts, posts, loading, getMore, limitReached, editLocalPosts} =
+    useGetPosts({paginationSize: PAGINATION_SIZE});
 
   const [voteInProgress, setVoteInProgress] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
@@ -63,6 +60,7 @@ export const Screen_Home: React.FC<{
   const [myAddress, setMyAddress] = useState('');
   const [oldUpdateTime, setOldUpdateTime] = useState(0);
   const [loadingUserAddress, setLoadingUserAddress] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   React.useEffect(() => {
     console.log('on mount home screen');
@@ -90,13 +88,13 @@ export const Screen_Home: React.FC<{
         editLocalPosts.createLocalPost(params.createLocalPost);
       } else {
         // only refetch posts
-        refetch();
+        getPosts();
       }
     }
   }, [
     params?.updateTime,
     params?.createLocalPost,
-    refetch,
+    getPosts,
     oldUpdateTime,
     editLocalPosts,
     myAddress,
@@ -113,6 +111,10 @@ export const Screen_Home: React.FC<{
       Alert.alert('No new results');
     }
   }, [loading, limitReached]);
+
+  useEffect(() => {
+    if (refreshing && !loading) setRefreshing(false);
+  }, [loading, refreshing]);
 
   useEffect(() => {
     if (userLogged) getAndSetUserAddress();
@@ -144,6 +146,11 @@ export const Screen_Home: React.FC<{
   useEffect(() => {
     if (myAddress) getUserBalance(myAddress);
   }, [myAddress]);
+
+  const onRefresh = React.useCallback(async () => {
+    await setRefreshing(true);
+    await getPosts();
+  }, [getPosts]);
 
   const goToProfileIsLoading = userLoggedLoading
     ? true
@@ -210,6 +217,9 @@ export const Screen_Home: React.FC<{
                 removeLocalPost={editLocalPosts.removeLocalPost}
               />
             )}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingTop: 20, paddingBottom: 50}}

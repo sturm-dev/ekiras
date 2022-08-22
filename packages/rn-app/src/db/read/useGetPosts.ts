@@ -116,13 +116,18 @@ export const useGetPosts = ({
     }
   }, [onFetch, data?.posts, error, oldPosts, refetch, posts]);
 
-  const onGetPosts = () => {
+  const onGetPosts = async () => {
     console.log(`[1;33m -- onGetPosts --[0m`); // log in yellow
-
-    setOnFetch(true);
     setGetMorePressed(false);
 
-    getPosts();
+    await setLocalPosts([]);
+    await setOldPosts([]);
+    await setPosts([]);
+
+    setTimeout(async () => {
+      setOnFetch(true);
+      await getPosts();
+    }, 100);
   };
 
   const getMore = () => {
