@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.8;
 
-contract JustFeedback {
-  address public manager;
-
+contract Ekiras {
   struct Post {
     uint256 id;
     uint256 createdDate;
@@ -22,7 +20,6 @@ contract JustFeedback {
   mapping(string => address) public usernameToAddress;
   address emptyAddress;
   mapping(address => uint256[]) public addressToPostIds;
-  mapping(uint256 => bool) public transactionIds;
 
   event CreatePostEvent(
     address _msgSender,
@@ -41,10 +38,7 @@ contract JustFeedback {
   );
   event UpdateUsernameEvent(address _msgSender, string _text);
 
-  event AddTransactionIdEvent(uint256 _transactionId);
-
   constructor() {
-    manager = msg.sender;
     postIndex = 0;
     emptyAddress = 0x0000000000000000000000000000000000000000;
   }
@@ -131,20 +125,5 @@ contract JustFeedback {
     }
 
     emit UpdateUsernameEvent(msg.sender, _text);
-  }
-
-  function addTransactionId(uint256 _transactionId) public {
-    require(
-      msg.sender == manager,
-      "only the manager can add new transactionIds"
-    );
-    require(
-      !transactionIds[_transactionId],
-      "already saved this transactionId"
-    );
-
-    transactionIds[_transactionId] = true;
-
-    emit AddTransactionIdEvent(_transactionId);
   }
 }

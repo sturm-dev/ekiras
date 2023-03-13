@@ -7,13 +7,13 @@ const {
 } = require("./utils")
 
 const { RPC_FULL_URL, ETHERSCAN_ADDRESS_URL } = require("../handleEnvVars")
-const exportTheAbiSync = require("./export/abi")
-const exportContractAddress = require("./export/contract-address")
+// const exportTheAbiSync = require("./export/abi")
+// const exportContractAddress = require("./export/contract-address")
 
 async function deploy({ MAINNET }) {
   console.log(`\n\n [1;33m -[0m To deploy to ${MAINNET ? "mainnet" : "testnet"}...\n\n`)
 
-  const JustFeedbackFactory = await ethers.getContractFactory("JustFeedback")
+  const ContractFactory = await ethers.getContractFactory("Ekiras")
 
   const address = fromPrivateKeyToAddress(network.config.accounts[0])
 
@@ -26,7 +26,14 @@ async function deploy({ MAINNET }) {
   // ────────────────────────────────────────────────────────────────────────────────
   console.log(`\n\n [1;33m -[0m Deploying smart contracts...\n\n`)
 
-  const contract = await JustFeedbackFactory.deploy()
+  // Set gas limit and gas price, using the default Ropsten provider
+  const price = ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
+  const options = {
+    gasLimit: 100000,
+    gasPrice: ethers.utils.parseUnits(price, "gwei"),
+  }
+
+  const contract = await ContractFactory.deploy(options)
   await contract.deployed()
 
   console.log(
@@ -51,13 +58,13 @@ async function deploy({ MAINNET }) {
   console.log("accountBalanceAfter", mathRound(accountBalanceAfter))
   console.log("uploadContractFee", mathRound(uploadContractFee))
   // ────────────────────────────────────────────────────────────────────────────────
-  console.log(`\n\n [1;33m -[0m Exporting the abi file to another projects...\n\n`)
-  exportTheAbiSync()
+  // console.log(`\n\n [1;33m -[0m Exporting the abi file to another projects...\n\n`)
+  // exportTheAbiSync()
   // ────────────────────────────────────────────────────────────────────────────────
-  console.log(
-    `\n\n [1;33m -[0m Exporting the contract address to another projects...\n\n`
-  )
-  exportContractAddress(contract.address)
+  // console.log(
+  //   `\n\n [1;33m -[0m Exporting the contract address to another projects...\n\n`
+  // )
+  // exportContractAddress(contract.address)
   // ────────────────────────────────────────────────────────────────────────────────
   console.log(`\n\n [1;33m -[0m All finished! 🎉\n\n`)
 }
