@@ -236,13 +236,6 @@ const useStyles = themedStyleSheet((colors: MyThemeInterfaceColors) => ({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  userImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: 'violet',
-    marginRight: 15,
-  },
   amountOfCredits: {
     alignItems: 'center',
     justifyContent: 'center',
