@@ -2,12 +2,6 @@
 
 ---
 
-## youtube video ➡
-
-[<img width="882" alt="Screenshot 2022-11-21 at 03 41 06" src="https://user-images.githubusercontent.com/30802967/202982379-8b2a3f69-a988-407b-a8ed-215e7f111431.png">](https://youtu.be/5qTpkrGSkjA)
-
----
-
 ## some screenshots ➡
 
 <p float="left">
