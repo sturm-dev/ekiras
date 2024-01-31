@@ -2,6 +2,12 @@
 
 ---
 
+## video
+
+[![](https://github.com/sturmenta/ekiras/assets/30802967/118bc947-ccea-4173-a168-41688846b012)](https://www.youtube.com/watch?v=5qTpkrGSkjA&ab_channel=NicolasSturm "")
+
+---
+
 ## some screenshots ➡
 
 <p float="left">
@@ -23,4 +29,3 @@
 [//]: # "[ ] solve infura show many requests only after buy crypto"
 [//]: # "[ ] .cert on react native"
 [//]: # "[ ] secure .env vars on docker"
-
